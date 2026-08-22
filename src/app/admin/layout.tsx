@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard,
   ShoppingBag,
@@ -17,14 +17,94 @@ import {
   ArrowRight,
   Sparkles,
   LogOut,
-  SlidersHorizontal
+  SlidersHorizontal,
+  Lock
 } from 'lucide-react';
+import { supabase } from '@/lib/supabase/client';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const [authChecking, setAuthChecking] = useState(true);
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
+  const [adminUserEmail, setAdminUserEmail] = useState<string>('');
   const [pendingVerificationCount, setPendingVerificationCount] = useState<number>(0);
 
+  // If on login page, render cleanly without admin layout wrapper
+  const isLoginPage = pathname === '/admin/login';
+
   useEffect(() => {
+    if (isLoginPage) {
+      setAuthChecking(false);
+      return;
+    }
+
+    let isMounted = true;
+
+    async function checkAdminAuth() {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session || !session.user) {
+          if (isMounted) {
+            setIsAdminAuthenticated(false);
+            setAuthChecking(false);
+            router.push('/admin/login');
+          }
+          return;
+        }
+
+        const appRole = session.user.app_metadata?.role;
+        const userRole = session.user.user_metadata?.role;
+        const isAdmin = appRole === 'admin' || userRole === 'admin';
+
+        if (!isAdmin) {
+          if (isMounted) {
+            setIsAdminAuthenticated(false);
+            setAuthChecking(false);
+            await supabase.auth.signOut();
+            router.push('/admin/login');
+          }
+          return;
+        }
+
+        if (isMounted) {
+          setAdminUserEmail(session.user.email || 'admin@zaad.sa');
+          setIsAdminAuthenticated(true);
+          setAuthChecking(false);
+        }
+      } catch (err) {
+        console.error('Error verifying admin authorization:', err);
+        if (isMounted) {
+          setIsAdminAuthenticated(false);
+          setAuthChecking(false);
+          router.push('/admin/login');
+        }
+      }
+    }
+
+    checkAdminAuth();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT' || !session) {
+        setIsAdminAuthenticated(false);
+        if (!isLoginPage) {
+          router.push('/admin/login');
+        }
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      authListener.subscription.unsubscribe();
+    };
+  }, [pathname, isLoginPage, router]);
+
+  // Load pending verification count for badge
+  useEffect(() => {
+    if (!isAdminAuthenticated || isLoginPage) return;
+
     let isMounted = true;
     async function loadPending() {
       try {
@@ -40,7 +120,34 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
     loadPending();
     return () => { isMounted = false; };
-  }, [pathname]);
+  }, [pathname, isAdminAuthenticated, isLoginPage]);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push('/admin/login');
+  };
+
+  if (isLoginPage) {
+    return <>{children}</>;
+  }
+
+  if (authChecking) {
+    return (
+      <div className="min-h-screen bg-zaad-950 flex flex-col items-center justify-center text-ivory-100 font-arabic space-y-4">
+        <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-gold-400 bg-white p-1 shadow-2xl animate-pulse">
+          <Image src="/images/zaad-logo.png" alt="ZAAD" fill className="object-contain" />
+        </div>
+        <div className="flex items-center gap-2 text-gold-400 text-xs font-bold">
+          <Lock className="w-4 h-4" />
+          <span>جاري التحقق من الصلاحيات الأمنية التنفيذية...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAdminAuthenticated) {
+    return null;
+  }
 
   const adminNav = [
     { name: 'لوحة المؤشرات التنفيذية', href: '/admin', icon: LayoutDashboard },
@@ -118,18 +225,32 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </nav>
 
         {/* Sidebar Footer */}
-        <div className="p-4 border-t border-zaad-800 text-xs text-ivory-400 space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] text-gold-400 font-semibold">المشرف: إدارة المطابقة</span>
-            <span className="w-2 h-2 rounded-full bg-green-500"></span>
+        <div className="p-4 border-t border-zaad-800 text-xs text-ivory-400 space-y-2.5">
+          <div className="bg-zaad-900 p-2.5 rounded-xl border border-zaad-800 flex items-center justify-between">
+            <div className="truncate">
+              <span className="text-[10px] text-gold-400 font-mono block">LOGGED IN ADMIN</span>
+              <span className="text-[11px] text-ivory-200 font-semibold truncate block">{adminUserEmail}</span>
+            </div>
+            <span className="w-2 h-2 rounded-full bg-green-500 shrink-0"></span>
           </div>
-          <Link
-            href="/"
-            className="flex items-center justify-center gap-1.5 w-full bg-zaad-900 hover:bg-zaad-800 text-ivory-200 py-2 rounded-lg text-xs font-medium transition-colors"
-          >
-            <ArrowRight className="w-3.5 h-3.5" />
-            <span>العودة للمتجر الرئيسي</span>
-          </Link>
+
+          <div className="flex gap-2">
+            <Link
+              href="/"
+              className="flex-1 flex items-center justify-center gap-1 bg-zaad-900 hover:bg-zaad-800 text-ivory-200 py-2 rounded-lg text-xs font-medium transition-colors"
+            >
+              <ArrowRight className="w-3.5 h-3.5" />
+              <span>المتجر</span>
+            </Link>
+            
+            <button
+              onClick={handleLogout}
+              className="flex-1 flex items-center justify-center gap-1 bg-red-950/60 hover:bg-red-900 text-red-200 py-2 rounded-lg text-xs font-medium border border-red-800/40 transition-colors"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>خروج</span>
+            </button>
+          </div>
         </div>
 
       </aside>
