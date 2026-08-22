@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
       luxury_gift_box_included: body.luxuryGiftBoxIncluded || false,
       luxury_gift_message: body.luxuryGiftMessage || null,
       total_amount: body.totalAmount,
-      currency: body.currency || 'SAR',
+      currency: body.currency || 'EGP',
       status: body.status || 'pending',
       payment_method: body.paymentMethod,
       payment_status: body.paymentStatus || 'unpaid',

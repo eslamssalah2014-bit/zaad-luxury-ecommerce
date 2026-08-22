@@ -44,7 +44,7 @@ export function formatSupabaseProduct(d: any): Product {
     comparePrice,
     discountPercentage,
     costPrice,
-    currency: d.currency || 'SAR',
+    currency: d.currency || 'EGP',
     stockQuantity,
     reservedStock,
     availableStock,

@@ -31,7 +31,7 @@ export function generateLuxuryEmailHtml(
         <p>عميلنا الكريم <strong>${data.recipientName}</strong>،</p>
         <p>لقد استلمنا تفاصيل طلبكم لمقتنيات زاد الفاخرة. نسعد بثقتكم في انتقاء أجود أنواع العسل الطبيعي النادر المقطوف وفق أعلى معايير الأصالة والتراث.</p>
         <div style="background:#f4efe8; border-right: 4px solid ${brandGold}; padding: 16px; margin: 20px 0; border-radius: 4px;">
-          <p style="margin:0; font-size:14px; color:#53483D;"><strong>إجمالي المقتنيات:</strong> ${data.orderTotal} ر.س</p>
+          <p style="margin:0; font-size:14px; color:#53483D;"><strong>إجمالي المقتنيات:</strong> ${data.orderTotal} ج.م</p>
           <p style="margin:6px 0 0 0; font-size:13px; color:#7F6E5E;">تم إرسال الطلب لغرفة التجهيز المعقمة لدى خبرائنا.</p>
         </div>
       `;

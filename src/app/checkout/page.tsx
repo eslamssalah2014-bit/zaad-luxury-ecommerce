@@ -147,7 +147,7 @@ export default function CheckoutPage() {
       luxuryGiftBoxIncluded: isGiftBox,
       luxuryGiftMessage: giftMessage,
       totalAmount: total,
-      currency: 'SAR',
+      currency: 'EGP',
       status: 'awaiting_verification',
       paymentMethod,
       paymentStatus: 'proof_submitted',

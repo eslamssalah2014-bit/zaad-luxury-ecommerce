@@ -311,7 +311,7 @@ export interface CmsSection {
 }
 
 export interface CurrencyRate {
-  code: 'SAR' | 'AED' | 'EGP' | 'USD' | 'KWD';
+  code: 'EGP' | 'SAR' | 'AED' | 'USD' | 'KWD';
   symbolAr: string;
-  rateToSar: number; // SAR base
+  rateToEgp: number; // EGP base
 }

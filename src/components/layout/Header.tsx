@@ -41,7 +41,7 @@ export default function Header() {
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="inline-block w-1.5 h-1.5 rounded-full bg-gold-400 animate-pulse"></span>
-            <span>نقاء موثق مخبرياً بنسبة 100% مع كل برطمان | شحن ملكي مبرد ومجاني للطلبات فوق 600 ر.س</span>
+            <span>نقاء موثق مخبرياً بنسبة 100% مع كل برطمان | شحن ملكي مبرد وفاخر</span>
           </div>
           <div className="hidden md:flex items-center gap-6 text-[11px] text-ivory-300">
             <Link href="/purity-checker" className="hover:text-gold-300 transition-colors flex items-center gap-1">

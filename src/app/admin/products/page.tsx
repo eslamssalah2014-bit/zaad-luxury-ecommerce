@@ -218,7 +218,7 @@ export default function AdminProductsPage() {
         price: Number(price),
         compareAtPrice: compareAtPrice ? Number(compareAtPrice) : null,
         costPrice: Number(costPrice),
-        currency: 'SAR',
+        currency: 'EGP',
         stockQuantity: Number(stockQuantity),
         lowStockThreshold: Number(lowStockThreshold),
         weightGrams: Number(weightGrams),
@@ -781,7 +781,7 @@ export default function AdminProductsPage() {
                 <div className="space-y-6 animate-fade-in">
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
-                      <label className="block font-bold text-zaad-900 mb-1">سعر البيع النهائي (SAR) *</label>
+                      <label className="block font-bold text-zaad-900 mb-1">سعر البيع النهائي (ج.م - EGP) *</label>
                       <input
                         type="number"
                         required
@@ -803,7 +803,7 @@ export default function AdminProductsPage() {
                     </div>
 
                     <div>
-                      <label className="block font-bold text-zaad-900 mb-1">تكلفة المنتج على الشركة (Cost Price) *</label>
+                      <label className="block font-bold text-zaad-900 mb-1">تكلفة المنتج على الشركة (Cost Price - ج.م) *</label>
                       <input
                         type="number"
                         required

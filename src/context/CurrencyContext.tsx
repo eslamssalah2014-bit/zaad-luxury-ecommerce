@@ -2,34 +2,34 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-export type CurrencyCode = 'SAR' | 'AED' | 'EGP' | 'USD' | 'KWD';
+export type CurrencyCode = 'EGP' | 'SAR' | 'AED' | 'USD' | 'KWD';
 
 interface CurrencyInfo {
   code: CurrencyCode;
   symbolAr: string;
   nameAr: string;
-  rateToSar: number; // 1 SAR = X other currency
+  rateToEgp: number; // 1 EGP = X other currency
 }
 
 export const CURRENCIES: Record<CurrencyCode, CurrencyInfo> = {
-  SAR: { code: 'SAR', symbolAr: 'ر.س', nameAr: 'ريال سعودي', rateToSar: 1.0 },
-  AED: { code: 'AED', symbolAr: 'د.إ', nameAr: 'درهم إماراتي', rateToSar: 0.98 },
-  EGP: { code: 'EGP', symbolAr: 'ج.م', nameAr: 'جنيه مصري', rateToSar: 13.0 },
-  USD: { code: 'USD', symbolAr: '$', nameAr: 'دولار أمريكي', rateToSar: 0.267 },
-  KWD: { code: 'KWD', symbolAr: 'د.ك', nameAr: 'دينار كويتي', rateToSar: 0.082 },
+  EGP: { code: 'EGP', symbolAr: 'ج.م', nameAr: 'جنيه مصري', rateToEgp: 1.0 },
+  SAR: { code: 'SAR', symbolAr: 'ر.س', nameAr: 'ريال سعودي', rateToEgp: 0.077 },
+  AED: { code: 'AED', symbolAr: 'د.إ', nameAr: 'درهم إماراتي', rateToEgp: 0.075 },
+  USD: { code: 'USD', symbolAr: '$', nameAr: 'دولار أمريكي', rateToEgp: 0.020 },
+  KWD: { code: 'KWD', symbolAr: 'د.ك', nameAr: 'دينار كويتي', rateToEgp: 0.0063 },
 };
 
 interface CurrencyContextType {
   currentCurrency: CurrencyInfo;
   setCurrency: (code: CurrencyCode) => void;
-  formatPrice: (amountInSar: number) => string;
-  convertPrice: (amountInSar: number) => number;
+  formatPrice: (amountInEgp: number) => string;
+  convertPrice: (amountInEgp: number) => number;
 }
 
 const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
 
 export const CurrencyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [currencyCode, setCurrencyCode] = useState<CurrencyCode>('SAR');
+  const [currencyCode, setCurrencyCode] = useState<CurrencyCode>('EGP');
 
   useEffect(() => {
     try {
@@ -55,13 +55,13 @@ export const CurrencyProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const currentCurrency = CURRENCIES[currencyCode];
 
-  const convertPrice = (amountInSar: number): number => {
-    return Math.round(amountInSar * currentCurrency.rateToSar * 100) / 100;
+  const convertPrice = (amountInEgp: number): number => {
+    return Math.round(Number(amountInEgp || 0) * currentCurrency.rateToEgp * 100) / 100;
   };
 
-  const formatPrice = (amountInSar: number): string => {
-    const converted = convertPrice(amountInSar);
-    return `${converted.toLocaleString('ar-SA')} ${currentCurrency.symbolAr}`;
+  const formatPrice = (amountInEgp: number): string => {
+    const converted = convertPrice(amountInEgp);
+    return `${converted.toLocaleString('ar-EG')} ${currentCurrency.symbolAr}`;
   };
 
   return (

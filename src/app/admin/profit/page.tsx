@@ -140,7 +140,7 @@ export default function AdminProfitPage() {
               <div className="font-serif text-2xl sm:text-3xl font-bold text-green-700">
                 {financialKpis.grossMarginPercent}%
               </div>
-              <span className="text-[11px] text-charcoal-700/60 block">متوسط العائد لكل ريال مبيعات</span>
+              <span className="text-[11px] text-charcoal-700/60 block">متوسط العائد لكل جنيه مبيعات</span>
             </div>
 
           </div>

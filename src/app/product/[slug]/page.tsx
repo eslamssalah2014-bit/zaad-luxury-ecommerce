@@ -296,7 +296,7 @@ export default function ProductDetailPage() {
                 </div>
                 <div className="text-left text-xs text-charcoal-700/70">
                   <span className="text-zaad-700 font-semibold block">شامل ضريبة القيمة المضافة</span>
-                  <span className="text-[11px] text-gold-700">شحن مبرد مجاني للطلبات فوق 600 ر.س</span>
+                  <span className="text-[11px] text-gold-700">شحن مبرد مجاني للطلبات الكبرى</span>
                 </div>
               </div>
 
