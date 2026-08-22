@@ -6,10 +6,12 @@ import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard,
-  ShoppingBag,
-  ShieldCheck,
+  TrendingUp,
+  FolderTree,
   Package,
   Layers,
+  ShieldCheck,
+  ShoppingBag,
   Users,
   FileEdit,
   Mail,
@@ -17,8 +19,8 @@ import {
   ArrowRight,
   Sparkles,
   LogOut,
-  SlidersHorizontal,
-  Lock
+  Lock,
+  Boxes
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 
@@ -31,7 +33,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [adminUserEmail, setAdminUserEmail] = useState<string>('');
   const [pendingVerificationCount, setPendingVerificationCount] = useState<number>(0);
 
-  // If on login page, render cleanly without admin layout wrapper
   const isLoginPage = pathname === '/admin/login';
 
   useEffect(() => {
@@ -149,21 +150,43 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return null;
   }
 
-  const adminNav = [
-    { name: 'لوحة المؤشرات التنفيذية', href: '/admin', icon: LayoutDashboard },
+  const navGroups = [
     {
-      name: 'طابور اعتماد الإيصالات',
-      href: '/admin/orders/verification',
-      icon: ShieldCheck,
-      badge: pendingVerificationCount > 0 ? pendingVerificationCount : undefined
+      groupTitle: 'الرئيسية والمؤشرات المالية',
+      items: [
+        { name: 'لوحة المؤشرات العامة', href: '/admin', icon: LayoutDashboard },
+        { name: 'تحليلات وهوامش الأرباح', href: '/admin/profit', icon: TrendingUp },
+      ]
     },
-    { name: 'إدارة الطلبات والشحن', href: '/admin/orders', icon: ShoppingBag },
-    { name: 'المحاصيل وتشغيلات المختبر', href: '/admin/products', icon: Package },
-    { name: 'حركة المخزون والتنبيهات', href: '/admin/inventory', icon: Layers },
-    { name: 'سجل العملاء والنخبة (CRM)', href: '/admin/customers', icon: Users },
-    { name: 'محرر المحتوى (CMS)', href: '/admin/cms', icon: FileEdit },
-    { name: 'نظام رسائل Resend', href: '/admin/emails', icon: Mail },
-    { name: 'سجل التدقيق الأمني', href: '/admin/audit-logs', icon: ShieldAlert },
+    {
+      groupTitle: 'إدارة الكتالوج والمنتجات',
+      items: [
+        { name: 'التصنيفات والفئات الفرعية', href: '/admin/categories', icon: FolderTree },
+        { name: 'المنتجات والمحاصيل الملكية', href: '/admin/products', icon: Package },
+      ]
+    },
+    {
+      groupTitle: 'المستودعات والعمليات',
+      items: [
+        { name: 'حركة المخزون والتنبيهات', href: '/admin/inventory', icon: Layers },
+        {
+          name: 'طابور اعتماد الإيصالات',
+          href: '/admin/orders/verification',
+          icon: ShieldCheck,
+          badge: pendingVerificationCount > 0 ? pendingVerificationCount : undefined
+        },
+        { name: 'إدارة الطلبات والشحن', href: '/admin/orders', icon: ShoppingBag },
+      ]
+    },
+    {
+      groupTitle: 'العملاء وإدارة المحتوى',
+      items: [
+        { name: 'سجل العملاء والنخبة (CRM)', href: '/admin/customers', icon: Users },
+        { name: 'محرر المحتوى (CMS)', href: '/admin/cms', icon: FileEdit },
+        { name: 'نظام رسائل Resend', href: '/admin/emails', icon: Mail },
+        { name: 'سجل التدقيق الأمني', href: '/admin/audit-logs', icon: ShieldAlert },
+      ]
+    }
   ];
 
   return (
@@ -173,59 +196,63 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className="w-full md:w-72 bg-zaad-950 text-ivory-200 border-l border-zaad-800 flex flex-col shrink-0">
         
         {/* Sidebar Header */}
-        <div className="p-6 border-b border-zaad-800/80 flex items-center justify-between">
+        <div className="p-5 border-b border-zaad-800/80 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3">
-            <div className="relative w-9 h-9 rounded-full overflow-hidden border border-gold-400 bg-white p-0.5">
+            <div className="relative w-9 h-9 rounded-full overflow-hidden border border-gold-400 bg-white p-0.5 shadow-md">
               <Image src="/images/zaad-logo.png" alt="ZAAD" fill className="object-contain" />
             </div>
             <div>
               <span className="font-serif text-lg font-bold text-ivory-50 tracking-widest block">
                 Z<span className="text-gold-400 font-normal">AA</span>D
               </span>
-              <span className="text-[10px] text-gold-400 font-mono block">OPERATIONS CENTER</span>
+              <span className="text-[10px] text-gold-400 font-mono block">BUSINESS OPERATIONS</span>
             </div>
           </Link>
         </div>
 
-        {/* Navigation Links */}
-        <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto">
-          <div className="px-3 py-2 text-[10px] font-bold text-gold-400/80 tracking-wider uppercase">
-            إدارة العمليات المركزية
-          </div>
+        {/* Navigation Links Grouped */}
+        <nav className="flex-1 p-3.5 space-y-4 overflow-y-auto">
+          {navGroups.map((group, gIdx) => (
+            <div key={gIdx} className="space-y-1">
+              <div className="px-3 py-1 text-[10px] font-bold text-gold-400/80 tracking-wider uppercase">
+                {group.groupTitle}
+              </div>
 
-          {adminNav.map((item) => {
-            const Icon = item.icon;
-            const isActive = pathname === item.href;
+              {group.items.map((item) => {
+                const Icon = item.icon;
+                const isActive = pathname === item.href;
 
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
-                  isActive
-                    ? 'bg-gold-500 text-zaad-950 font-bold shadow-md'
-                    : 'text-ivory-300 hover:bg-zaad-900 hover:text-white'
-                }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-zaad-950' : 'text-gold-400'}`} />
-                  <span>{item.name}</span>
-                </div>
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                      isActive
+                        ? 'bg-gold-500 text-zaad-950 font-bold shadow-md'
+                        : 'text-ivory-300 hover:bg-zaad-900 hover:text-white'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Icon className={`w-4 h-4 ${isActive ? 'text-zaad-950' : 'text-gold-400'}`} />
+                      <span>{item.name}</span>
+                    </div>
 
-                {item.badge !== undefined && (
-                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold animate-pulse ${
-                    isActive ? 'bg-zaad-950 text-gold-400' : 'bg-red-600 text-white'
-                  }`}>
-                    {item.badge}
-                  </span>
-                )}
-              </Link>
-            );
-          })}
+                    {item.badge !== undefined && (
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold animate-pulse ${
+                        isActive ? 'bg-zaad-950 text-gold-400' : 'bg-red-600 text-white'
+                      }`}>
+                        {item.badge}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
         </nav>
 
         {/* Sidebar Footer */}
-        <div className="p-4 border-t border-zaad-800 text-xs text-ivory-400 space-y-2.5">
+        <div className="p-3.5 border-t border-zaad-800 text-xs text-ivory-400 space-y-2.5">
           <div className="bg-zaad-900 p-2.5 rounded-xl border border-zaad-800 flex items-center justify-between">
             <div className="truncate">
               <span className="text-[10px] text-gold-400 font-mono block">LOGGED IN ADMIN</span>

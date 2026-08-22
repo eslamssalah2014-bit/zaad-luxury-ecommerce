@@ -7,11 +7,49 @@ export interface User {
   phone?: string;
   role: UserRole;
   avatarUrl?: string;
-  vipTier: 'Gold' | 'Royal Platinum' | 'Black Diamond' | 'Standard';
+  vipTier: 'Standard' | 'Silver' | 'Gold' | 'Royal VIP' | 'Black Diamond' | 'Royal Platinum';
   loyaltyPoints: number;
   totalSpent: number;
   ordersCount: number;
   createdAt: string;
+}
+
+export interface SensoryProfile {
+  sweetness: number;      // 1-5
+  floralAroma: number;    // 1-5
+  density: number;        // 1-5
+  intensity: number;      // 1-5
+  crystallization: string; // 'نادر' | 'بطيء' | 'متوسط' | 'سريع'
+}
+
+export interface LabAnalysis {
+  batchNumber: string;
+  harvestSeason: string;
+  harvestDate: string;
+  testedDate: string;
+  labName: string;
+  moisturePercentage: number;   // Max 20%
+  hmfLevel: number;             // Max 80 mg/kg
+  diastaseActivity: number;     // Min 8
+  sucrosePercentage: number;    // Max 5%
+  pollenPurityPercentage: number; // e.g. 98.5%
+  certificatePdfUrl?: string;
+  labSealImageUrl?: string;
+}
+
+export type ProductVisibility = 'published' | 'draft' | 'hidden' | 'out_of_stock';
+
+export interface Subcategory {
+  id: string;
+  categoryId: string;
+  categoryNameAr?: string;
+  nameAr: string;
+  nameEn: string;
+  slug: string;
+  descriptionAr?: string;
+  sortOrder: number;
+  isActive: boolean;
+  createdAt?: string;
 }
 
 export interface Category {
@@ -22,30 +60,9 @@ export interface Category {
   descriptionAr: string;
   imageUrl: string;
   sortOrder: number;
-  itemCount: number;
-}
-
-export interface SensoryProfile {
-  sweetness: number;    // 1 - 5
-  floralAroma: number;  // 1 - 5
-  density: number;      // 1 - 5 (Viscosity)
-  intensity: number;    // 1 - 5
-  crystallization: string; // 'عالي' | 'متوسط' | 'نادر'
-}
-
-export interface LabAnalysis {
-  batchNumber: string;
-  harvestSeason: string;
-  harvestDate: string;
-  testedDate: string;
-  labName: string;
-  moisturePercentage: number;   // e.g. 14.2% (Standard max is 20%)
-  hmfLevel: number;             // Hydroxymethylfurfural mg/kg (Standard max 80, ZAAD is < 5)
-  diastaseActivity: number;     // Enzyme activity in Schade units (ZAAD > 16)
-  sucrosePercentage: number;    // Natural sugars vs free sucrose (< 1.5%)
-  pollenPurityPercentage: number; // Single floral purity (e.g. 98.4%)
-  certificatePdfUrl?: string;
-  labSealImageUrl?: string;
+  isActive?: boolean;
+  itemCount?: number;
+  subcategories?: Subcategory[];
 }
 
 export interface Product {
@@ -57,17 +74,24 @@ export interface Product {
   taglineAr: string;
   categoryId: string;
   categoryNameAr: string;
+  subcategoryId?: string;
+  subcategoryNameAr?: string;
   price: number;
+  sellingPrice?: number;
   compareAtPrice?: number;
+  comparePrice?: number;
+  discountPercentage?: number;
+  costPrice?: number; // Cost of goods sold (COGS)
   currency: string;
   stockQuantity: number;
   reservedStock: number;
+  availableStock?: number;
   lowStockThreshold: number;
   weightGrams: number;
   originRegionAr: string;
-  originRegionEn: string;
+  originRegionEn?: string;
   floralSourceAr: string;
-  floralSourceEn: string;
+  floralSourceEn?: string;
   shortDescAr: string;
   fullStoryAr: string;
   healthBenefitsAr: string[];
@@ -76,11 +100,14 @@ export interface Product {
   images: string[];
   isFeatured: boolean;
   isAvailable: boolean;
+  visibilityStatus?: ProductVisibility;
   rating: number;
   reviewCount: number;
   sensoryProfile: SensoryProfile;
   latestLabBatch: LabAnalysis;
   badge?: string; // 'موسم نادر' | 'إصدار ملكي خاص' | 'الأكثر طلباً'
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export type OrderStatus =
@@ -114,6 +141,7 @@ export interface OrderItem {
   productSlug: string;
   productImage: string;
   price: number;
+  costPrice?: number;
   quantity: number;
   total: number;
   weightGrams: number;
@@ -195,13 +223,73 @@ export interface Review {
   createdAt: string;
 }
 
+export type InventoryMovementType =
+  | 'sale_reservation'
+  | 'sale_fulfillment'
+  | 'restock_batch'
+  | 'return_restock'
+  | 'damage_loss'
+  | 'manual_adjustment'
+  | 'audit_adjustment';
+
+export interface InventoryMovement {
+  id: string;
+  productId: string;
+  productNameAr?: string;
+  batchId?: string;
+  movementType: InventoryMovementType;
+  quantityChanged: number;
+  quantityAfter: number;
+  referenceId?: string;
+  reason: string;
+  createdBy?: string;
+  createdAt: string;
+}
+
+export interface ProfitReportItem {
+  productId: string;
+  productNameAr: string;
+  sku: string;
+  categoryNameAr: string;
+  sellingPrice: number;
+  costPrice: number;
+  unitsSold: number;
+  totalRevenue: number;
+  totalCost: number;
+  grossProfit: number;
+  profitMarginPercent: number;
+  stockQuantity: number;
+  status: ProductVisibility;
+}
+
+export interface FinancialKPIs {
+  totalRevenue: number;
+  totalCost: number;
+  grossProfit: number;
+  grossMarginPercent: number;
+  totalOrders: number;
+  averageOrderValue: number;
+  totalUnitsSold: number;
+}
+
+export interface TimeframeSales {
+  todayRevenue: number;
+  todayOrders: number;
+  weekRevenue: number;
+  weekOrders: number;
+  monthRevenue: number;
+  monthOrders: number;
+  yearRevenue: number;
+  yearOrders: number;
+}
+
 export interface AuditLog {
   id: string;
   userId: string;
   userName: string;
   userRole: UserRole;
   action: string;
-  entityType: 'ORDER' | 'PAYMENT' | 'PRODUCT' | 'BATCH' | 'CMS' | 'SYSTEM';
+  entityType: 'ORDER' | 'PAYMENT' | 'PRODUCT' | 'BATCH' | 'CMS' | 'SYSTEM' | 'INVENTORY';
   entityId: string;
   detailsAr: string;
   ipAddress: string;

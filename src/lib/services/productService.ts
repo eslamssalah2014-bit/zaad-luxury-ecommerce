@@ -7,6 +7,26 @@ import { Product, Category } from '@/types';
  */
 export function formatSupabaseProduct(d: any): Product {
   const latestBatch = d.batches?.[0] || d.product_batches?.[0] || null;
+  const sellingPrice = Number(d.price || 0);
+  const comparePrice = d.compare_at_price ? Number(d.compare_at_price) : undefined;
+  const costPrice = Number(d.cost_price ?? d.sensory_profile?.cost_price ?? Math.round(sellingPrice * 0.45));
+  const discountPercentage = comparePrice && comparePrice > sellingPrice
+    ? Math.round(((comparePrice - sellingPrice) / comparePrice) * 100)
+    : undefined;
+
+  const stockQuantity = Number(d.stock_quantity ?? 0);
+  const reservedStock = Number(d.reserved_stock ?? 0);
+  const availableStock = Math.max(0, stockQuantity - reservedStock);
+
+  let visibilityStatus = d.visibility_status || d.sensory_profile?.visibility_status;
+  if (!visibilityStatus) {
+    if (stockQuantity === 0) visibilityStatus = 'out_of_stock';
+    else if (d.is_available === false) visibilityStatus = 'hidden';
+    else visibilityStatus = 'published';
+  }
+
+  const subcategoryId = d.subcategory_id || d.sensory_profile?.subcategory_id || undefined;
+
   return {
     id: d.id,
     slug: d.slug,
@@ -16,11 +36,18 @@ export function formatSupabaseProduct(d: any): Product {
     taglineAr: d.tagline_ar || '',
     categoryId: d.category_id,
     categoryNameAr: d.category?.name_ar || d.categories?.name_ar || '',
-    price: Number(d.price),
-    compareAtPrice: d.compare_at_price ? Number(d.compare_at_price) : undefined,
+    subcategoryId,
+    subcategoryNameAr: undefined,
+    price: sellingPrice,
+    sellingPrice,
+    compareAtPrice: comparePrice,
+    comparePrice,
+    discountPercentage,
+    costPrice,
     currency: d.currency || 'SAR',
-    stockQuantity: d.stock_quantity ?? 0,
-    reservedStock: d.reserved_stock ?? 0,
+    stockQuantity,
+    reservedStock,
+    availableStock,
     lowStockThreshold: d.low_stock_threshold ?? 5,
     weightGrams: d.weight_grams ?? 500,
     originRegionAr: d.origin_region_ar || '',
@@ -35,10 +62,13 @@ export function formatSupabaseProduct(d: any): Product {
     images: Array.isArray(d.images) && d.images.length > 0 ? d.images : ['/images/zaad-logo.png'],
     isFeatured: Boolean(d.is_featured),
     isAvailable: Boolean(d.is_available),
+    visibilityStatus,
     rating: Number(d.rating || 5.0),
     reviewCount: Number(d.review_count || 0),
     sensoryProfile: d.sensory_profile || { sweetness: 4, floralAroma: 4, density: 4, intensity: 4, crystallization: 'نادر' },
     badge: d.badge || undefined,
+    createdAt: d.created_at,
+    updatedAt: d.updated_at,
     latestLabBatch: latestBatch ? {
       batchNumber: latestBatch.batch_number,
       harvestSeason: latestBatch.harvest_season,
@@ -70,7 +100,7 @@ export function formatSupabaseProduct(d: any): Product {
 /**
  * Fetch all live products directly from Supabase (Client or Server safe)
  */
-export async function getLiveProducts(categoryId?: string): Promise<Product[]> {
+export async function getLiveProducts(categoryId?: string, includeHidden = false): Promise<Product[]> {
   try {
     const client = typeof window === 'undefined' ? supabaseAdmin : supabase;
     let query = client
@@ -86,9 +116,17 @@ export async function getLiveProducts(categoryId?: string): Promise<Product[]> {
       query = query.eq('category_id', categoryId);
     }
 
+    if (!includeHidden) {
+      query = query.eq('is_available', true);
+    }
+
     const { data, error } = await query;
     if (!error && data) {
-      return data.map(formatSupabaseProduct);
+      const prods = data.map(formatSupabaseProduct);
+      if (!includeHidden) {
+        return prods.filter(p => p.visibilityStatus !== 'hidden' && p.visibilityStatus !== 'draft');
+      }
+      return prods;
     }
   } catch (err) {
     console.error('Error fetching live products from Supabase:', err);
@@ -132,6 +170,7 @@ export async function getLiveCategories(): Promise<Category[]> {
     const { data, error } = await client
       .from('categories')
       .select('*')
+      .eq('is_active', true)
       .order('sort_order', { ascending: true });
 
     if (!error && data && data.length > 0) {

@@ -1,16 +1,16 @@
-import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { NextRequest, NextResponse } from 'next/server';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { orderId, action, reviewerName, reason } = body;
 
     if (!orderId || !action || !['approve', 'reject', 'request_reupload'].includes(action)) {
-      return NextResponse.json({ success: false, error: 'Invalid verification request parameters' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'معلمات طلب الاعتماد غير صالحة' }, { status: 400 });
     }
 
     const now = new Date().toISOString();
@@ -37,11 +37,11 @@ export async function POST(request: Request) {
         updated_at: now
       })
       .or(`id.eq.${orderId},order_number.eq.${orderId}`)
-      .select()
+      .select('*, items:order_items(*)')
       .single();
 
     if (updateError || !updatedOrder) {
-      return NextResponse.json({ success: false, error: updateError?.message || 'Order not found in Supabase' }, { status: 404 });
+      return NextResponse.json({ success: false, error: updateError?.message || 'الطلب غير موجود في Supabase' }, { status: 404 });
     }
 
     // 2. Update Payment Proof in Supabase
@@ -50,11 +50,53 @@ export async function POST(request: Request) {
       .update({
         status: paymentStatus,
         rejection_reason: reason || null,
-        reviewed_at: now
+        reviewed_at: now,
+        reviewed_by: null
       })
       .eq('order_id', updatedOrder.id);
 
-    // 3. Write immutable audit log to Supabase
+    // 3. AUTOMATIC INVENTORY DEDUCTION (When order payment is APPROVED)
+    if (action === 'approve' && Array.isArray(updatedOrder.items) && updatedOrder.items.length > 0) {
+      for (const item of updatedOrder.items) {
+        try {
+          // Fetch current stock
+          const { data: product } = await supabaseAdmin
+            .from('products')
+            .select('id, name_ar, stock_quantity, sku')
+            .eq('id', item.product_id)
+            .single();
+
+          if (product) {
+            const currentStock = Number(product.stock_quantity ?? 0);
+            const deductQty = Number(item.quantity || 1);
+            const newStock = Math.max(0, currentStock - deductQty);
+
+            // Deduct stock quantity
+            await supabaseAdmin
+              .from('products')
+              .update({
+                stock_quantity: newStock,
+                updated_at: now
+              })
+              .eq('id', product.id);
+
+            // Record movement in inventory_movements
+            await supabaseAdmin.from('inventory_movements').insert({
+              product_id: product.id,
+              movement_type: 'sale_fulfillment',
+              quantity_changed: -deductQty,
+              quantity_after: newStock,
+              reference_id: updatedOrder.order_number,
+              reason: `خصم تلقائي لتأكيد سداد الطلب الملكي رقم ${updatedOrder.order_number} (${item.product_name_ar})`
+            });
+          }
+        } catch (itemErr) {
+          console.error(`Error deducting stock for product ${item.product_id}:`, itemErr);
+        }
+      }
+    }
+
+    // 4. Write immutable audit log to Supabase
     await supabaseAdmin.from('audit_logs').insert({
       user_name: reviewerName || 'إدارة العمليات والتدقيق المالي',
       user_role: 'operations',
@@ -67,6 +109,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true, data: updatedOrder, source: 'supabase' });
   } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: error?.message || 'Server error' }, { status: 500 });
   }
 }
