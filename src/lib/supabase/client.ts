@@ -1,32 +1,37 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { getSanitizedSupabaseUrl } from './admin';
+
+const SUPABASE_PROJECT_URL =
+  process.env.NEXT_PUBLIC_SUPABASE_URL ||
+  'https://btcwrjwokjpltshdyegw.supabase.co';
+
+const SUPABASE_ANON_KEY =
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+  'sb_publishable_P5LTBPXDpvqbppjioBlM_A_HBQDHh47';
 
 /**
- * Resolves the Supabase Anon / Publishable key from environment variables.
+ * Resolves the sanitized Supabase URL safely for browser client
+ */
+export function getClientSupabaseUrl(): string {
+  return SUPABASE_PROJECT_URL.trim().replace(/\/rest\/v1\/?$/i, '').replace(/\/+$/, '');
+}
+
+/**
+ * Resolves the Supabase Anon key safely for browser client
  */
 export function getSupabaseAnonKey(): string {
-  return (
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
-    process.env.SUPABASE_ANON_KEY ||
-    process.env.SUPABASE_PUBLISHABLE_KEY ||
-    process.env.SUPABASE_SERVICE_ROLE_KEY ||
-    process.env.SUPABASE_SECRET_KEY ||
-    ''
-  ).trim();
+  return SUPABASE_ANON_KEY.trim();
 }
 
 /**
  * Factory function creating a browser/public Supabase client.
  */
 export function createBrowserClient(): SupabaseClient {
-  const url = getSanitizedSupabaseUrl();
-  const key = getSupabaseAnonKey();
-
-  return createClient(url, key, {
+  return createClient(getClientSupabaseUrl(), getSupabaseAnonKey(), {
     auth: {
       persistSession: true,
       autoRefreshToken: true,
+      detectSessionInUrl: true,
     },
   });
 }

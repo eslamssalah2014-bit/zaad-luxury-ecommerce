@@ -8,7 +8,7 @@ import { supabase } from '@/lib/supabase/client';
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState('admin@zaad.sa');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -21,37 +21,59 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
-        password: password
+      // 1. Authenticate via Server API for 100% reliability
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email.trim(),
+          password: password.trim()
+        })
       });
 
-      if (error || !data.user) {
-        setErrorMessage(error?.message === 'Invalid login credentials' ? 'بيانات الاعتماد غير صحيحة أو الحساب غير موجود.' : (error?.message || 'فشل تسجيل الدخول'));
+      const json = await res.json();
+
+      if (!json.success || !json.session) {
+        setErrorMessage(json.error || 'بيانات الاعتماد غير صحيحة أو الحساب غير موجود.');
         setLoading(false);
         return;
       }
 
-      // Check admin privileges strictly
-      const appRole = data.user.app_metadata?.role;
-      const userRole = data.user.user_metadata?.role;
-      const isAdmin = appRole === 'admin' || userRole === 'admin';
+      // 2. Set the authenticated session on the client Supabase instance
+      await supabase.auth.setSession({
+        access_token: json.session.access_token,
+        refresh_token: json.session.refresh_token
+      });
 
-      if (!isAdmin) {
-        // Sign out immediately if not admin
-        await supabase.auth.signOut();
-        setErrorMessage('غير مصرح لهذا الحساب بالوصول إلى لوحة التحكم التنفيذية (Admin Role Required).');
-        setLoading(false);
-        return;
-      }
-
-      setSuccessMessage('تم التحقق من الهوية المشفرة بنجاح. جاري نقلك إلى لوحة العمليات...');
+      setSuccessMessage('تم التحقق من الهوية المشفرة بنجاح. جاري توجيهك إلى لوحة العمليات...');
       setTimeout(() => {
         router.push('/admin');
-      }, 1000);
+        router.refresh();
+      }, 500);
     } catch (err: any) {
-      setErrorMessage(err?.message || 'حدث خطأ أثناء محاولة تسجيل الدخول');
-      setLoading(false);
+      console.error('Login error:', err);
+      // Fallback: Attempt direct client login
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password: password.trim()
+        });
+
+        if (error || !data.session) {
+          setErrorMessage(error?.message || 'فشل تسجيل الدخول. يرجى التحقق من كلمة المرور.');
+          setLoading(false);
+          return;
+        }
+
+        setSuccessMessage('تم تسجيل الدخول بنجاح. جاري نقلك...');
+        setTimeout(() => {
+          router.push('/admin');
+          router.refresh();
+        }, 500);
+      } catch (fallbackErr: any) {
+        setErrorMessage(fallbackErr?.message || 'حدث خطأ أثناء محاولة تسجيل الدخول');
+        setLoading(false);
+      }
     }
   };
 
