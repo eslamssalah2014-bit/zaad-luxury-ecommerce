@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { supabaseAdmin, getSanitizedSupabaseUrl, getSupabaseServiceRoleKey } from '@/lib/supabase/admin';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -33,13 +33,36 @@ export async function GET(request: Request) {
 
     const { data, error } = await query;
     if (error) {
-      return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+      console.error('Supabase query error in /api/products:', error);
+      return NextResponse.json({
+        success: false,
+        error: error.message,
+        hint: error.hint,
+        details: error.details
+      }, { status: 500 });
     }
 
     const formattedList = (data || []).map(formatProductRow);
     return NextResponse.json({ success: true, data: formattedList, source: 'supabase' });
   } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    const activeUrl = getSanitizedSupabaseUrl();
+    const hasKey = Boolean(getSupabaseServiceRoleKey());
+
+    console.error('Exception in /api/products:', {
+      message: error?.message,
+      stack: error?.stack,
+      supabaseUrl: activeUrl ? `${activeUrl.slice(0, 20)}...` : 'MISSING',
+      hasKey
+    });
+
+    return NextResponse.json({
+      success: false,
+      error: error?.message || 'Internal server error',
+      diagnostics: {
+        supabaseConfigured: Boolean(activeUrl && hasKey),
+        urlDetected: Boolean(activeUrl)
+      }
+    }, { status: 500 });
   }
 }
 
