@@ -40,20 +40,24 @@ export default function PaymentVerificationPage() {
       const json = await res.json();
       if (json.success && Array.isArray(json.data)) {
         setOrders(json.data);
-        // Auto-select first pending order if nothing currently selected
-        const pending = json.data.filter(
-          (o: any) => o.status === 'awaiting_verification' || o.paymentStatus === 'proof_submitted'
-        );
-        if (pending.length > 0 && !selectedOrder) {
-          setSelectedOrder(pending[0]);
-        }
+        // Auto-select first pending order or preserve selection
+        setSelectedOrder((prev) => {
+          if (prev) {
+            const found = json.data.find((o: Order) => o.id === prev.id);
+            return found || json.data.find((o: Order) => o.status === 'awaiting_verification' || o.paymentStatus === 'proof_submitted') || null;
+          }
+          const pending = json.data.filter(
+            (o: Order) => o.status === 'awaiting_verification' || o.paymentStatus === 'proof_submitted'
+          );
+          return pending.length > 0 ? pending[0] : null;
+        });
       }
       setLoading(false);
     } catch (e) {
       console.error('Error loading verification orders from Supabase:', e);
       setLoading(false);
     }
-  }, [selectedOrder]);
+  }, []);
 
   useEffect(() => {
     loadOrders();
