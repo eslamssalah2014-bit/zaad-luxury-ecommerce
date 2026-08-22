@@ -19,18 +19,19 @@ export default function AdminAuditLogsPage() {
           .order('created_at', { ascending: false });
 
         if (!error && data && isMounted) {
-          setLogs(data.map((d: any) => ({
-            id: d.id,
-            userId: d.user_id,
-            userName: d.user_name,
-            userRole: d.user_role,
-            action: d.action,
-            entityType: d.entity_type,
-            entityId: d.entity_id,
-            detailsAr: d.details_ar,
-            ipAddress: d.ip_address,
-            timestamp: d.created_at
-          })));
+          const mapped: AuditLog[] = data.map((d: any) => ({
+            id: String(d.id ?? ''),
+            userId: String(d.user_id ?? ''),
+            userName: String(d.user_name ?? ''),
+            userRole: d.user_role as AuditLog['userRole'],
+            action: String(d.action ?? ''),
+            entityType: (d.entity_type as AuditLog['entityType']) || 'SYSTEM',
+            entityId: String(d.entity_id ?? ''),
+            detailsAr: String(d.details_ar ?? ''),
+            ipAddress: String(d.ip_address ?? ''),
+            timestamp: String(d.created_at ?? new Date().toISOString())
+          }));
+          setLogs(mapped);
         }
         if (isMounted) setLoading(false);
       } catch (e) {

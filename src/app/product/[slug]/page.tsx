@@ -72,18 +72,19 @@ export default function ProductDetailPage() {
             .eq('status', 'approved');
 
           if (revData) {
-            setReviews(revData.map((r: any) => ({
-              id: r.id,
-              productId: r.product_id,
+            const mappedRevs: Review[] = revData.map((r: any) => ({
+              id: String(r.id ?? ''),
+              productId: String(r.product_id ?? liveProd.id),
               productNameAr: liveProd.nameAr,
-              customerName: r.customer_name,
-              rating: r.rating,
-              titleAr: r.title_ar,
-              commentAr: r.comment_ar,
-              isVerifiedPurchase: r.is_verified_purchase,
-              helpfulCount: r.helpful_count,
-              createdAt: r.created_at
-            })));
+              customerName: String(r.customer_name ?? 'مقتني موثق'),
+              rating: Number(r.rating ?? 5),
+              titleAr: String(r.title_ar ?? 'تجربة استثنائية'),
+              commentAr: String(r.comment_ar ?? ''),
+              isVerifiedPurchase: Boolean(r.is_verified_purchase),
+              helpfulCount: Number(r.helpful_count ?? 0),
+              createdAt: String(r.created_at ?? new Date().toISOString())
+            }));
+            setReviews(mappedRevs);
           }
         }
         if (isMounted) setLoading(false);

@@ -22,19 +22,20 @@ export default function SocialProofReviews() {
           .limit(3);
 
         if (!error && data && data.length > 0 && isMounted) {
-          setReviews(data.map((r: any) => ({
-            id: r.id,
-            productId: r.product_id,
-            productNameAr: r.product?.name_ar || 'عسل زاد الملكي',
-            customerName: r.customer_name,
-            customerAvatar: r.customer_avatar,
-            rating: r.rating,
-            titleAr: r.title_ar,
-            commentAr: r.comment_ar,
-            isVerifiedPurchase: r.is_verified_purchase,
-            helpfulCount: r.helpful_count,
-            createdAt: r.created_at
-          })));
+          const mapped: Review[] = data.map((r: any) => ({
+            id: String(r.id ?? ''),
+            productId: String(r.product_id ?? ''),
+            productNameAr: String(r.product?.name_ar || 'عسل زاد الملكي'),
+            customerName: String(r.customer_name ?? 'مقتني موثق'),
+            customerAvatar: r.customer_avatar ? String(r.customer_avatar) : undefined,
+            rating: Number(r.rating ?? 5),
+            titleAr: String(r.title_ar ?? 'أصداء الثقة'),
+            commentAr: String(r.comment_ar ?? ''),
+            isVerifiedPurchase: Boolean(r.is_verified_purchase),
+            helpfulCount: Number(r.helpful_count ?? 0),
+            createdAt: String(r.created_at ?? new Date().toISOString())
+          }));
+          setReviews(mapped);
         }
       } catch (err) {
         console.warn('Error fetching live reviews:', err);

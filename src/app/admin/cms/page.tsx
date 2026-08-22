@@ -19,16 +19,18 @@ export default function AdminCmsPage() {
     try {
       const { data, error } = await supabase.from('cms_blocks').select('*');
       if (!error && data && data.length > 0) {
-        const mapped = data.map((d: any) => ({
-          key: d.key,
-          titleAr: d.title_ar,
-          subtitleAr: d.subtitle_ar || '',
-          headlineAr: d.headline_ar || '',
-          bodyAr: d.body_ar || '',
-          ctaTextAr: d.cta_text_ar || '',
-          ctaLink: d.cta_link || '',
-          imageUrl: d.image_url || '',
-          isActive: d.is_active
+        const mapped: CmsSection[] = data.map((d: any) => ({
+          id: String(d.id ?? ''),
+          key: String(d.key ?? ''),
+          titleAr: String(d.title_ar ?? ''),
+          subtitleAr: String(d.subtitle_ar ?? ''),
+          headlineAr: String(d.headline_ar ?? ''),
+          bodyAr: String(d.body_ar ?? ''),
+          ctaTextAr: d.cta_text_ar ? String(d.cta_text_ar) : undefined,
+          ctaLink: d.cta_link ? String(d.cta_link) : undefined,
+          imageUrl: d.image_url ? String(d.image_url) : undefined,
+          isActive: Boolean(d.is_active),
+          updatedAt: String(d.updated_at ?? new Date().toISOString())
         }));
         setCmsSections(mapped);
         const current = mapped.find(c => c.key === selectedKey) || mapped[0];
