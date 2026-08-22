@@ -1,0 +1,120 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #FAF8F5;
+    --foreground: #121814;
+    --primary: #163E23;
+    --primary-hover: #1A4423;
+    --gold: #C59B27;
+    --gold-light: #DFBE60;
+    --gold-dark: #997517;
+    --card: #FFFFFF;
+    --card-foreground: #121814;
+    --border: #E8E2D8;
+    --input: #EFE9DE;
+    --ring: #C59B27;
+  }
+
+  .dark {
+    --background: #0E1611;
+    --foreground: #FAF8F5;
+    --primary: #2E6B3F;
+    --primary-hover: #366B40;
+    --gold: #DDB86C;
+    --gold-light: #F2E4C2;
+    --gold-dark: #C59B27;
+    --card: #141E18;
+    --card-foreground: #FAF8F5;
+    --border: #223228;
+    --input: #1D2B22;
+    --ring: #DDB86C;
+  }
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-ibm-plex-arabic), Alexandria, system-ui, -apple-system, sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Custom Luxury Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F4EFE8;
+}
+::-webkit-scrollbar-thumb {
+  background: #C59B27;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #AA821C;
+}
+
+/* Luxury Glassmorphism & Borders */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(197, 155, 39, 0.18);
+}
+
+.glass-panel-dark {
+  background: rgba(14, 25, 18, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(197, 155, 39, 0.22);
+}
+
+.gold-gradient-text {
+  background: linear-gradient(135deg, #DFBE60 0%, #C59B27 50%, #997517 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gold-border-gradient {
+  border-image: linear-gradient(135deg, #DFBE60, #C59B27, #997517) 1;
+}
+
+.green-gradient-bg {
+  background: linear-gradient(145deg, #163E23 0%, #0E2917 100%);
+}
+
+.luxury-card-hover {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.luxury-card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -15px rgba(22, 62, 35, 0.12), 0 0 20px rgba(197, 155, 39, 0.1);
+  border-color: rgba(197, 155, 39, 0.4);
+}
+
+/* Gold Shimmer Button Effect */
+.gold-shimmer-btn {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+.gold-shimmer-btn::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(60deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  transform: rotate(30deg);
+  transition: all 0.8s ease;
+}
+.gold-shimmer-btn:hover::after {
+  transform: rotate(30deg) translate(50%, 50%);
+}
