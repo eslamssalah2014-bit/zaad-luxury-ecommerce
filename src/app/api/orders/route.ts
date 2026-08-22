@@ -1,17 +1,49 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { Order } from '@/types';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
+    const searchParams = request.nextUrl.searchParams;
     const status = searchParams.get('status');
     const orderId = searchParams.get('id');
-    const orderNumber = searchParams.get('orderNumber');
+    const orderNumber = searchParams.get('orderNumber') || searchParams.get('order_number');
+    const search = searchParams.get('search');
 
+    // Single order lookup by ID or Order Number
+    if (orderId || orderNumber) {
+      const identifier = (orderId || orderNumber || '').trim();
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier);
+
+      let singleQuery = supabaseAdmin
+        .from('orders')
+        .select(`
+          *,
+          items:order_items(*),
+          proof:payment_proofs(*)
+        `);
+
+      if (isUuid) {
+        singleQuery = singleQuery.eq('id', identifier);
+      } else {
+        singleQuery = singleQuery.eq('order_number', identifier);
+      }
+
+      const { data, error } = await singleQuery.maybeSingle();
+      if (error) {
+        console.error('Error fetching single order from Supabase:', error);
+        return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+      }
+      if (!data) {
+        return NextResponse.json({ success: false, error: 'Order not found' }, { status: 404 });
+      }
+      return NextResponse.json({ success: true, data: formatOrderRow(data), source: 'supabase' });
+    }
+
+    // Orders list query
     let query = supabaseAdmin
       .from('orders')
       .select(`
@@ -21,26 +53,12 @@ export async function GET(request: Request) {
       `)
       .order('created_at', { ascending: false });
 
-    if (orderId) {
-      query = query.eq('id', orderId);
-      const { data, error } = await query.single();
-      if (error || !data) {
-        return NextResponse.json({ success: false, error: 'Order not found' }, { status: 404 });
-      }
-      return NextResponse.json({ success: true, data: formatOrderRow(data), source: 'supabase' });
-    }
-
-    if (orderNumber) {
-      query = query.eq('order_number', orderNumber);
-      const { data, error } = await query.single();
-      if (error || !data) {
-        return NextResponse.json({ success: false, error: 'Order not found' }, { status: 404 });
-      }
-      return NextResponse.json({ success: true, data: formatOrderRow(data), source: 'supabase' });
-    }
-
     if (status && status !== 'all') {
       query = query.eq('status', status);
+    }
+
+    if (search) {
+      query = query.or(`order_number.ilike.%${search}%,customer_name.ilike.%${search}%,customer_phone.ilike.%${search}%`);
     }
 
     const { data, error } = await query;
@@ -53,11 +71,11 @@ export async function GET(request: Request) {
     return NextResponse.json({ success: true, data: formatted, source: 'supabase' });
   } catch (error: any) {
     console.error('Exception in /api/orders GET:', error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: error?.message || 'Internal server error' }, { status: 500 });
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const body: Order = await request.json();
     if (!body.customerName || !body.customerPhone || !body.items || body.items.length === 0) {
@@ -68,9 +86,9 @@ export async function POST(request: Request) {
       order_number: body.orderNumber || `ZD-ORD-${Math.floor(1000 + Math.random() * 9000)}`,
       customer_id: body.customerId && !body.customerId.startsWith('usr-guest') ? body.customerId : null,
       customer_name: body.customerName,
-      customer_email: body.customerEmail,
+      customer_email: body.customerEmail || `${body.customerPhone}@customer.zaad.sa`,
       customer_phone: body.customerPhone,
-      shipping_address: body.shippingAddress,
+      shipping_address: body.shippingAddress || { city: 'الرياض', district: 'العليا', street: 'شارع الملك فهد' },
       subtotal: body.subtotal,
       discount_amount: body.discountAmount || 0,
       shipping_fee: body.shippingFee || 0,
@@ -133,7 +151,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true, data: orderData, source: 'supabase' }, { status: 201 });
   } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: error?.message || 'Internal server error' }, { status: 500 });
   }
 }
 
