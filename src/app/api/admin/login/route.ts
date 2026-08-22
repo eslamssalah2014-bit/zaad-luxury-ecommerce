@@ -17,6 +17,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const cleanEmail = String(email).trim().toLowerCase();
+    const cleanPassword = String(password).trim();
+
     const url = getSanitizedSupabaseUrl();
     const anonKey = getSupabaseAnonKey();
 
@@ -25,8 +28,8 @@ export async function POST(request: NextRequest) {
     });
 
     const { data, error } = await authClient.auth.signInWithPassword({
-      email: email.trim().toLowerCase(),
-      password: password
+      email: cleanEmail,
+      password: cleanPassword
     });
 
     if (error || !data.user) {

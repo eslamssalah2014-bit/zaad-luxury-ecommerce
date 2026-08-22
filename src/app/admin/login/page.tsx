@@ -3,13 +3,14 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { ShieldCheck, Lock, Mail, AlertCircle, ArrowLeft, KeyRound, CheckCircle2 } from 'lucide-react';
+import { ShieldCheck, Lock, Mail, AlertCircle, ArrowLeft, KeyRound, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 
 export default function AdminLoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('admin@zaad.sa');
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState('Zaad2026@RoyalAdmin');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -20,14 +21,17 @@ export default function AdminLoginPage() {
     setSuccessMessage('');
     setLoading(true);
 
+    const cleanEmail = email.trim();
+    const cleanPassword = password.trim();
+
     try {
       // 1. Authenticate via Server API for 100% reliability
       const res = await fetch('/api/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: email.trim(),
-          password: password.trim()
+          email: cleanEmail,
+          password: cleanPassword
         })
       });
 
@@ -55,8 +59,8 @@ export default function AdminLoginPage() {
       // Fallback: Attempt direct client login
       try {
         const { data, error } = await supabase.auth.signInWithPassword({
-          email: email.trim(),
-          password: password.trim()
+          email: cleanEmail,
+          password: cleanPassword
         });
 
         if (error || !data.session) {
@@ -143,14 +147,23 @@ export default function AdminLoginPage() {
               </label>
               <div className="relative">
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••••••••••"
-                  className="w-full bg-zaad-950/80 border border-zaad-700 text-ivory-100 rounded-xl px-4 py-3 pl-10 text-xs focus:border-gold-400 focus:outline-none transition-colors"
+                  className="w-full bg-zaad-950/80 border border-zaad-700 text-ivory-100 rounded-xl px-4 py-3 pl-20 text-xs focus:border-gold-400 focus:outline-none transition-colors"
                 />
-                <KeyRound className="w-4 h-4 text-gold-400/60 absolute left-3 top-3.5 pointer-events-none" />
+                <div className="absolute left-3 top-3 flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="text-ivory-400 hover:text-gold-400 p-0.5 transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                  <KeyRound className="w-4 h-4 text-gold-400/60 pointer-events-none" />
+                </div>
               </div>
             </div>
 
