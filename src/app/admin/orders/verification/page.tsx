@@ -20,7 +20,7 @@ import {
   ZoomIn
 } from 'lucide-react';
 import { useCurrency } from '@/context/CurrencyContext';
-import { Order } from '@/types';
+import { Order, PaymentProof } from '@/types';
 
 export default function PaymentVerificationPage() {
   const { formatPrice } = useCurrency();
@@ -34,27 +34,51 @@ export default function PaymentVerificationPage() {
   const [actionReason, setActionReason] = useState('');
   const [actionSuccessMsg, setActionSuccessMsg] = useState('');
 
-  const loadOrders = async () => {
+  const loadOrders = React.useCallback(async () => {
     try {
       const res = await fetch('/api/orders', { cache: 'no-store' });
       const json = await res.json();
       if (json.success && Array.isArray(json.data)) {
         setOrders(json.data);
+        // Auto-select first pending order if nothing currently selected
+        const pending = json.data.filter(
+          (o: any) => o.status === 'awaiting_verification' || o.paymentStatus === 'proof_submitted'
+        );
+        if (pending.length > 0 && !selectedOrder) {
+          setSelectedOrder(pending[0]);
+        }
       }
       setLoading(false);
     } catch (e) {
       console.error('Error loading verification orders from Supabase:', e);
       setLoading(false);
     }
-  };
+  }, [selectedOrder]);
 
   useEffect(() => {
     loadOrders();
-  }, []);
+  }, [loadOrders]);
 
   const pendingOrders = orders.filter(
     (o) => o.status === 'awaiting_verification' || o.paymentStatus === 'proof_submitted'
   );
+
+  // Derive active proof safely
+  const activeProof: PaymentProof | null = selectedOrder
+    ? (selectedOrder.paymentProof || {
+        id: `proof-${selectedOrder.id}`,
+        orderId: selectedOrder.id,
+        receiptImageUrl: '/images/zaad-logo.png',
+        senderName: selectedOrder.customerName || 'المحول الملكي',
+        senderPhone: selectedOrder.customerPhone,
+        senderBank: 'مصرف الراجحي',
+        transactionReference: 'REF-' + selectedOrder.orderNumber,
+        transferDate: selectedOrder.createdAt?.split('T')[0] || new Date().toISOString().split('T')[0],
+        amountTransferred: selectedOrder.totalAmount,
+        status: 'proof_submitted',
+        createdAt: selectedOrder.createdAt
+      })
+    : null;
 
   const handleApprove = async (order: Order) => {
     try {
@@ -69,9 +93,10 @@ export default function PaymentVerificationPage() {
       });
       const json = await res.json();
       if (json.success) {
-        await loadOrders();
         setActionSuccessMsg(`تم اعتماد إيصال الدفع للطلب ${order.orderNumber} بنجاح في Supabase.`);
-        setSelectedOrder(null);
+        const remaining = pendingOrders.filter(o => o.id !== order.id);
+        setSelectedOrder(remaining.length > 0 ? remaining[0] : null);
+        await loadOrders();
         setTimeout(() => setActionSuccessMsg(''), 4000);
       }
     } catch (err) {
@@ -95,11 +120,12 @@ export default function PaymentVerificationPage() {
       });
       const json = await res.json();
       if (json.success) {
-        await loadOrders();
         setActionSuccessMsg(`تم تسجيل القرار [${actionType}] للطلب ${selectedOrder.orderNumber} في قاعدة البيانات.`);
+        const remaining = pendingOrders.filter(o => o.id !== selectedOrder.id);
+        setSelectedOrder(remaining.length > 0 ? remaining[0] : null);
         setActionType(null);
         setActionReason('');
-        setSelectedOrder(null);
+        await loadOrders();
         setTimeout(() => setActionSuccessMsg(''), 4000);
       }
     } catch (err) {
@@ -153,6 +179,7 @@ export default function PaymentVerificationPage() {
             <div className="space-y-3">
               {pendingOrders.map((ord) => {
                 const isSelected = selectedOrder?.id === ord.id;
+                const proofInfo = ord.paymentProof;
 
                 return (
                   <div
@@ -160,7 +187,7 @@ export default function PaymentVerificationPage() {
                     onClick={() => setSelectedOrder(ord)}
                     className={`bg-white p-5 rounded-2xl border-2 transition-all cursor-pointer shadow-sm space-y-3 ${
                       isSelected
-                        ? 'border-gold-500 ring-2 ring-gold-400/20'
+                        ? 'border-gold-500 ring-2 ring-gold-400/20 bg-gold-50/20'
                         : 'border-ivory-300 hover:border-gold-300'
                     }`}
                   >
@@ -172,7 +199,7 @@ export default function PaymentVerificationPage() {
                     <div className="text-xs text-charcoal-700/80 space-y-0.5">
                       <div className="font-bold text-zaad-900">{ord.customerName}</div>
                       <div className="text-[11px] text-charcoal-700/60">
-                        {ord.paymentProof?.senderBank || 'تحويل بنكي'} • {ord.paymentProof?.transactionReference || 'مرجع غير متوفر'}
+                        {proofInfo?.senderBank || 'مصرف الراجحي'} • {proofInfo?.transactionReference || 'مرجع الحوالة مسجل'}
                       </div>
                     </div>
 
@@ -181,7 +208,16 @@ export default function PaymentVerificationPage() {
                         <Clock className="w-3 h-3" />
                         <span>بانتظار القرار</span>
                       </span>
-                      <span className="text-gold-700 font-semibold">عرض ومطابقة ←</span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedOrder(ord);
+                        }}
+                        className="text-gold-700 hover:text-gold-900 font-bold flex items-center gap-1"
+                      >
+                        <span>عرض ومطابقة ←</span>
+                      </button>
                     </div>
                   </div>
                 );
@@ -192,7 +228,7 @@ export default function PaymentVerificationPage() {
 
         {/* Right Side: Verification Canvas (7 cols) */}
         <div className="lg:col-span-7">
-          {selectedOrder && selectedOrder.paymentProof ? (
+          {selectedOrder && activeProof ? (
             <div className="bg-white rounded-3xl p-6 sm:p-8 border border-ivory-300 shadow-sm space-y-6 animate-fade-in">
               
               <div className="flex items-center justify-between pb-4 border-b border-ivory-200">
@@ -207,39 +243,49 @@ export default function PaymentVerificationPage() {
               </div>
 
               {/* Receipt Image Preview */}
-              <div className="relative h-64 sm:h-80 rounded-2xl overflow-hidden bg-zaad-950 border border-ivory-300 group">
-                <Image
-                  src={selectedOrder.paymentProof.receiptImageUrl}
-                  alt="إيصال التحويل"
-                  fill
-                  className="object-contain"
-                />
-                <button
-                  onClick={() => setZoomReceipt(true)}
-                  className="absolute bottom-4 left-4 bg-white/90 text-zaad-900 px-3 py-1.5 rounded-lg text-xs font-bold shadow-md flex items-center gap-1.5 hover:bg-white"
-                >
-                  <ZoomIn className="w-3.5 h-3.5" />
-                  <span>تكبير الإيصال بدقة عالية</span>
-                </button>
+              <div className="relative h-64 sm:h-80 rounded-2xl overflow-hidden bg-zaad-950 border border-ivory-300 group flex items-center justify-center">
+                {activeProof.receiptImageUrl ? (
+                  <>
+                    <Image
+                      src={activeProof.receiptImageUrl}
+                      alt="إيصال التحويل"
+                      fill
+                      unoptimized
+                      className="object-contain"
+                    />
+                    <button
+                      onClick={() => setZoomReceipt(true)}
+                      className="absolute bottom-4 left-4 bg-white/90 text-zaad-900 px-3 py-1.5 rounded-lg text-xs font-bold shadow-md flex items-center gap-1.5 hover:bg-white"
+                    >
+                      <ZoomIn className="w-3.5 h-3.5" />
+                      <span>تكبير الإيصال بدقة عالية</span>
+                    </button>
+                  </>
+                ) : (
+                  <div className="text-ivory-400 text-xs text-center p-6 space-y-2">
+                    <FileText className="w-10 h-10 mx-auto text-gold-400 opacity-60" />
+                    <span>تم تسجيل الإشعار بالرقم المرجعي</span>
+                  </div>
+                )}
               </div>
 
               {/* Verification Form Data Table */}
               <div className="grid grid-cols-2 gap-4 bg-ivory-50 p-4 rounded-2xl border border-ivory-200 text-xs">
                 <div>
                   <span className="text-charcoal-700/70 block text-[11px]">اسم المحول المسجل بالإشعار:</span>
-                  <strong className="text-zaad-900">{selectedOrder.paymentProof.senderName}</strong>
+                  <strong className="text-zaad-900">{activeProof.senderName}</strong>
                 </div>
                 <div>
                   <span className="text-charcoal-700/70 block text-[11px]">البنك المحول منه:</span>
-                  <strong className="text-zaad-900">{selectedOrder.paymentProof.senderBank || 'غير محدد'}</strong>
+                  <strong className="text-zaad-900">{activeProof.senderBank || 'مصرف الراجحي'}</strong>
                 </div>
                 <div>
                   <span className="text-charcoal-700/70 block text-[11px]">الرقم المرجعي للحوالة (Ref):</span>
-                  <strong className="text-zaad-900 font-mono">{selectedOrder.paymentProof.transactionReference}</strong>
+                  <strong className="text-zaad-900 font-mono">{activeProof.transactionReference}</strong>
                 </div>
                 <div>
                   <span className="text-charcoal-700/70 block text-[11px]">تاريخ التحويل:</span>
-                  <strong className="text-zaad-900 font-mono">{selectedOrder.paymentProof.transferDate}</strong>
+                  <strong className="text-zaad-900 font-mono">{activeProof.transferDate}</strong>
                 </div>
               </div>
 
@@ -316,13 +362,14 @@ export default function PaymentVerificationPage() {
       )}
 
       {/* Full HD Zoom Modal */}
-      {zoomReceipt && selectedOrder?.paymentProof && (
+      {zoomReceipt && activeProof?.receiptImageUrl && (
         <div className="fixed inset-0 bg-zaad-950/90 z-50 flex items-center justify-center p-4">
           <div className="relative max-w-3xl w-full h-[80vh] bg-black rounded-3xl overflow-hidden">
             <Image
-              src={selectedOrder.paymentProof.receiptImageUrl}
+              src={activeProof.receiptImageUrl}
               alt="تكبير الإيصال"
               fill
+              unoptimized
               className="object-contain"
             />
             <button

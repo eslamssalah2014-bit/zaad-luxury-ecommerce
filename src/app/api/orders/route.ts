@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 import { Order } from '@/types';
 
 export const dynamic = 'force-dynamic';
@@ -45,12 +45,14 @@ export async function GET(request: Request) {
 
     const { data, error } = await query;
     if (error) {
+      console.error('Error querying orders in Supabase:', error);
       return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 
     const formatted = (data || []).map(formatOrderRow);
     return NextResponse.json({ success: true, data: formatted, source: 'supabase' });
   } catch (error: any) {
+    console.error('Exception in /api/orders GET:', error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
@@ -136,6 +138,26 @@ export async function POST(request: Request) {
 }
 
 function formatOrderRow(o: any): Order {
+  // Handle both 1-to-1 object and 1-to-many array join representations from PostgREST
+  const rawProof = Array.isArray(o.proof)
+    ? o.proof[0]
+    : (o.proof || (Array.isArray(o.payment_proofs) ? o.payment_proofs[0] : o.payment_proofs) || null);
+
+  const proofFormatted = rawProof ? {
+    id: String(rawProof.id ?? ''),
+    orderId: String(rawProof.order_id ?? o.id),
+    receiptImageUrl: String(rawProof.receipt_image_url ?? '/images/zaad-logo.png'),
+    senderName: String(rawProof.sender_name ?? o.customer_name ?? 'المحول'),
+    senderPhone: rawProof.sender_phone ? String(rawProof.sender_phone) : undefined,
+    senderBank: String(rawProof.sender_bank ?? 'مصرف الراجحي'),
+    transactionReference: String(rawProof.transaction_reference ?? 'REF-' + o.order_number),
+    transferDate: String(rawProof.transfer_date ?? o.created_at?.split('T')[0] ?? new Date().toISOString().split('T')[0]),
+    amountTransferred: Number(rawProof.amount_transferred ?? o.total_amount ?? 0),
+    status: rawProof.status || 'proof_submitted',
+    rejectionReason: rawProof.rejection_reason ? String(rawProof.rejection_reason) : undefined,
+    createdAt: String(rawProof.created_at ?? o.created_at ?? new Date().toISOString())
+  } : undefined;
+
   return {
     id: o.id,
     orderNumber: o.order_number,
@@ -168,20 +190,7 @@ function formatOrderRow(o: any): Order {
     courierName: o.courier_name,
     adminNotes: o.admin_notes,
     statusTimeline: o.status_timeline || [],
-    paymentProof: o.proof?.[0] ? {
-      id: o.proof[0].id,
-      orderId: o.proof[0].order_id,
-      receiptImageUrl: o.proof[0].receipt_image_url,
-      senderName: o.proof[0].sender_name,
-      senderPhone: o.proof[0].sender_phone,
-      senderBank: o.proof[0].sender_bank,
-      transactionReference: o.proof[0].transaction_reference,
-      transferDate: o.proof[0].transfer_date,
-      amountTransferred: Number(o.proof[0].amount_transferred),
-      status: o.proof[0].status,
-      rejectionReason: o.proof[0].rejection_reason,
-      createdAt: o.proof[0].created_at
-    } : undefined,
+    paymentProof: proofFormatted,
     createdAt: o.created_at,
     updatedAt: o.updated_at
   };
