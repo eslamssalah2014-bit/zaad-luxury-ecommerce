@@ -387,22 +387,17 @@ export default function ProductDetailPage() {
                 </button>
               </div>
 
-              {/* Direct Purity Checker Link */}
-              {product.latestLabBatch?.batchNumber && (
-                <div className="flex items-center justify-between text-xs text-charcoal-700/80 pt-1">
-                  <Link
-                    href={`/purity-checker?batch=${product.latestLabBatch.batchNumber}`}
-                    className="text-gold-700 hover:text-gold-900 font-semibold flex items-center gap-1 transition-colors"
-                  >
-                    <FileText className="w-3.5 h-3.5" />
-                    <span>فحص شهادة التحليل الكروماتوغرافي المعتمدة للتشغيلة</span>
-                  </Link>
-                  <span className="text-green-700 font-semibold flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                    متوفر بالمستودع المبرد
-                  </span>
-                </div>
-              )}
+              {/* Quality & Cold Warehouse Status */}
+              <div className="flex items-center justify-between text-xs text-charcoal-700/80 pt-1">
+                <span className="text-gold-700 font-semibold flex items-center gap-1">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  <span>نقاء موثق مخبرياً وخام 100%</span>
+                </span>
+                <span className="text-green-700 font-semibold flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                  متوفر بالمستودع المبرد
+                </span>
+              </div>
 
             </div>
 
@@ -527,16 +522,6 @@ export default function ProductDetailPage() {
                     <div className="text-xs text-ivory-300 mt-1">نقاء طيف اللقاح</div>
                     <div className="text-[10px] text-green-400 mt-0.5">(أحادي الزهرة موثق)</div>
                   </div>
-                </div>
-
-                <div className="mt-6 pt-4 border-t border-zaad-800 text-center">
-                  <Link
-                    href={`/purity-checker?batch=${product.latestLabBatch.batchNumber}`}
-                    className="inline-flex items-center gap-2 text-xs font-bold text-gold-400 hover:text-gold-300 transition-colors"
-                  >
-                    <span>فتح صفحة التوثيق الكاملة ومطابقة الأختام الرقمية</span>
-                    <ArrowRight className="w-3.5 h-3.5 rotate-180" />
-                  </Link>
                 </div>
               </div>
             </div>

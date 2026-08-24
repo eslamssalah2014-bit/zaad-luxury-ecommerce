@@ -60,11 +60,11 @@ export default function HeroSection() {
           </Link>
 
           <Link
-            href="/purity-checker"
+            href="/story"
             className="w-full sm:w-auto px-8 py-4 bg-zaad-900/80 hover:bg-zaad-800 text-ivory-100 border border-gold-400/40 hover:border-gold-400 font-semibold text-sm rounded-full backdrop-blur-sm transition-all flex items-center justify-center gap-2"
           >
-            <ShieldCheck className="w-4 h-4 text-gold-400" />
-            <span>فحص شهادة النقاء</span>
+            <Sparkles className="w-4 h-4 text-gold-400" />
+            <span>ميثاق وقصة زاد</span>
           </Link>
         </div>
 

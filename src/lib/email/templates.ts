@@ -20,7 +20,7 @@ export function generateLuxuryEmailHtml(
   let headline = '';
   let subheadline = '';
   let messageBody = '';
-  let callToAction = { text: 'عرض تفاصيل الطلب في بوابة زاد', url: 'https://zaad-luxury.com/account' };
+  let callToAction = { text: 'استكشاف المحصول الملكي', url: 'https://www.zaadstore.com/shop' };
 
   switch (type) {
     case 'order_confirmation':
@@ -88,7 +88,7 @@ export function generateLuxuryEmailHtml(
           <p style="margin:6px 0 0 0; font-size:14px;"><strong>رقم الشحنة:</strong> ${data.trackingNumber}</p>
         </div>
       `;
-      callToAction = { text: 'تتبع الشحنة المباشر', url: 'https://zaad-luxury.com/account' };
+      callToAction = { text: 'استكشاف تشكيلة المتجر', url: 'https://www.zaadstore.com/shop' };
       break;
 
     case 'delivered':
@@ -98,9 +98,9 @@ export function generateLuxuryEmailHtml(
       messageBody = `
         <p>عميلنا الراقي <strong>${data.recipientName}</strong>،</p>
         <p>تم تسليم طلبكم بنجاح. نرجو أن تكون تجربة التذوق بمستوى تطلعاتكم الرفيعة.</p>
-        <p>يمكنكم فحص شهادة التحليل المخبري الخاصة بتشغيلتكم عبر مسح رمز الاستجابة السريع (QR) المطبوع على العبوة، أو مشاركتنا تقييمكم الكريم.</p>
+        <p>يسعدنا دائماً خدمتكم واستقبال تقييمكم الكريم لتجربة مقتنيات زاد النادرة.</p>
       `;
-      callToAction = { text: 'فحص شهادة النقاء وتقييم التجربة', url: 'https://zaad-luxury.com/purity-checker' };
+      callToAction = { text: 'استكشاف المحصول الملكي', url: 'https://www.zaadstore.com/shop' };
       break;
 
     case 'welcome':

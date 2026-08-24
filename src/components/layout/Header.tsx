@@ -4,16 +4,14 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { ShoppingBag, Heart, Search, ShieldCheck, User, Menu, X, ChevronDown, Sparkles } from 'lucide-react';
+import { ShoppingBag, Menu, X, ChevronDown, Sparkles } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useCurrency, CURRENCIES, CurrencyCode } from '@/context/CurrencyContext';
-import { useWishlist } from '@/context/WishlistContext';
 
 export default function Header() {
   const pathname = usePathname();
   const { itemCount, openDrawer, total } = useCart();
   const { currentCurrency, setCurrency, formatPrice } = useCurrency();
-  const { wishlistCount } = useWishlist();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currencyOpen, setCurrencyOpen] = useState(false);
@@ -30,8 +28,6 @@ export default function Header() {
     { name: 'الرئيسية', href: '/' },
     { name: 'المجموعة الملكية', href: '/shop' },
     { name: 'إرث وقصة زاد', href: '/story' },
-    { name: 'فحص شهادة النقاء', href: '/purity-checker', badge: 'موثق' },
-    { name: 'بوابة المقتني', href: '/account' },
   ];
 
   return (
@@ -44,11 +40,6 @@ export default function Header() {
             <span>نقاء موثق مخبرياً بنسبة 100% مع كل برطمان | شحن ملكي مبرد وفاخر</span>
           </div>
           <div className="hidden md:flex items-center gap-6 text-[11px] text-ivory-300">
-            <Link href="/purity-checker" className="hover:text-gold-300 transition-colors flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5 text-gold-400" />
-              <span>فحص رقم التشغيلة والمختبر</span>
-            </Link>
-            <span className="text-zaad-700">|</span>
             <Link href="/story" className="hover:text-gold-300 transition-colors flex items-center gap-1 text-gold-400">
               <Sparkles className="w-3 h-3" />
               <span>ميثاق النقاء الملكي</span>
@@ -107,14 +98,7 @@ export default function Header() {
                       : 'text-charcoal-800/80 hover:text-zaad-800'
                   }`}
                 >
-                  <span className="flex items-center gap-1.5">
-                    {link.name}
-                    {link.badge && (
-                      <span className="text-[10px] bg-gold-100 text-gold-700 px-1.5 py-0.2 rounded-full border border-gold-300 font-normal">
-                        {link.badge}
-                      </span>
-                    )}
-                  </span>
+                  <span>{link.name}</span>
                   {isActive && (
                     <span className="absolute bottom-0 right-0 left-0 h-0.5 bg-gold-500 rounded-full animate-fade-in" />
                   )}
@@ -158,38 +142,6 @@ export default function Header() {
               )}
             </div>
 
-            {/* Quick Purity Checker Search */}
-            <Link
-              href="/purity-checker"
-              title="فحص شهادة النقاء المخبرية"
-              className="p-2 text-zaad-800 hover:text-gold-600 rounded-full hover:bg-ivory-200 transition-all hidden sm:flex items-center justify-center"
-            >
-              <Search className="w-5 h-5" />
-            </Link>
-
-            {/* Wishlist Link */}
-            <Link
-              href="/account"
-              title="المحفوظات"
-              className="p-2 text-zaad-800 hover:text-gold-600 rounded-full hover:bg-ivory-200 transition-all relative hidden sm:flex items-center justify-center"
-            >
-              <Heart className="w-5 h-5" />
-              {wishlistCount > 0 && (
-                <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-gold-500 text-white text-[10px] flex items-center justify-center font-bold">
-                  {wishlistCount}
-                </span>
-              )}
-            </Link>
-
-            {/* Account / Concierge */}
-            <Link
-              href="/account"
-              title="حسابي الملكي"
-              className="p-2 text-zaad-800 hover:text-gold-600 rounded-full hover:bg-ivory-200 transition-all flex items-center justify-center"
-            >
-              <User className="w-5 h-5" />
-            </Link>
-
             {/* Cart Drawer Trigger */}
             <button
               onClick={openDrawer}
@@ -224,11 +176,6 @@ export default function Header() {
                 className="text-base font-semibold text-zaad-800 py-2 border-b border-ivory-200 flex items-center justify-between"
               >
                 <span>{link.name}</span>
-                {link.badge && (
-                  <span className="text-xs bg-gold-100 text-gold-700 px-2 py-0.5 rounded-full border border-gold-300">
-                    {link.badge}
-                  </span>
-                )}
               </Link>
             ))}
           </div>

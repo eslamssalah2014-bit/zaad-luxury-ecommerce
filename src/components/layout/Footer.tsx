@@ -83,10 +83,10 @@ export default function Footer() {
             </p>
             <div className="pt-2">
               <Link
-                href="/purity-checker"
+                href="/story"
                 className="inline-flex items-center gap-2 text-xs text-gold-400 hover:text-gold-300 font-medium group"
               >
-                <span>فحص شهادة التحليل المخبري لأي تشغيلة</span>
+                <span>اكتشف ميثاق النقاء وقصة الحصاد الطبيعي</span>
                 <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </Link>
             </div>
@@ -96,11 +96,11 @@ export default function Footer() {
           <div>
             <h4 className="text-sm font-bold text-gold-300 mb-4 border-r-2 border-gold-500 pr-2">المحصول الملكي</h4>
             <ul className="space-y-2.5 text-xs text-ivory-300">
-              <li><Link href="/shop?category=rare-sidr" className="hover:text-gold-300 transition-colors">عسل سدر دوعني ملكي</Link></li>
-              <li><Link href="/shop?category=mountain-wild" className="hover:text-gold-300 transition-colors">عسل سمر بري جبلي</Link></li>
-              <li><Link href="/shop?category=mountain-wild" className="hover:text-gold-300 transition-colors">عسل المروج البيضاء</Link></li>
-              <li><Link href="/shop?category=royal-gifts" className="hover:text-gold-300 transition-colors">صناديق الاحتياط الملكي</Link></li>
-              <li><Link href="/shop?category=bee-essentials" className="hover:text-gold-300 transition-colors">غذاء الملكات والعكبر النقي</Link></li>
+              <li><Link href="/shop" className="hover:text-gold-300 transition-colors">عسل سدر دوعني ملكي</Link></li>
+              <li><Link href="/shop" className="hover:text-gold-300 transition-colors">عسل سمر بري جبلي</Link></li>
+              <li><Link href="/shop" className="hover:text-gold-300 transition-colors">عسل المروج البيضاء</Link></li>
+              <li><Link href="/shop" className="hover:text-gold-300 transition-colors">صناديق الإهداء الملكي</Link></li>
+              <li><Link href="/shop" className="hover:text-gold-300 transition-colors">غذاء الملكات والعكبر النقي</Link></li>
             </ul>
           </div>
 
@@ -108,11 +108,11 @@ export default function Footer() {
           <div>
             <h4 className="text-sm font-bold text-gold-300 mb-4 border-r-2 border-gold-500 pr-2">خدمات النخبة</h4>
             <ul className="space-y-2.5 text-xs text-ivory-300">
-              <li><Link href="/purity-checker" className="hover:text-gold-300 transition-colors">التحقق من رقم التشغيلة</Link></li>
-              <li><Link href="/story" className="hover:text-gold-300 transition-colors">معايير النقاء والفحص</Link></li>
-              <li><Link href="/account" className="hover:text-gold-300 transition-colors">تتبع الطلبات وحالة الإيصال</Link></li>
+              <li><Link href="/story" className="hover:text-gold-300 transition-colors">ميثاق النقاء والأصالة</Link></li>
+              <li><Link href="/shop" className="hover:text-gold-300 transition-colors">المحصول الملكي الحصري</Link></li>
               <li><Link href="/checkout" className="hover:text-gold-300 transition-colors">طرق التحويل والاعتماد</Link></li>
-              <li><Link href="/story#faq" className="hover:text-gold-300 transition-colors">الأسئلة الشائعة</Link></li>
+              <li><Link href="/story" className="hover:text-gold-300 transition-colors">الشحن المبرد الفاخر</Link></li>
+              <li><Link href="/story" className="hover:text-gold-300 transition-colors">الأسئلة الشائعة</Link></li>
             </ul>
           </div>
 
@@ -121,15 +121,15 @@ export default function Footer() {
             <h4 className="text-sm font-bold text-gold-300 mb-4 border-r-2 border-gold-500 pr-2">الضمان والأصالة</h4>
             <ul className="space-y-2.5 text-xs text-ivory-300">
               <li>
-                <Link href="/purity-checker" className="text-gold-400 hover:text-gold-200 font-semibold flex items-center gap-1.5 transition-colors">
+                <Link href="/story" className="text-gold-400 hover:text-gold-200 font-semibold flex items-center gap-1.5 transition-colors">
                   <Sparkles className="w-3.5 h-3.5" />
-                  <span>فحص شهادة النقاء المخبرية</span>
+                  <span>ميثاق الجودة والنقاء الطبيعي</span>
                 </Link>
               </li>
-              <li><Link href="/story" className="hover:text-gold-300 transition-colors">ميثاق الجودة والنقاء الطبيعي</Link></li>
               <li><Link href="/shop" className="hover:text-gold-300 transition-colors">كتالوج المحاصيل النادرة</Link></li>
               <li><Link href="/checkout" className="hover:text-gold-300 transition-colors">الشحن المبرد وضمان الوصول</Link></li>
-              <li><Link href="/account" className="hover:text-gold-300 transition-colors">عضوية الدائرة الملكية</Link></li>
+              <li><Link href="/checkout" className="hover:text-gold-300 transition-colors">خيارات الدفع والتحويل البنكي</Link></li>
+              <li><Link href="/shop" className="hover:text-gold-300 transition-colors">باقات الهدايا الفاخرة</Link></li>
             </ul>
           </div>
 
