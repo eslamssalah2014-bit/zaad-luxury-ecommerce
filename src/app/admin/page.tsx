@@ -22,6 +22,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { useCurrency } from '@/context/CurrencyContext';
+import { adminFetch } from '@/lib/auth/adminFetch';
 
 export default function AdminDashboardPage() {
   const { formatPrice } = useCurrency();
@@ -46,9 +47,9 @@ export default function AdminDashboardPage() {
     async function loadAllDashboardData() {
       try {
         const [analyticsRes, profitRes, inventoryRes] = await Promise.all([
-          fetch('/api/analytics', { cache: 'no-store' }),
-          fetch('/api/analytics/profit', { cache: 'no-store' }),
-          fetch('/api/inventory', { cache: 'no-store' })
+          adminFetch('/api/analytics', { cache: 'no-store' }),
+          adminFetch('/api/analytics/profit', { cache: 'no-store' }),
+          adminFetch('/api/inventory', { cache: 'no-store' })
         ]);
 
         const [analyticsJson, profitJson, inventoryJson] = await Promise.all([

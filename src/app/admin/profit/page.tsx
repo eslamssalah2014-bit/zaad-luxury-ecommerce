@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { useCurrency } from '@/context/CurrencyContext';
 import { FinancialKPIs, TimeframeSales, ProfitReportItem } from '@/types';
+import { adminFetch } from '@/lib/auth/adminFetch';
 
 export default function AdminProfitPage() {
   const { formatPrice } = useCurrency();
@@ -35,7 +36,7 @@ export default function AdminProfitPage() {
 
   const loadData = useCallback(async () => {
     try {
-      const res = await fetch('/api/analytics/profit', { cache: 'no-store' });
+      const res = await adminFetch('/api/analytics/profit', { cache: 'no-store' });
       const json = await res.json();
       if (json.success && json.data) {
         setFinancialKpis(json.data.financialKpis);

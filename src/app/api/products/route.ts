@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin, getSanitizedSupabaseUrl, getSupabaseServiceRoleKey } from '@/lib/supabase/admin';
+import { verifyAdminSession } from '@/lib/auth/adminAuth';
 import { Product } from '@/types';
 
 export const dynamic = 'force-dynamic';
@@ -10,8 +11,14 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const category = searchParams.get('category');
     const slug = searchParams.get('slug');
-    const isAdmin = searchParams.get('admin') === 'true';
+    const requestedAdmin = searchParams.get('admin') === 'true';
     const visibility = searchParams.get('visibility');
+
+    let isAdmin = false;
+    if (requestedAdmin) {
+      const auth = await verifyAdminSession(request);
+      isAdmin = auth.isAuthorized;
+    }
 
     let query = supabaseAdmin
       .from('products')
@@ -28,19 +35,23 @@ export async function GET(request: NextRequest) {
       if (error || !data) {
         return NextResponse.json({ success: false, error: 'Product not found' }, { status: 404 });
       }
-      return NextResponse.json({ success: true, data: formatProductRow(data), source: 'supabase' });
+      const prod = formatProductRow(data);
+      if (!isAdmin && (prod.visibilityStatus === 'hidden' || prod.visibilityStatus === 'draft')) {
+        return NextResponse.json({ success: false, error: 'Product not found' }, { status: 404 });
+      }
+      return NextResponse.json({ success: true, data: prod, source: 'supabase' });
     }
 
     if (category && category !== 'all') {
       query = query.eq('category_id', category);
     }
 
-    if (visibility && visibility !== 'all') {
+    if (visibility && visibility !== 'all' && isAdmin) {
       query = query.eq('visibility_status', visibility);
     }
 
     // Public storefront safety filter: Hide drafts and hidden items from public
-    if (!isAdmin && !visibility) {
+    if (!isAdmin) {
       query = query.eq('is_available', true);
     }
 
@@ -83,6 +94,12 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Enforce Super Admin Authorization
+    const auth = await verifyAdminSession(request);
+    if (!auth.isAuthorized) {
+      return NextResponse.json({ success: false, error: auth.error || 'غير مصرح' }, { status: auth.status || 401 });
+    }
+
     const body = await request.json();
     const {
       nameAr,
@@ -145,7 +162,7 @@ export async function POST(request: NextRequest) {
       short_desc_ar: shortDescAr,
       full_story_ar: fullStoryAr || shortDescAr,
       health_benefits_ar: healthBenefitsAr,
-      pairingSuggestionsAr: pairingSuggestionsAr,
+      pairing_suggestions_ar: pairingSuggestionsAr,
       storage_instructions_ar: storageInstructionsAr || 'يحفظ في مكان بارد وجاف بعيداً عن أشعة الشمس المباشرة',
       images: Array.isArray(images) && images.length > 0 ? images : ['/images/zaad-logo.png'],
       is_featured: Boolean(isFeatured),
@@ -216,6 +233,12 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
+    // Enforce Super Admin Authorization
+    const auth = await verifyAdminSession(request);
+    if (!auth.isAuthorized) {
+      return NextResponse.json({ success: false, error: auth.error || 'غير مصرح' }, { status: auth.status || 401 });
+    }
+
     const body = await request.json();
     const {
       id,
@@ -334,6 +357,12 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    // Enforce Super Admin Authorization
+    const auth = await verifyAdminSession(request);
+    if (!auth.isAuthorized) {
+      return NextResponse.json({ success: false, error: auth.error || 'غير مصرح' }, { status: auth.status || 401 });
+    }
+
     const searchParams = request.nextUrl.searchParams;
     const id = searchParams.get('id');
 
@@ -341,7 +370,6 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'معرف المنتج مطلوب للحذف' }, { status: 400 });
     }
 
-    // Delete batches first (cascade safety)
     await supabaseAdmin.from('product_batches').delete().eq('product_id', id);
     await supabaseAdmin.from('inventory_movements').delete().eq('product_id', id);
     

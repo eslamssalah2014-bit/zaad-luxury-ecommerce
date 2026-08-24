@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/admin';
+import { verifyAdminSession } from '@/lib/auth/adminAuth';
 import { FinancialKPIs, TimeframeSales, ProfitReportItem } from '@/types';
 
 export const dynamic = 'force-dynamic';
@@ -7,6 +8,12 @@ export const revalidate = 0;
 
 export async function GET(request: NextRequest) {
   try {
+    // Enforce Super Admin Authorization
+    const auth = await verifyAdminSession(request);
+    if (!auth.isAuthorized) {
+      return NextResponse.json({ success: false, error: auth.error || 'غير مصرح' }, { status: auth.status || 401 });
+    }
+
     // 1. Fetch all products with pricing and costs
     const { data: products, error: prodErr } = await supabaseAdmin
       .from('products')
@@ -78,7 +85,6 @@ export async function GET(request: NextRequest) {
       yearOrders: 0
     };
 
-    // Product sales accumulator map: productId -> unitsSold, revenue, cost
     const productSalesMap = new Map<string, { unitsSold: number; revenue: number; cost: number }>();
 
     (orders || []).forEach((ord: any) => {
@@ -90,7 +96,6 @@ export async function GET(request: NextRequest) {
         totalOrders += 1;
         totalRevenue += orderTotal;
 
-        // Periodic accumulations
         if (orderDate >= startOfToday) {
           timeframeSales.todayRevenue += orderTotal;
           timeframeSales.todayOrders += 1;
@@ -108,7 +113,6 @@ export async function GET(request: NextRequest) {
           timeframeSales.yearOrders += 1;
         }
 
-        // Process line items for product profitability and total cost
         (ord.items || []).forEach((item: any) => {
           const qty = Number(item.quantity || 1);
           const itemPrice = Number(item.price || 0);
@@ -144,7 +148,6 @@ export async function GET(request: NextRequest) {
       totalUnitsSold
     };
 
-    // Product Profitability List
     const profitabilityReport: ProfitReportItem[] = [];
     productMap.forEach((pInfo, productId) => {
       const sales = productSalesMap.get(productId) || { unitsSold: 0, revenue: 0, cost: 0 };
@@ -170,7 +173,6 @@ export async function GET(request: NextRequest) {
       });
     });
 
-    // Sort by Most Profitable
     profitabilityReport.sort((a, b) => b.grossProfit - a.grossProfit);
 
     const mostProfitable = [...profitabilityReport].sort((a, b) => b.grossProfit - a.grossProfit).slice(0, 3);

@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { useCurrency } from '@/context/CurrencyContext';
 import { Product, Category, Subcategory, ProductVisibility } from '@/types';
+import { adminFetch } from '@/lib/auth/adminFetch';
 
 export default function AdminProductsPage() {
   const { formatPrice } = useCurrency();
@@ -39,8 +40,8 @@ export default function AdminProductsPage() {
 
   // Modal State
   const [productModalOpen, setProductModalOpen] = useState(false);
+  const [modalTab, setModalTab] = useState<'basic' | 'pricing' | 'inventory' | 'media' | 'lab' | 'visibility'>('basic');
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [modalTab, setModalTab] = useState<'basic' | 'pricing' | 'inventory' | 'media' | 'lab'>('basic');
 
   // Form Fields
   const [nameAr, setNameAr] = useState('');
@@ -53,7 +54,7 @@ export default function AdminProductsPage() {
   const [price, setPrice] = useState<number>(500);
   const [compareAtPrice, setCompareAtPrice] = useState<number | undefined>(undefined);
   const [costPrice, setCostPrice] = useState<number>(225);
-  const [stockQuantity, setStockQuantity] = useState<number>(20);
+  const [stockQuantity, setStockQuantity] = useState<number>(25);
   const [lowStockThreshold, setLowStockThreshold] = useState<number>(5);
   const [weightGrams, setWeightGrams] = useState<number>(500);
   const [originRegionAr, setOriginRegionAr] = useState('حضرموت - وادي دوعن');
@@ -72,16 +73,16 @@ export default function AdminProductsPage() {
   const [batchNumber, setBatchNumber] = useState('');
   const [harvestSeason, setHarvestSeason] = useState('المحصول الملكي 2026');
   const [labName, setLabName] = useState('مختبر الجودة الأوروبية المعتمد');
-  const [moisturePercentage, setMoisturePercentage] = useState(14.2);
-  const [hmfLevel, setHmfLevel] = useState(2.1);
-  const [diastaseActivity, setDiastaseActivity] = useState(19.4);
-  const [pollenPurityPercentage, setPollenPurityPercentage] = useState(98.6);
+  const [moisturePercentage, setMoisturePercentage] = useState<number>(14.2);
+  const [hmfLevel, setHmfLevel] = useState<number>(2.1);
+  const [diastaseActivity, setDiastaseActivity] = useState<number>(19.4);
+  const [pollenPurityPercentage, setPollenPurityPercentage] = useState<number>(98.6);
 
   const loadData = useCallback(async () => {
     try {
       const [prodRes, catRes] = await Promise.all([
-        fetch('/api/products?admin=true', { cache: 'no-store' }),
-        fetch('/api/categories?all=true', { cache: 'no-store' })
+        adminFetch('/api/products?admin=true', { cache: 'no-store' }),
+        adminFetch('/api/categories?all=true', { cache: 'no-store' })
       ]);
 
       const [prodJson, catJson] = await Promise.all([prodRes.json(), catRes.json()]);
@@ -247,7 +248,7 @@ export default function AdminProductsPage() {
         }
       };
 
-      const res = await fetch('/api/products', {
+      const res = await adminFetch('/api/products', {
         method: editingProduct ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -269,7 +270,7 @@ export default function AdminProductsPage() {
   // Quick Toggle Visibility
   const handleQuickToggleVisibility = async (prod: Product, newStatus: ProductVisibility) => {
     try {
-      const res = await fetch('/api/products', {
+      const res = await adminFetch('/api/products', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -291,7 +292,7 @@ export default function AdminProductsPage() {
   const handleDeleteProduct = async (id: string, name: string) => {
     if (!confirm(`هل أنت متأكد من حذف المحصول [${name}] نهائياً من قاعدة البيانات؟`)) return;
     try {
-      const res = await fetch(`/api/products?id=${id}`, { method: 'DELETE' });
+      const res = await adminFetch(`/api/products?id=${id}`, { method: 'DELETE' });
       const json = await res.json();
       if (json.success) {
         showNotification('success', 'تم حذف المنتج بنجاح');

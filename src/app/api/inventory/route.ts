@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/admin';
+import { verifyAdminSession } from '@/lib/auth/adminAuth';
 import { InventoryMovement } from '@/types';
 
 export const dynamic = 'force-dynamic';
@@ -7,6 +8,12 @@ export const revalidate = 0;
 
 export async function GET(request: NextRequest) {
   try {
+    // Enforce Super Admin Authorization
+    const auth = await verifyAdminSession(request);
+    if (!auth.isAuthorized) {
+      return NextResponse.json({ success: false, error: auth.error || 'غير مصرح' }, { status: auth.status || 401 });
+    }
+
     // 1. Fetch products with current stock levels
     const { data: products, error: prodError } = await supabaseAdmin
       .from('products')
@@ -92,6 +99,12 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Enforce Super Admin Authorization
+    const auth = await verifyAdminSession(request);
+    if (!auth.isAuthorized) {
+      return NextResponse.json({ success: false, error: auth.error || 'غير مصرح' }, { status: auth.status || 401 });
+    }
+
     const body = await request.json();
     const { productId, actionType, quantity, reason, referenceId, reviewerName } = body;
 
@@ -153,8 +166,8 @@ export async function POST(request: NextRequest) {
 
     // 4. Record in audit_logs
     await supabaseAdmin.from('audit_logs').insert({
-      user_name: reviewerName || 'إدارة المستودعات والمخزون',
-      user_role: 'operations',
+      user_name: reviewerName || auth.user?.email || 'إدارة العمليات',
+      user_role: auth.user?.role || 'super_admin',
       action: 'INVENTORY_ADJUST',
       entity_type: 'INVENTORY',
       entity_id: product.sku,

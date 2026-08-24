@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/admin';
+import { verifyAdminSession } from '@/lib/auth/adminAuth';
 import { Order } from '@/types';
 
 export const dynamic = 'force-dynamic';
@@ -13,7 +14,7 @@ export async function GET(request: NextRequest) {
     const orderNumber = searchParams.get('orderNumber') || searchParams.get('order_number');
     const search = searchParams.get('search');
 
-    // Single order lookup by ID or Order Number
+    // Single order lookup by ID or Order Number (used for customer order confirmation page)
     if (orderId || orderNumber) {
       const identifier = (orderId || orderNumber || '').trim();
       const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier);
@@ -43,7 +44,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: true, data: formatOrderRow(data), source: 'supabase' });
     }
 
-    // Orders list query
+    // General Orders list query requires Super Admin / Admin authorization
+    const auth = await verifyAdminSession(request);
+    if (!auth.isAuthorized) {
+      return NextResponse.json({ success: false, error: auth.error || 'غير مصرح' }, { status: auth.status || 401 });
+    }
+
     let query = supabaseAdmin
       .from('orders')
       .select(`
@@ -63,15 +69,15 @@ export async function GET(request: NextRequest) {
 
     const { data, error } = await query;
     if (error) {
-      console.error('Error querying orders in Supabase:', error);
+      console.error('Supabase query error in /api/orders:', error);
       return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 
-    const formatted = (data || []).map(formatOrderRow);
-    return NextResponse.json({ success: true, data: formatted, source: 'supabase' });
+    const formattedList = (data || []).map(formatOrderRow);
+    return NextResponse.json({ success: true, data: formattedList, source: 'supabase' });
   } catch (error: any) {
-    console.error('Exception in /api/orders GET:', error);
-    return NextResponse.json({ success: false, error: error?.message || 'Internal server error' }, { status: 500 });
+    console.error('Exception in GET /api/orders:', error);
+    return NextResponse.json({ success: false, error: error?.message || 'Server error' }, { status: 500 });
   }
 }
 
@@ -79,7 +85,7 @@ export async function POST(request: NextRequest) {
   try {
     const body: Order = await request.json();
     if (!body.customerName || !body.customerPhone || !body.items || body.items.length === 0) {
-      return NextResponse.json({ success: false, error: 'Invalid order payload' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'بيانات الطلب غير مكتملة' }, { status: 400 });
     }
 
     const orderPayload = {
@@ -116,47 +122,131 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (orderError || !orderData) {
-      return NextResponse.json({ success: false, error: orderError?.message || 'Failed to create order in Supabase' }, { status: 500 });
+      console.error('Supabase error inserting order:', orderError);
+      return NextResponse.json({ success: false, error: orderError?.message || 'Failed to create order' }, { status: 500 });
     }
 
-    // Insert order items into Supabase
-    const itemsPayload = body.items.map(item => ({
-      order_id: orderData.id,
-      product_id: item.productId,
-      product_name_ar: item.productNameAr,
-      product_slug: item.productSlug,
-      product_image: item.productImage,
-      price: item.price,
-      quantity: item.quantity,
-      total: item.total,
-      weight_grams: item.weightGrams
-    }));
-
-    await supabaseAdmin.from('order_items').insert(itemsPayload);
-
-    // Insert payment proof into Supabase if provided
-    if (body.paymentProof) {
-      await supabaseAdmin.from('payment_proofs').insert({
+    // Insert Order Line Items
+    if (body.items && body.items.length > 0) {
+      const itemsPayload = body.items.map(item => ({
         order_id: orderData.id,
-        receipt_image_url: body.paymentProof.receiptImageUrl,
-        sender_name: body.paymentProof.senderName,
-        sender_phone: body.paymentProof.senderPhone || null,
-        sender_bank: body.paymentProof.senderBank || null,
-        transaction_reference: body.paymentProof.transactionReference,
-        transfer_date: body.paymentProof.transferDate || new Date().toISOString().split('T')[0],
-        amount_transferred: body.paymentProof.amountTransferred,
-        status: body.paymentProof.status || 'proof_submitted'
-      });
+        product_id: item.productId,
+        product_name_ar: item.productNameAr,
+        product_slug: item.productSlug,
+        product_image: item.productImage || '/images/zaad-logo.png',
+        price: item.price,
+        quantity: item.quantity,
+        total: item.total,
+        weight_grams: item.weightGrams || 500
+      }));
+
+      const { error: itemsError } = await supabaseAdmin.from('order_items').insert(itemsPayload);
+      if (itemsError) {
+        console.error('Supabase error inserting order_items:', itemsError);
+      }
     }
 
-    return NextResponse.json({ success: true, data: orderData, source: 'supabase' }, { status: 201 });
+    // Insert Payment Proof if provided
+    if (body.paymentProof && body.paymentProof.receiptImageUrl) {
+      const proofPayload = {
+        order_id: orderData.id,
+        customer_id: orderData.customer_id,
+        receipt_image_url: body.paymentProof.receiptImageUrl,
+        sender_name: body.paymentProof.senderName || body.customerName,
+        sender_phone: body.paymentProof.senderPhone || body.customerPhone,
+        sender_bank: body.paymentProof.senderBank || 'مصرف الراجحي',
+        transaction_reference: body.paymentProof.transactionReference || 'REF-' + orderData.order_number,
+        transfer_date: body.paymentProof.transferDate || new Date().toISOString().split('T')[0],
+        amount_transferred: body.paymentProof.amountTransferred || body.totalAmount,
+        status: 'proof_submitted'
+      };
+
+      const { error: proofError } = await supabaseAdmin.from('payment_proofs').insert(proofPayload);
+      if (proofError) {
+        console.error('Supabase error inserting payment_proof:', proofError);
+      }
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        id: orderData.id,
+        orderNumber: orderData.order_number,
+        totalAmount: orderData.total_amount,
+        status: orderData.status
+      }
+    }, { status: 201 });
   } catch (error: any) {
-    return NextResponse.json({ success: false, error: error?.message || 'Internal server error' }, { status: 500 });
+    console.error('Exception in POST /api/orders:', error);
+    return NextResponse.json({ success: false, error: error?.message || 'Server error' }, { status: 500 });
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const auth = await verifyAdminSession(request);
+    if (!auth.isAuthorized) {
+      return NextResponse.json({ success: false, error: auth.error || 'غير مصرح' }, { status: auth.status || 401 });
+    }
+
+    const body = await request.json();
+    const { id, status, trackingNumber, courierName, adminNotes } = body;
+
+    if (!id) {
+      return NextResponse.json({ success: false, error: 'معرف الطلب مطلوب' }, { status: 400 });
+    }
+
+    const updatePayload: any = {
+      updated_at: new Date().toISOString()
+    };
+    if (status) updatePayload.status = status;
+    if (trackingNumber !== undefined) updatePayload.tracking_number = trackingNumber;
+    if (courierName !== undefined) updatePayload.courier_name = courierName;
+    if (adminNotes !== undefined) updatePayload.admin_notes = adminNotes;
+
+    const { data: updatedOrder, error } = await supabaseAdmin
+      .from('orders')
+      .update(updatePayload)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error || !updatedOrder) {
+      return NextResponse.json({ success: false, error: error?.message || 'Order not found' }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true, data: updatedOrder });
+  } catch (error: any) {
+    return NextResponse.json({ success: false, error: error?.message || 'Server error' }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const auth = await verifyAdminSession(request);
+    if (!auth.isAuthorized) {
+      return NextResponse.json({ success: false, error: auth.error || 'غير مصرح' }, { status: auth.status || 401 });
+    }
+
+    const searchParams = request.nextUrl.searchParams;
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json({ success: false, error: 'معرف الطلب مطلوب للحذف' }, { status: 400 });
+    }
+
+    const { error } = await supabaseAdmin.from('orders').delete().eq('id', id);
+    if (error) {
+      return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true, message: 'تم حذف الطلب بنجاح' });
+  } catch (error: any) {
+    return NextResponse.json({ success: false, error: error?.message || 'Server error' }, { status: 500 });
   }
 }
 
 function formatOrderRow(o: any): Order {
-  // Handle both 1-to-1 object and 1-to-many array join representations from PostgREST
   const rawProof = Array.isArray(o.proof)
     ? o.proof[0]
     : (o.proof || (Array.isArray(o.payment_proofs) ? o.payment_proofs[0] : o.payment_proofs) || null);
@@ -200,7 +290,7 @@ function formatOrderRow(o: any): Order {
     luxuryGiftBoxIncluded: o.luxury_gift_box_included,
     luxuryGiftMessage: o.luxury_gift_message,
     totalAmount: Number(o.total_amount),
-    currency: o.currency,
+    currency: o.currency || 'EGP',
     status: o.status,
     paymentMethod: o.payment_method,
     paymentStatus: o.payment_status,

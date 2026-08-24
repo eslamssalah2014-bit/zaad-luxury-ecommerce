@@ -58,7 +58,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         const appRole = session.user.app_metadata?.role;
         const userRole = session.user.user_metadata?.role;
-        const isAdmin = appRole === 'admin' || userRole === 'admin';
+        const isSuperAdmin = appRole === 'super_admin' || userRole === 'super_admin';
+        const isAdmin = appRole === 'admin' || userRole === 'admin' || isSuperAdmin;
 
         if (!isAdmin) {
           if (isMounted) {
@@ -109,7 +110,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     let isMounted = true;
     async function loadPending() {
       try {
-        const res = await fetch('/api/orders', { cache: 'no-store' });
+        const { data: { session } } = await supabase.auth.getSession();
+        const headers: Record<string, string> = {};
+        if (session?.access_token) {
+          headers['Authorization'] = `Bearer ${session.access_token}`;
+        }
+        const res = await fetch('/api/orders', { cache: 'no-store', headers });
         const json = await res.json();
         if (isMounted && json.success && Array.isArray(json.data)) {
           const count = json.data.filter((o: any) => o.paymentStatus === 'proof_submitted').length;
@@ -124,7 +130,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }, [pathname, isAdminAuthenticated, isLoginPage]);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+    } catch (e) {
+      console.error('Logout error:', e);
+    }
     router.push('/admin/login');
   };
 

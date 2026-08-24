@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/admin';
+import { verifyAdminSession } from '@/lib/auth/adminAuth';
 import { Category, Subcategory } from '@/types';
 
 export const dynamic = 'force-dynamic';
@@ -43,10 +44,9 @@ export async function GET(request: NextRequest) {
         subcategories = subData;
       }
     } catch {
-      // Graceful fallback if subcategories table is not yet migrated in Postgres
+      // Graceful fallback
     }
 
-    // Map subcategories into their parent categories
     const formattedCategories: Category[] = (categories || []).map((c: any) => {
       const subs = subcategories
         .filter((s: any) => s.category_id === c.id)
@@ -100,6 +100,12 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Enforce Super Admin Authorization for Category creation
+    const auth = await verifyAdminSession(request);
+    if (!auth.isAuthorized) {
+      return NextResponse.json({ success: false, error: auth.error || 'غير مصرح' }, { status: auth.status || 401 });
+    }
+
     const body = await request.json();
     const { type, nameAr, nameEn, slug, descriptionAr, imageUrl, sortOrder, isActive, categoryId } = body;
 
@@ -160,6 +166,12 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
+    // Enforce Super Admin Authorization for Category update
+    const auth = await verifyAdminSession(request);
+    if (!auth.isAuthorized) {
+      return NextResponse.json({ success: false, error: auth.error || 'غير مصرح' }, { status: auth.status || 401 });
+    }
+
     const body = await request.json();
     const { id, type, nameAr, nameEn, slug, descriptionAr, imageUrl, sortOrder, isActive, categoryId } = body;
 
@@ -218,6 +230,12 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    // Enforce Super Admin Authorization for Category deletion
+    const auth = await verifyAdminSession(request);
+    if (!auth.isAuthorized) {
+      return NextResponse.json({ success: false, error: auth.error || 'غير مصرح' }, { status: auth.status || 401 });
+    }
+
     const searchParams = request.nextUrl.searchParams;
     const id = searchParams.get('id');
     const type = searchParams.get('type');

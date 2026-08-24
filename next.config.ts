@@ -31,6 +31,18 @@ const securityHeaders = [
   }
 ];
 
+const adminSecurityHeaders = [
+  ...securityHeaders,
+  {
+    key: 'X-Robots-Tag',
+    value: 'noindex, nofollow, noarchive, nosnippet'
+  },
+  {
+    key: 'Cache-Control',
+    value: 'no-store, max-age=0, must-revalidate'
+  }
+];
+
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
@@ -45,6 +57,14 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
+      {
+        source: '/admin/:path*',
+        headers: adminSecurityHeaders,
+      },
+      {
+        source: '/api/:path*',
+        headers: adminSecurityHeaders,
+      },
       {
         source: '/:path*',
         headers: securityHeaders,

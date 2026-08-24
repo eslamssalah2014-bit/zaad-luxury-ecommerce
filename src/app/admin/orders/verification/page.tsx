@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { useCurrency } from '@/context/CurrencyContext';
 import { Order, PaymentProof } from '@/types';
+import { adminFetch } from '@/lib/auth/adminFetch';
 
 export default function PaymentVerificationPage() {
   const { formatPrice } = useCurrency();
@@ -36,7 +37,7 @@ export default function PaymentVerificationPage() {
 
   const loadOrders = React.useCallback(async () => {
     try {
-      const res = await fetch('/api/orders', { cache: 'no-store' });
+      const res = await adminFetch('/api/orders', { cache: 'no-store' });
       const json = await res.json();
       if (json.success && Array.isArray(json.data)) {
         setOrders(json.data);
@@ -86,7 +87,7 @@ export default function PaymentVerificationPage() {
 
   const handleApprove = async (order: Order) => {
     try {
-      const res = await fetch('/api/payments/verify', {
+      const res = await adminFetch('/api/payments/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -112,7 +113,7 @@ export default function PaymentVerificationPage() {
     if (!selectedOrder || !actionType) return;
 
     try {
-      const res = await fetch('/api/payments/verify', {
+      const res = await adminFetch('/api/payments/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

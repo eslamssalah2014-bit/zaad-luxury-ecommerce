@@ -20,6 +20,7 @@ import {
   FileSpreadsheet
 } from 'lucide-react';
 import { InventoryMovement } from '@/types';
+import { adminFetch } from '@/lib/auth/adminFetch';
 
 export default function AdminInventoryPage() {
   const [products, setProducts] = useState<any[]>([]);
@@ -46,7 +47,7 @@ export default function AdminInventoryPage() {
 
   const loadData = useCallback(async () => {
     try {
-      const res = await fetch('/api/inventory', { cache: 'no-store' });
+      const res = await adminFetch('/api/inventory', { cache: 'no-store' });
       const json = await res.json();
       if (json.success && json.data) {
         setProducts(json.data.products || []);
@@ -84,7 +85,7 @@ export default function AdminInventoryPage() {
     setSubmitting(true);
 
     try {
-      const res = await fetch('/api/inventory', {
+      const res = await adminFetch('/api/inventory', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

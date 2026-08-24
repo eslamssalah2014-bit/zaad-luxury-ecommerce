@@ -18,6 +18,7 @@ import {
   Eye
 } from 'lucide-react';
 import { Category, Subcategory } from '@/types';
+import { adminFetch } from '@/lib/auth/adminFetch';
 
 export default function AdminCategoriesPage() {
   const [activeTab, setActiveTab] = useState<'categories' | 'subcategories'>('categories');
@@ -51,7 +52,7 @@ export default function AdminCategoriesPage() {
 
   const loadData = useCallback(async () => {
     try {
-      const res = await fetch('/api/categories?all=true', { cache: 'no-store' });
+      const res = await adminFetch('/api/categories?all=true', { cache: 'no-store' });
       const json = await res.json();
       if (json.success) {
         setCategories(json.data || []);
@@ -136,7 +137,7 @@ export default function AdminCategoriesPage() {
         isActive: catIsActive
       };
 
-      const res = await fetch('/api/categories', {
+      const res = await adminFetch('/api/categories', {
         method: editingCategory ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -171,7 +172,7 @@ export default function AdminCategoriesPage() {
         isActive: subIsActive
       };
 
-      const res = await fetch('/api/categories', {
+      const res = await adminFetch('/api/categories', {
         method: editingSubcategory ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -193,7 +194,7 @@ export default function AdminCategoriesPage() {
   // Toggle Category Active Status
   const handleToggleCategoryActive = async (cat: Category) => {
     try {
-      const res = await fetch('/api/categories', {
+      const res = await adminFetch('/api/categories', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -219,7 +220,7 @@ export default function AdminCategoriesPage() {
   const handleDeleteCategory = async (id: string, name: string) => {
     if (!confirm(`هل أنت متأكد من حذف التصنيف [${name}]؟`)) return;
     try {
-      const res = await fetch(`/api/categories?id=${id}`, { method: 'DELETE' });
+      const res = await adminFetch(`/api/categories?id=${id}`, { method: 'DELETE' });
       const json = await res.json();
       if (json.success) {
         showNotification('success', 'تم حذف التصنيف بنجاح');
@@ -236,7 +237,7 @@ export default function AdminCategoriesPage() {
   const handleDeleteSubcategory = async (id: string, name: string) => {
     if (!confirm(`هل أنت متأكد من حذف الفئة الفرعية [${name}]؟`)) return;
     try {
-      const res = await fetch(`/api/categories?id=${id}&type=subcategory`, { method: 'DELETE' });
+      const res = await adminFetch(`/api/categories?id=${id}&type=subcategory`, { method: 'DELETE' });
       const json = await res.json();
       if (json.success) {
         showNotification('success', 'تم حذف الفئة الفرعية بنجاح');

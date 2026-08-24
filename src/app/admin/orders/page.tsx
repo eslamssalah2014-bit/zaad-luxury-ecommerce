@@ -19,6 +19,7 @@ import {
 import { supabase } from '@/lib/supabase/client';
 import { useCurrency } from '@/context/CurrencyContext';
 import { Order, OrderStatus } from '@/types';
+import { adminFetch } from '@/lib/auth/adminFetch';
 
 export default function AdminOrdersPage() {
   const { formatPrice } = useCurrency();
@@ -30,7 +31,7 @@ export default function AdminOrdersPage() {
 
   const loadOrders = async () => {
     try {
-      const res = await fetch('/api/orders', { cache: 'no-store' });
+      const res = await adminFetch('/api/orders', { cache: 'no-store' });
       const json = await res.json();
       if (json.success && Array.isArray(json.data)) {
         setOrders(json.data);

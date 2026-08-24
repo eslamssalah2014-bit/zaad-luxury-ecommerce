@@ -116,20 +116,20 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Concierge & Admin Access */}
+          {/* Quality Assurance & Purity Standards */}
           <div>
-            <h4 className="text-sm font-bold text-gold-300 mb-4 border-r-2 border-gold-500 pr-2">العمليات والإدارة</h4>
+            <h4 className="text-sm font-bold text-gold-300 mb-4 border-r-2 border-gold-500 pr-2">الضمان والأصالة</h4>
             <ul className="space-y-2.5 text-xs text-ivory-300">
               <li>
-                <Link href="/admin" className="text-gold-400 hover:text-gold-200 font-semibold flex items-center gap-1.5 transition-colors">
+                <Link href="/purity-checker" className="text-gold-400 hover:text-gold-200 font-semibold flex items-center gap-1.5 transition-colors">
                   <Sparkles className="w-3.5 h-3.5" />
-                  <span>لوحة العمليات المركزية</span>
+                  <span>فحص شهادة النقاء المخبرية</span>
                 </Link>
               </li>
-              <li><Link href="/admin/orders/verification" className="hover:text-gold-300 transition-colors">طابور مطابقة الإيصالات</Link></li>
-              <li><Link href="/admin/products" className="hover:text-gold-300 transition-colors">إدارة التشغيلات والمختبر</Link></li>
-              <li><Link href="/admin/emails" className="hover:text-gold-300 transition-colors">نظام رسائل Resend</Link></li>
-              <li><Link href="/admin/audit-logs" className="hover:text-gold-300 transition-colors">سجل التدقيق الأمني</Link></li>
+              <li><Link href="/story" className="hover:text-gold-300 transition-colors">ميثاق الجودة والنقاء الطبيعي</Link></li>
+              <li><Link href="/shop" className="hover:text-gold-300 transition-colors">كتالوج المحاصيل النادرة</Link></li>
+              <li><Link href="/checkout" className="hover:text-gold-300 transition-colors">الشحن المبرد وضمان الوصول</Link></li>
+              <li><Link href="/account" className="hover:text-gold-300 transition-colors">عضوية الدائرة الملكية</Link></li>
             </ul>
           </div>
 

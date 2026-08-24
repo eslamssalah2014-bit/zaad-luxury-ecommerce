@@ -1,11 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/admin';
+import { verifyAdminSession } from '@/lib/auth/adminAuth';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export async function POST(request: NextRequest) {
   try {
+    // Enforce Super Admin Authorization
+    const auth = await verifyAdminSession(request);
+    if (!auth.isAuthorized) {
+      return NextResponse.json({ success: false, error: auth.error || 'غير مصرح' }, { status: auth.status || 401 });
+    }
+
     const body = await request.json();
     const { orderId, action, reviewerName, reason } = body;
 
@@ -51,7 +58,7 @@ export async function POST(request: NextRequest) {
         status: paymentStatus,
         rejection_reason: reason || null,
         reviewed_at: now,
-        reviewed_by: null
+        reviewed_by: auth.user?.id || null
       })
       .eq('order_id', updatedOrder.id);
 
@@ -59,7 +66,6 @@ export async function POST(request: NextRequest) {
     if (action === 'approve' && Array.isArray(updatedOrder.items) && updatedOrder.items.length > 0) {
       for (const item of updatedOrder.items) {
         try {
-          // Fetch current stock
           const { data: product } = await supabaseAdmin
             .from('products')
             .select('id, name_ar, stock_quantity, sku')
@@ -71,7 +77,6 @@ export async function POST(request: NextRequest) {
             const deductQty = Number(item.quantity || 1);
             const newStock = Math.max(0, currentStock - deductQty);
 
-            // Deduct stock quantity
             await supabaseAdmin
               .from('products')
               .update({
@@ -80,7 +85,6 @@ export async function POST(request: NextRequest) {
               })
               .eq('id', product.id);
 
-            // Record movement in inventory_movements
             await supabaseAdmin.from('inventory_movements').insert({
               product_id: product.id,
               movement_type: 'sale_fulfillment',
@@ -98,8 +102,8 @@ export async function POST(request: NextRequest) {
 
     // 4. Write immutable audit log to Supabase
     await supabaseAdmin.from('audit_logs').insert({
-      user_name: reviewerName || 'إدارة العمليات والتدقيق المالي',
-      user_role: 'operations',
+      user_name: reviewerName || auth.user?.email || 'إدارة العمليات والتدقيق المالي',
+      user_role: auth.user?.role || 'super_admin',
       action: `PAYMENT_${action.toUpperCase()}`,
       entity_type: 'PAYMENT',
       entity_id: updatedOrder.order_number,

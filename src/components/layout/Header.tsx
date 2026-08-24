@@ -46,12 +46,12 @@ export default function Header() {
           <div className="hidden md:flex items-center gap-6 text-[11px] text-ivory-300">
             <Link href="/purity-checker" className="hover:text-gold-300 transition-colors flex items-center gap-1">
               <ShieldCheck className="w-3.5 h-3.5 text-gold-400" />
-              <span>فحص رقم التشغيلة</span>
+              <span>فحص رقم التشغيلة والمختبر</span>
             </Link>
             <span className="text-zaad-700">|</span>
-            <Link href="/admin" className="hover:text-gold-300 transition-colors flex items-center gap-1 text-gold-400">
+            <Link href="/story" className="hover:text-gold-300 transition-colors flex items-center gap-1 text-gold-400">
               <Sparkles className="w-3 h-3" />
-              <span>لوحة تحكم العمليات (Admin)</span>
+              <span>ميثاق النقاء الملكي</span>
             </Link>
           </div>
         </div>
@@ -231,16 +231,6 @@ export default function Header() {
                 )}
               </Link>
             ))}
-            <div className="pt-3 flex flex-col gap-2">
-              <Link
-                href="/admin"
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-xs text-gold-600 bg-gold-50 p-2.5 rounded-lg border border-gold-200 flex items-center justify-center gap-2 font-medium"
-              >
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>لوحة تحكم العمليات (Admin Hub)</span>
-              </Link>
-            </div>
           </div>
         </div>
       )}
