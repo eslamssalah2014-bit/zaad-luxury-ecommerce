@@ -21,7 +21,15 @@ import {
   Image as ImageIcon,
   Tag,
   Boxes,
-  Info
+  Info,
+  UploadCloud,
+  ImagePlus,
+  Star,
+  ArrowRight,
+  ArrowLeft,
+  Loader2,
+  MoveRight,
+  MoveLeft
 } from 'lucide-react';
 import { useCurrency } from '@/context/CurrencyContext';
 import { Product, Category, Subcategory, ProductVisibility } from '@/types';
@@ -42,6 +50,11 @@ export default function AdminProductsPage() {
   const [productModalOpen, setProductModalOpen] = useState(false);
   const [modalTab, setModalTab] = useState<'basic' | 'pricing' | 'inventory' | 'media' | 'lab' | 'visibility'>('basic');
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+
+  // Upload State
+  const [uploadingImages, setUploadingImages] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // Form Fields
   const [nameAr, setNameAr] = useState('');
@@ -183,24 +196,86 @@ export default function AdminProductsPage() {
     setProductModalOpen(true);
   };
 
-  // Add Image URL
+  // Direct Image File Upload
+  const handleFileUpload = async (files: FileList | File[] | null) => {
+    if (!files || files.length === 0) return;
+    setUploadingImages(true);
+
+    try {
+      const formData = new FormData();
+      let count = 0;
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (file.size > 10 * 1024 * 1024) {
+          showNotification('error', `حجم الملف (${file.name}) يتجاوز 10 ميجابايت.`);
+          setUploadingImages(false);
+          return;
+        }
+        formData.append('files', file);
+        count++;
+      }
+
+      const res = await adminFetch('/api/admin/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      const json = await res.json();
+      if (json.success && Array.isArray(json.urls) && json.urls.length > 0) {
+        setImages((prev) => {
+          const isOnlyPlaceholder = prev.length === 1 && prev[0] === '/images/zaad-logo.png';
+          return isOnlyPlaceholder ? json.urls : [...prev, ...json.urls];
+        });
+        showNotification('success', `تم رفع ${json.urls.length} صورة بنجاح وإضافتها للمنتج.`);
+      } else {
+        showNotification('error', json.error || 'فشل رفع الصور.');
+      }
+    } catch (err: any) {
+      console.error('Upload error:', err);
+      showNotification('error', err?.message || 'حدث خطأ أثناء رفع الصور.');
+    } finally {
+      setUploadingImages(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  // Add Manual Image URL (Optional)
   const handleAddImage = () => {
     if (!newImageUrl.trim()) return;
-    setImages([...images, newImageUrl.trim()]);
+    setImages((prev) => {
+      const isOnlyPlaceholder = prev.length === 1 && prev[0] === '/images/zaad-logo.png';
+      return isOnlyPlaceholder ? [newImageUrl.trim()] : [...prev, newImageUrl.trim()];
+    });
     setNewImageUrl('');
   };
 
-  // Remove Image URL
+  // Remove Image
   const handleRemoveImage = (index: number) => {
     const updated = images.filter((_, i) => i !== index);
     setImages(updated.length > 0 ? updated : ['/images/zaad-logo.png']);
   };
 
-  // Set Featured Image
+  // Set Featured / Primary Image (Moves to index 0)
   const handleSetFeaturedImage = (index: number) => {
+    if (index === 0) return;
     const selected = images[index];
     const rest = images.filter((_, i) => i !== index);
     setImages([selected, ...rest]);
+    showNotification('success', 'تم تعيين الصورة كصورة رئيسية للمنتج.');
+  };
+
+  // Move Image Position (Reorder)
+  const handleMoveImage = (index: number, direction: 'left' | 'right') => {
+    // In RTL display: 'left' moves to higher index, 'right' moves to lower index
+    const newIndex = direction === 'left' ? index + 1 : index - 1;
+    if (newIndex < 0 || newIndex >= images.length) return;
+    const updated = [...images];
+    const temp = updated[index];
+    updated[index] = updated[newIndex];
+    updated[newIndex] = temp;
+    setImages(updated);
   };
 
   // Save Product (Create or Update)
@@ -917,58 +992,205 @@ export default function AdminProductsPage() {
                 </div>
               )}
 
-              {/* TAB 4: MEDIA GALLERY */}
+              {/* TAB 4: MEDIA GALLERY & CLOUD STORAGE UPLOAD */}
               {modalTab === 'media' && (
-                <div className="space-y-4 animate-fade-in">
-                  <div className="flex gap-2">
+                <div className="space-y-6 animate-fade-in">
+                  
+                  {/* Direct File Upload & Drag-and-Drop Zone */}
+                  <div
+                    onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                    onDragLeave={() => setDragOver(false)}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      setDragOver(false);
+                      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                        handleFileUpload(e.dataTransfer.files);
+                      }
+                    }}
+                    className={`relative border-2 border-dashed rounded-3xl p-8 text-center transition-all duration-300 ${
+                      dragOver
+                        ? 'border-gold-500 bg-gold-500/10 scale-[1.01]'
+                        : 'border-ivory-300 bg-ivory-50/70 hover:border-gold-400 hover:bg-ivory-100/50'
+                    }`}
+                  >
                     <input
-                      type="text"
-                      placeholder="أدخل رابط صورة جديدة (URL)..."
-                      value={newImageUrl}
-                      onChange={(e) => setNewImageUrl(e.target.value)}
-                      className="flex-1 bg-ivory-50 border border-ivory-300 rounded-xl p-3 focus:border-gold-500 focus:outline-none font-mono"
+                      ref={fileInputRef}
+                      type="file"
+                      multiple
+                      accept="image/jpeg,image/png,image/webp,image/jpg"
+                      onChange={(e) => handleFileUpload(e.target.files)}
+                      className="hidden"
                     />
-                    <button
-                      type="button"
-                      onClick={handleAddImage}
-                      className="bg-zaad-900 text-gold-400 px-4 rounded-xl font-bold hover:bg-zaad-800"
-                    >
-                      إضافة صورة
-                    </button>
-                  </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    {images.map((img, idx) => (
-                      <div key={idx} className="relative rounded-2xl overflow-hidden bg-ivory-100 border-2 border-ivory-300 group aspect-square">
-                        <Image src={img} alt={`Product ${idx}`} fill className="object-cover" />
-                        
-                        {idx === 0 && (
-                          <span className="absolute top-2 right-2 bg-gold-600 text-white text-[9px] font-bold px-2 py-0.5 rounded-md shadow-md">
-                            الصورة الرئيسية
-                          </span>
+                    <div className="flex flex-col items-center justify-center space-y-3">
+                      <div className="w-16 h-16 rounded-2xl bg-gold-50 border border-gold-300 flex items-center justify-center text-gold-600 shadow-inner">
+                        {uploadingImages ? (
+                          <Loader2 className="w-8 h-8 animate-spin text-gold-600" />
+                        ) : (
+                          <UploadCloud className="w-8 h-8" />
                         )}
+                      </div>
 
-                        <div className="absolute inset-0 bg-zaad-950/70 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center gap-1.5 transition-opacity p-2 text-center">
-                          {idx !== 0 && (
+                      {uploadingImages ? (
+                        <div className="space-y-1">
+                          <p className="font-bold text-sm text-zaad-900">جاري معالجة ورفع الصور إلى السحابة (Supabase Storage)...</p>
+                          <p className="text-xs text-charcoal-700/60 font-mono">يرجى الانتظار بضع ثوانٍ</p>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <h4 className="font-bold text-base text-zaad-900">
+                            رفع صور المنتج مباشرة من جهاز الكمبيوتر
+                          </h4>
+                          <p className="text-xs text-charcoal-700/70 max-w-md mx-auto">
+                            اسحب الصور وأفلتها هنا مباشرة، أو اضغط على الزر أدناه لتحديد الصور من جهازك
+                          </p>
+
+                          <div className="pt-2">
                             <button
                               type="button"
-                              onClick={() => handleSetFeaturedImage(idx)}
-                              className="bg-gold-500 text-zaad-950 px-2 py-1 rounded text-[10px] font-bold"
+                              onClick={() => fileInputRef.current?.click()}
+                              className="bg-gradient-to-r from-zaad-900 to-zaad-950 text-gold-400 hover:text-gold-300 font-bold px-6 py-2.5 rounded-xl text-xs border border-gold-500/40 shadow-lg flex items-center gap-2 mx-auto transition-all hover:scale-105"
                             >
-                              تعيين كرئيسية
+                              <ImagePlus className="w-4 h-4" />
+                              <span>اختيار صور من الجهاز (Upload Images)</span>
                             </button>
-                          )}
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveImage(idx)}
-                            className="bg-red-600 text-white px-2 py-1 rounded text-[10px] font-bold"
-                          >
-                            حذف
-                          </button>
+                          </div>
+
+                          <div className="pt-2 text-[11px] text-charcoal-700/60 flex items-center justify-center gap-4">
+                            <span>الصيغ المدعومة: JPG, PNG, WEBP</span>
+                            <span>•</span>
+                            <span>الحد الأقصى للملف: 10 ميجابايت</span>
+                            <span>•</span>
+                            <span>يدعم رفع عدة صور معاً</span>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      )}
+                    </div>
                   </div>
+
+                  {/* Active Gallery Preview Grid */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-zaad-900 flex items-center gap-1.5">
+                        <ImageIcon className="w-4 h-4 text-gold-600" />
+                        <span>معرض صور المحصول المعتمدة ({images.length} صور):</span>
+                      </span>
+                      <span className="text-[11px] text-charcoal-700/60">
+                        الصورة الأولى هي الصورة الرئيسية التي تظهر في المتجر
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                      {images.map((img, idx) => (
+                        <div
+                          key={idx}
+                          className={`relative rounded-2xl overflow-hidden bg-ivory-100 border-2 transition-all group aspect-square flex flex-col justify-between ${
+                            idx === 0
+                              ? 'border-gold-500 ring-2 ring-gold-400/30 shadow-md'
+                              : 'border-ivory-300 hover:border-gold-300'
+                          }`}
+                        >
+                          <Image
+                            src={img}
+                            alt={`Product Media ${idx + 1}`}
+                            fill
+                            className="object-cover"
+                          />
+
+                          {/* Primary Badge */}
+                          <div className="relative z-10 p-2 flex justify-between items-start">
+                            {idx === 0 ? (
+                              <span className="bg-gradient-to-r from-gold-600 to-gold-500 text-zaad-950 text-[10px] font-bold px-2 py-0.5 rounded-lg shadow-md flex items-center gap-1">
+                                <Star className="w-3 h-3 fill-zaad-950" />
+                                <span>الرئيسية</span>
+                              </span>
+                            ) : (
+                              <span className="bg-zaad-900/80 text-ivory-200 text-[10px] font-mono font-bold px-2 py-0.5 rounded-lg backdrop-blur-sm">
+                                #{idx + 1}
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Actions Overlay */}
+                          <div className="relative z-10 p-2 bg-gradient-to-t from-zaad-950/90 via-zaad-950/60 to-transparent flex items-center justify-between gap-1 opacity-90 group-hover:opacity-100 transition-opacity">
+                            
+                            {/* Reorder Buttons */}
+                            <div className="flex items-center gap-1">
+                              {idx > 0 && (
+                                <button
+                                  type="button"
+                                  title="تحريك لليمين"
+                                  onClick={() => handleMoveImage(idx, 'right')}
+                                  className="w-7 h-7 rounded-lg bg-white/20 hover:bg-gold-500 hover:text-zaad-950 text-white flex items-center justify-center text-xs transition-colors"
+                                >
+                                  <ArrowRight className="w-3.5 h-3.5" />
+                                </button>
+                              )}
+                              {idx < images.length - 1 && (
+                                <button
+                                  type="button"
+                                  title="تحريك لليسار"
+                                  onClick={() => handleMoveImage(idx, 'left')}
+                                  className="w-7 h-7 rounded-lg bg-white/20 hover:bg-gold-500 hover:text-zaad-950 text-white flex items-center justify-center text-xs transition-colors"
+                                >
+                                  <ArrowLeft className="w-3.5 h-3.5" />
+                                </button>
+                              )}
+                            </div>
+
+                            {/* Set Primary or Delete */}
+                            <div className="flex items-center gap-1">
+                              {idx !== 0 && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleSetFeaturedImage(idx)}
+                                  className="bg-gold-500 hover:bg-gold-400 text-zaad-950 px-2 py-1 rounded-lg text-[10px] font-bold flex items-center gap-1 transition-colors"
+                                  title="تعيين كصورة رئيسية للمنتج"
+                                >
+                                  <Star className="w-3 h-3" />
+                                  <span>رئيسية</span>
+                                </button>
+                              )}
+
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveImage(idx)}
+                                className="w-7 h-7 rounded-lg bg-red-600/90 hover:bg-red-600 text-white flex items-center justify-center transition-colors"
+                                title="حذف الصورة"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Optional Fallback: Manual Image URL Input */}
+                  <div className="bg-ivory-50 p-4 rounded-2xl border border-ivory-300 space-y-2">
+                    <label className="block text-xs font-bold text-charcoal-700">
+                      أو إضافة رابط صورة يدوي (External Image URL - خيار متقدم):
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="https://images.unsplash.com/... أو أي رابط مباشر"
+                        value={newImageUrl}
+                        onChange={(e) => setNewImageUrl(e.target.value)}
+                        className="flex-1 bg-white border border-ivory-300 rounded-xl p-2.5 text-xs focus:border-gold-500 focus:outline-none font-mono"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleAddImage}
+                        className="bg-zaad-900 hover:bg-zaad-800 text-gold-400 px-4 py-2 rounded-xl text-xs font-bold transition-colors"
+                      >
+                        إضافة الرابط
+                      </button>
+                    </div>
+                  </div>
+
                 </div>
               )}
 
