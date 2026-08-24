@@ -60,16 +60,16 @@ export default function BrandStoryScroll() {
                 className={`flex flex-col ${isEven ? 'lg:flex-row-reverse' : 'lg:flex-row'} items-center gap-12 lg:gap-16`}
               >
                 {/* Image Side */}
-                <div className="w-full lg:w-1/2">
-                  <div className="relative h-[380px] sm:h-[440px] rounded-2xl overflow-hidden shadow-luxury border-2 border-ivory-300 group">
+                <div className="w-full lg:w-1/2 flex justify-center">
+                  <div className="relative w-full aspect-[3/4] max-h-[520px] rounded-2xl overflow-hidden shadow-luxury border-2 border-ivory-300 bg-ivory-100 flex items-center justify-center group">
                     <Image
                       src={step.image}
                       alt={step.titleAr}
                       fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                      className="object-contain group-hover:scale-[1.02] transition-transform duration-500 ease-out"
+                      sizes="(max-width: 1024px) 100vw, 50vw"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-zaad-950/60 via-transparent to-transparent"></div>
-                    <div className="absolute bottom-6 right-6 bg-zaad-900/90 backdrop-blur-md px-4 py-2 rounded-lg border border-gold-400/40 text-gold-300 font-mono text-sm font-bold">
+                    <div className="absolute top-4 left-4 bg-zaad-900/90 backdrop-blur-md px-3.5 py-1.5 rounded-lg border border-gold-400/40 text-gold-300 font-mono text-xs font-bold shadow-md">
                       {step.number} / قصة زاد
                     </div>
                   </div>
