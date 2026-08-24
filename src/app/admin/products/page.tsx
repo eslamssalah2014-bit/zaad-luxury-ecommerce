@@ -544,7 +544,7 @@ export default function AdminProductsPage() {
                         <td className="p-4">
                           <div className="flex items-center gap-3">
                             <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-ivory-100 border border-ivory-200 shrink-0">
-                              <Image src={p.images[0] || '/images/zaad-logo.png'} alt={p.nameAr} fill className="object-cover" />
+                              <Image src={p.images[0] || '/images/zaad-logo.png'} alt={p.nameAr} fill unoptimized className="object-cover" />
                             </div>
                             <div>
                               <div className="font-bold text-sm text-zaad-900">{p.nameAr}</div>
@@ -1094,6 +1094,7 @@ export default function AdminProductsPage() {
                             src={img}
                             alt={`Product Media ${idx + 1}`}
                             fill
+                            unoptimized
                             className="object-cover"
                           />
 

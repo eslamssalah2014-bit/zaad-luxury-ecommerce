@@ -117,7 +117,7 @@ export default function CartPage() {
                     
                     <div className="flex items-center gap-4">
                       <div className="relative w-20 h-20 rounded-xl overflow-hidden border border-ivory-300 bg-ivory-100 shrink-0">
-                        <Image src={item.productImage} alt={item.productNameAr} fill className="object-cover" />
+                        <Image src={item.productImage || '/images/zaad-logo.png'} alt={item.productNameAr} fill unoptimized className="object-cover" />
                       </div>
                       <div>
                         <h3 className="font-serif text-sm font-bold text-zaad-900">{item.productNameAr}</h3>

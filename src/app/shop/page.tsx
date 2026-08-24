@@ -215,6 +215,7 @@ export default function ShopPage() {
                       src={product.images[0] || '/images/zaad-logo.png'}
                       alt={product.nameAr}
                       fill
+                      unoptimized
                       className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                     />
 

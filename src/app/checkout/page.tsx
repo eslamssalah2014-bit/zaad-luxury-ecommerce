@@ -785,7 +785,7 @@ export default function CheckoutPage() {
                   <div key={item.productId} className="py-2.5 first:pt-0 flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2.5">
                       <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-ivory-300 bg-ivory-100 shrink-0">
-                        <Image src={item.productImage} alt={item.productNameAr} fill className="object-cover" />
+                        <Image src={item.productImage || '/images/zaad-logo.png'} alt={item.productNameAr} fill unoptimized className="object-cover" />
                       </div>
                       <div>
                         <div className="font-bold text-zaad-900 truncate max-w-[130px]">{item.productNameAr}</div>

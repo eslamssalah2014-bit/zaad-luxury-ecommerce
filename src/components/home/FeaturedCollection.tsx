@@ -84,9 +84,10 @@ export default function FeaturedCollection({ products }: FeaturedCollectionProps
                 {/* Image & Badges Container */}
                 <div className="relative h-72 bg-ivory-200/50 overflow-hidden">
                   <Image
-                    src={product.images[0]}
+                    src={product.images[0] || '/images/zaad-logo.png'}
                     alt={product.nameAr}
                     fill
+                    unoptimized
                     className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
 

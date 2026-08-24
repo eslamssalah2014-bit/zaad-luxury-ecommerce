@@ -268,7 +268,7 @@ export default function AdminInventoryPage() {
                       <td className="p-4">
                         <div className="flex items-center gap-3">
                           <div className="relative w-11 h-11 rounded-xl overflow-hidden bg-ivory-100 border border-ivory-200 shrink-0">
-                            <Image src={p.image || '/images/zaad-logo.png'} alt={p.nameAr} fill className="object-cover" />
+                            <Image src={p.image || '/images/zaad-logo.png'} alt={p.nameAr} fill unoptimized className="object-cover" />
                           </div>
                           <div>
                             <div className="font-bold text-sm text-zaad-900">{p.nameAr}</div>

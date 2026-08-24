@@ -181,6 +181,7 @@ export default function ProductDetailPage() {
                 src={product.images[selectedImageIndex] || product.images[0] || '/images/zaad-logo.png'}
                 alt={product.nameAr}
                 fill
+                unoptimized
                 className="object-cover"
                 priority
               />
@@ -238,7 +239,7 @@ export default function ProductDetailPage() {
                         : 'border-ivory-300 hover:border-gold-300 opacity-70 hover:opacity-100'
                     }`}
                   >
-                    <Image src={img} alt={`صورة ${idx + 1}`} fill className="object-cover" />
+                    <Image src={img} alt={`صورة ${idx + 1}`} fill unoptimized className="object-cover" />
                   </button>
                 ))}
               </div>

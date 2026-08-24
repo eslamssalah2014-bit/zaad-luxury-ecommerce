@@ -117,9 +117,10 @@ export default function CartDrawer() {
                     <div key={item.productId} className="pt-3 first:pt-0 flex gap-3.5 items-center">
                       <div className="relative w-16 h-16 rounded-lg overflow-hidden border border-ivory-300 shrink-0 bg-ivory-100">
                         <Image
-                          src={item.productImage}
+                          src={item.productImage || '/images/zaad-logo.png'}
                           alt={item.productNameAr}
                           fill
+                          unoptimized
                           className="object-cover"
                         />
                       </div>
