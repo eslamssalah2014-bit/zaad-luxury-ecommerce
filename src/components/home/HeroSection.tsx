@@ -38,15 +38,15 @@ export default function HeroSection() {
 
         {/* Cinematic Headline */}
         <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-ivory-50 leading-[1.2] mb-6 max-w-4xl mx-auto">
-          زاد ليست مجرد عسل..
+          زاد...
           <span className="block text-gold-400 font-serif font-normal mt-2">
-            بل إرثٌ من النقاء الملكي
+            حيث يلتقي النقاء بالفخامة.
           </span>
         </h1>
 
         {/* Subtitle Statement */}
         <p className="text-base sm:text-xl text-ivory-300 font-light max-w-2xl mx-auto mb-10 leading-relaxed">
-          نقاءٌ مطلق مستخلص يدوياً من أودية دوعن وجبال عسير العذراء، غير مبستر وبإنزيمات حية كاملة، موثق بشهادات فحص مخبري مستقلة لكل برطمان.
+          منتجات طبيعية مختارة بعناية، بمعايير جودة صارمة وتجربة استثنائية تليق بمن يقدّر الأفضل.
         </p>
 
         {/* Call to Actions */}
