@@ -3,7 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ShieldCheck, Award, Sparkles, Mountain, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { Sparkles, ArrowLeft, Heart, History, Award, CheckCircle2 } from 'lucide-react';
 
 export default function StoryPage() {
   return (
@@ -11,16 +11,16 @@ export default function StoryPage() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Editorial Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
+        <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in">
           <span className="text-xs font-bold text-gold-600 tracking-widest uppercase mb-2 block">
-            سجل الأصالة والتوثيق
+            إرث الأصالة المتوارث
           </span>
-          <h1 className="font-serif text-3xl sm:text-5xl font-bold text-zaad-900 leading-tight">
-            زاد.. قصة نَقَاءٍ لا يعرف المساومة
+          <h1 className="font-serif text-4xl sm:text-6xl font-bold text-zaad-900 leading-tight">
+            قصة زاد
           </h1>
           <div className="w-16 h-0.5 bg-gold-500 mx-auto my-6"></div>
-          <p className="text-sm sm:text-base text-charcoal-700/80 font-light leading-relaxed">
-            لم نبتكر مفهوم العسل، لكننا أعدنا صياغة مفهوم النقاء والتوثيق المخبري لنعيد لهذه الثروة قيمتها التاريخية والملكية.
+          <p className="text-base sm:text-lg text-charcoal-700/90 font-light leading-relaxed">
+            لم تبدأ زاد كشركة، ولا كمشروع تجاري.. بل بدأت كحكاية شغف وإخلاص امتدت لأكثر من أربعين عاماً.
           </p>
         </div>
 
@@ -28,120 +28,144 @@ export default function StoryPage() {
         <div className="relative h-[380px] sm:h-[480px] rounded-3xl overflow-hidden shadow-2xl border-2 border-gold-500/20 mb-16">
           <Image
             src="https://images.unsplash.com/photo-1471943311424-646960669fbc?auto=format&fit=crop&w=1600&q=85"
-            alt="أودية دوعن وجبال عسير"
+            alt="المناحل والجبال الطبيعية العذراء"
             fill
             className="object-cover"
             priority
           />
           <div className="absolute inset-0 bg-gradient-to-t from-zaad-950/80 via-zaad-950/20 to-transparent"></div>
           <div className="absolute bottom-8 right-8 left-8 text-ivory-100 max-w-2xl">
-            <span className="text-xs text-gold-400 font-mono tracking-wider block mb-1">الموطن الأصلي • دوعن وعسير</span>
-            <h2 className="font-serif text-xl sm:text-3xl font-bold">حيث تلتقي عراقة الأرض بحكمة النحل</h2>
+            <span className="text-xs text-gold-400 font-mono tracking-wider block mb-1">من ثمانينيات القرن الماضي وحتى اليوم</span>
+            <h2 className="font-serif text-xl sm:text-3xl font-bold">إرثٌ عائلي من النقاء الخالص</h2>
           </div>
         </div>
 
-        {/* Story Paragraphs & Pillars */}
-        <div className="space-y-16 text-charcoal-800 leading-relaxed font-light text-sm sm:text-base">
+        {/* Story Narrative Sections */}
+        <div className="space-y-16 text-charcoal-800 leading-relaxed font-light text-base sm:text-lg">
           
-          {/* Section 1 */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center bg-white p-8 sm:p-10 rounded-3xl border border-ivory-300 shadow-sm">
-            <div className="md:col-span-7 space-y-4">
-              <span className="text-xs font-bold text-gold-600">الفصل الأول: البدايات والفلسفة</span>
-              <h3 className="font-serif text-2xl font-bold text-zaad-900">
-                لماذا تأسست دار زاد؟
+          {/* Section 1: The Beginning */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center bg-white p-8 sm:p-12 rounded-3xl border border-ivory-300 shadow-sm">
+            <div className="md:col-span-7 space-y-5">
+              <div className="inline-flex items-center gap-2 text-xs font-bold text-gold-600 bg-gold-50 px-3 py-1 rounded-full border border-gold-200">
+                <History className="w-3.5 h-3.5" />
+                <span>البدايات الأولى في ثمانينيات القرن الماضي</span>
+              </div>
+              <h3 className="font-serif text-2xl sm:text-3xl font-bold text-zaad-900 leading-snug">
+                هواية أحبها الجد وأخلص لها
               </h3>
-              <p>
-                تأسست دار زاد استجابة لواقع السوق المعاصر الذي طغت عليه المنتجات التجارية المعالجة حرارياً، والأعسال المخلوطة التي فقدت هويتها وقيمتها الشفائية. رأينا أن المستهلك الباحث عن النقاء الحقيقي يستحق داراً تلتزم بالشفافية المطلقة وتضع بين يديه التحليل العلمي الدقيق لكل قطرة.
+              <p className="text-charcoal-700 leading-relaxed">
+                بدأت الحكاية في ثمانينيات القرن الماضي، حين كان جدي يمارس تربية النحل كهواية أحبها وأخلص لها. كان يقضي ساعات طويلة بين المناحل، يتابع النحل بعناية ويحرص على أن يبقى العسل كما خلقته الطبيعة؛ نقيًا، خالصًا، دون أي إضافات أو تدخلات.
               </p>
-              <p>
-                زاد ليست مجرد علامة تجارية؛ إنها ميثاق شرف يربط بين جهد النحال في وعورة الجبال، وثقة المقتني الباحث عن أرفع مراتب الجودة.
+              <p className="text-charcoal-700 leading-relaxed">
+                لم يكن يبيع العسل في ذلك الوقت، بل كان يقدمه للأقارب والأصدقاء والمعارف. ومع مرور السنوات، أصبح الجميع ينتظر موسم العسل بشغف، لما عرفوه فيه من نقاء وجودة وطعم مختلف يصعب العثور عليه في الأسواق.
               </p>
             </div>
             <div className="md:col-span-5">
-              <div className="relative h-64 rounded-2xl overflow-hidden border border-ivory-300">
-                <Image
-                  src="https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=800&q=80"
-                  alt="عسل زاد"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Section 2 */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center bg-zaad-950 text-ivory-100 p-8 sm:p-10 rounded-3xl border border-gold-500/30 shadow-2xl">
-            <div className="md:col-span-5 order-2 md:order-1">
-              <div className="relative h-64 rounded-2xl overflow-hidden border border-gold-500/30">
+              <div className="relative h-72 rounded-2xl overflow-hidden border border-ivory-300 shadow-md">
                 <Image
                   src="https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?auto=format&fit=crop&w=800&q=80"
-                  alt="حرفة النحالة"
+                  alt="حرفة رعاية المناحل"
                   fill
                   className="object-cover"
                 />
               </div>
             </div>
-            <div className="md:col-span-7 space-y-4 order-1 md:order-2">
-              <span className="text-xs font-bold text-gold-400">الفصل الثاني: بروتوكول الجني الملكي</span>
-              <h3 className="font-serif text-2xl font-bold text-ivory-50">
-                الحرفة اليدوية بلا أي تسخين صناعي
-              </h3>
-              <p className="text-ivory-300 font-light text-xs sm:text-sm">
-                نعتمد بروتوكولاً صارماً يمنع تعريض العسل لأي درجة حرارة تفوق حرارة الخلية الطبيعية (35°م). يتم جني الأقراص الناضجة فقط التي ختمها النحل بالشمع الطبيعي، مما يضمن تدني نسبة الرطوبة واكتمال التركيبة الحيوية للإنزيمات.
-              </p>
-              <div className="grid grid-cols-2 gap-3 pt-2 text-xs">
-                <div className="bg-zaad-900 p-3 rounded-lg border border-zaad-800 text-gold-300 font-semibold flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-gold-400 shrink-0" />
-                  <span>فلترة طبيعية بالجاذبية</span>
-                </div>
-                <div className="bg-zaad-900 p-3 rounded-lg border border-zaad-800 text-gold-300 font-semibold flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-gold-400 shrink-0" />
-                  <span>تعبئة في غرف معقمة</span>
-                </div>
+          </div>
+
+          {/* Section 2: Growing with Memories */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center bg-zaad-950 text-ivory-100 p-8 sm:p-12 rounded-3xl border border-gold-500/30 shadow-2xl">
+            <div className="md:col-span-5 order-2 md:order-1">
+              <div className="relative h-72 rounded-2xl overflow-hidden border border-gold-500/30 shadow-lg">
+                <Image
+                  src="https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=800&q=80"
+                  alt="عسل زاد الصافي"
+                  fill
+                  className="object-cover"
+                />
               </div>
+            </div>
+            <div className="md:col-span-7 space-y-5 order-1 md:order-2">
+              <div className="inline-flex items-center gap-2 text-xs font-bold text-gold-400 bg-gold-950/80 px-3 py-1 rounded-full border border-gold-500/30">
+                <Heart className="w-3.5 h-3.5 text-gold-400" />
+                <span>ذكريات الطفولة والمائدة العائلية</span>
+              </div>
+              <h3 className="font-serif text-2xl sm:text-3xl font-bold text-ivory-50 leading-snug">
+                عسلٌ كبرنا معه وعرفنا قيمته
+              </h3>
+              <p className="text-ivory-300 font-light text-sm sm:text-base leading-relaxed">
+                ومع تزايد الطلب من المحيطين به، كبر المنحل عامًا بعد عام، ليس بدافع التجارة، بل بدافع الحفاظ على جودة المنتج الذي أحبّه الناس ووثقوا به.
+              </p>
+              <p className="text-ivory-300 font-light text-sm sm:text-base leading-relaxed">
+                كبرت أنا أيضًا على هذا العسل. كان حاضرًا على مائدتنا، وجزءًا من ذكرياتنا اليومية. عرفت قيمته قبل أن أعرف معنى العلامات التجارية، وشهدت بنفسي الفرق الذي يصنعه المنتج الطبيعي الصادق الذي يصل من النحلة إلى الإنسان دون تغيير أو إضافات.
+              </p>
             </div>
           </div>
 
-          {/* Section 3 */}
-          <div className="bg-white p-8 sm:p-10 rounded-3xl border border-ivory-300 shadow-sm space-y-6">
-            <div className="text-center max-w-2xl mx-auto space-y-2">
-              <span className="text-xs font-bold text-gold-600">الفصل الثالث: الثقة الموثقة</span>
-              <h3 className="font-serif text-2xl font-bold text-zaad-900">
-                التحليل الكروماتوغرافي المستقل
+          {/* Section 3: Birth of ZAAD & The Heritage */}
+          <div className="bg-white p-8 sm:p-12 rounded-3xl border border-ivory-300 shadow-sm space-y-8">
+            <div className="max-w-3xl mx-auto space-y-6 text-center">
+              <div className="inline-flex items-center gap-2 text-xs font-bold text-gold-600 bg-gold-50 px-3.5 py-1 rounded-full border border-gold-200">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>من السؤال الصادق إلى ولادة زاد</span>
+              </div>
+              
+              <h3 className="font-serif text-2xl sm:text-4xl font-bold text-zaad-900 leading-tight">
+                استمرار النهج.. بعد رحيل الجد
               </h3>
-              <p className="text-xs sm:text-sm text-charcoal-700/80">
-                لا نكتفي بوعود الجودة الشفهية؛ بل نرسل عينات من كل محصول إلى مختبرات ألمانية وسويسرية معتمدة لفحص طيف حبوب اللقاح والإنزيمات.
-              </p>
-            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 text-center">
-              <div className="bg-ivory-50 p-4 rounded-xl border border-ivory-300">
-                <div className="font-mono text-2xl font-bold text-zaad-900">0%</div>
-                <div className="text-xs font-bold text-zaad-800 mt-1">تغذية سكرية</div>
-                <p className="text-[10px] text-charcoal-700/70 mt-0.5">موثق بنسبة السكروز الحر</p>
+              <div className="bg-ivory-50 p-6 sm:p-8 rounded-2xl border-r-4 border-gold-500 text-right space-y-4 shadow-inner">
+                <p className="text-base sm:text-lg text-zaad-900 font-serif italic leading-relaxed">
+                  وبعد رحيل جدي، بقي السؤال حاضرًا في ذهني:
+                </p>
+                <p className="text-lg sm:text-xl font-bold text-gold-700 font-serif leading-relaxed">
+                  &ldquo;لماذا تبقى هذه التجربة محصورة في دائرة صغيرة من الأقارب والمعارف، بينما يستحق المزيد من الناس أن يتذوقوا هذا النقاء؟&rdquo;
+                </p>
               </div>
 
-              <div className="bg-ivory-50 p-4 rounded-xl border border-ivory-300">
-                <div className="font-mono text-2xl font-bold text-zaad-900">&lt; 14.5%</div>
-                <div className="text-xs font-bold text-zaad-800 mt-1">نسبة الرطوبة</div>
-                <p className="text-[10px] text-charcoal-700/70 mt-0.5">قوام كثيف طبيعي معتق</p>
+              <div className="space-y-4 text-charcoal-700 text-right leading-relaxed pt-2">
+                <p className="text-lg font-bold text-zaad-900">
+                  ومن هنا وُلدت زاد.
+                </p>
+                <p>
+                  ولم يكن الهدف إنشاء علامة تجارية جديدة، بل الحفاظ على إرث عائلي امتد لعقود، والاستمرار على النهج نفسه الذي بدأ به جدي منذ أكثر من أربعين عامًا: عسل طبيعي خالص، يُنتج بعناية، ويصل إليك كما خرج من الخلية.
+                </p>
+                <p className="pt-2 text-base text-zaad-900 font-medium">
+                  في زاد، نؤمن أن أفضل ما يمكن أن نقدمه ليس وصفًا تسويقيًا، بل وعدًا بسيطًا وصادقًا:
+                </p>
               </div>
 
-              <div className="bg-ivory-50 p-4 rounded-xl border border-ivory-300">
-                <div className="font-mono text-2xl font-bold text-zaad-900">100%</div>
-                <div className="text-xs font-bold text-zaad-800 mt-1">إنزيمات حية نشطة</div>
-                <p className="text-[10px] text-charcoal-700/70 mt-0.5">بدون أي معالجة حرارية</p>
+              {/* The Simple & Honest Promise Box */}
+              <div className="bg-gradient-to-r from-zaad-900 via-zaad-950 to-zaad-900 text-ivory-50 p-8 sm:p-10 rounded-3xl border-2 border-gold-500/50 shadow-2xl text-center space-y-4">
+                <span className="text-xs font-mono text-gold-400 uppercase tracking-widest block">
+                  وعد دار زاد الصادق
+                </span>
+                <p className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-gold-300 leading-snug">
+                  &ldquo;العسل يأتي من النحلة إليك... كما أرادته الطبيعة.&rdquo;
+                </p>
               </div>
-            </div>
 
-            <div className="text-center pt-4">
-              <Link
-                href="/shop"
-                className="inline-flex items-center gap-2 bg-zaad-800 hover:bg-zaad-700 text-white text-xs font-bold px-8 py-3.5 rounded-full shadow-md hover:shadow-gold-glow transition-all gold-shimmer-btn"
-              >
-                <span>استكشاف المحصول الملكي المتاح الآن</span>
-                <ArrowLeft className="w-4 h-4 text-gold-300" />
-              </Link>
+              {/* Highlight Final Signature Quote */}
+              <div className="pt-6 pb-2">
+                <div className="inline-block p-1 rounded-2xl bg-gradient-to-r from-gold-500/20 via-gold-500/40 to-gold-500/20">
+                  <div className="bg-white px-8 py-5 rounded-xl border border-gold-400/40 shadow-sm">
+                    <span className="text-xs text-charcoal-700/70 block mb-1">الخاتمة المميزة</span>
+                    <h4 className="font-serif text-xl sm:text-2xl font-bold text-zaad-900">
+                      زاد... حيث يلتقي النقاء بالفخامة.
+                    </h4>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-6">
+                <Link
+                  href="/shop"
+                  className="inline-flex items-center gap-2 bg-gold-500 hover:bg-gold-400 text-zaad-950 text-sm font-bold px-10 py-4 rounded-full shadow-lg hover:shadow-gold-glow-lg transition-all gold-shimmer-btn"
+                >
+                  <span>استكشاف المحصول الملكي المتاح الآن</span>
+                  <ArrowLeft className="w-4 h-4 text-zaad-950" />
+                </Link>
+              </div>
+
             </div>
           </div>
 

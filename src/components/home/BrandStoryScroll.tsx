@@ -3,29 +3,29 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, CheckCircle, Feather, Mountain, FlaskConical } from 'lucide-react';
+import { ArrowLeft, Heart, History, Sparkles } from 'lucide-react';
 
 export default function BrandStoryScroll() {
   const steps = [
     {
-      icon: Mountain,
+      icon: History,
       number: '٠١',
-      titleAr: 'عزلة الأودية البكر والتربة المعدنية',
-      descAr: 'تنتشر خلايانا في أودية دوعن وجبال عسير على ارتفاعات تتجاوز 2500 متر، في بيئات نقية خالية تماماً من الملوثات الصناعية والمبيدات، حيث تتغذى النحلات حصرياً على أزهار السدر والسمر المعمرة.',
+      titleAr: 'البداية في ثمانينيات القرن الماضي',
+      descAr: 'لم تبدأ زاد كشركة ولا كمشروع تجاري، بل بدأت كهواية أحبها جدي وأخلص لها. كان يقضي ساعات طويلة بين المناحل، يحرص على أن يبقى العسل نقيًا خالصًا كما خلقته الطبيعة ويقدمه للأقارب والمعارف.',
       image: 'https://images.unsplash.com/photo-1471943311424-646960669fbc?auto=format&fit=crop&w=800&q=80',
     },
     {
-      icon: Feather,
+      icon: Heart,
       number: '٠٢',
-      titleAr: 'حرفة الجني اليدوي والفلترة الباردة',
-      descAr: 'نتبع تقاليد متوارثة منذ مئات السنين؛ لا نستخدم أي طرد مركزي ميكانيكي عنيف أو معالجات حرارية قد تفقد العسل إنزيماته الحية. يتم الفلترة الدقيقة بالجاذبية الطبيعية فقط لحفظ حبوب اللقاح والبروبوليس.',
+      titleAr: 'كبر المنحل.. وذكريات الطفولة',
+      descAr: 'ومع تزايد الطلب، كبر المنحل حفاظًا على الجودة التي وثق بها الناس. كبرت أنا أيضًا على هذا العسل حاضرًا على مائدتنا اليومية، وشهدت الفرق الذي يصنعه المنتج الصادق الواصل من الخلية دون إضافات.',
       image: 'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?auto=format&fit=crop&w=800&q=80',
     },
     {
-      icon: FlaskConical,
+      icon: Sparkles,
       number: '٠٣',
-      titleAr: 'الفحص المخبري المستقل والتوثيق الرقمي',
-      descAr: 'تخضع كل تشغيلة محصودة لتحليل كروماتوغرافي وطيفي مستقل في مختبرات أوروبية معتمدة، لقياس نسب الرطوبة، والإنزيمات، والنقاء الزهري، وتوثيقها في شهادة رقمية يمكن لكل عميل فحصها مباشرة.',
+      titleAr: 'ولادة زاد واستمرار الإرث',
+      descAr: 'لم يكن الهدف إنشاء علامة تجارية، بل الحفاظ على إرث عائلي ممتد لأكثر من أربعين عاماً على النهج ذاته، ووعدنا البسيط الصادق: "العسل يأتي من النحلة إليك... كما أرادته الطبيعة."',
       image: 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=800&q=80',
     }
   ];
@@ -37,14 +37,14 @@ export default function BrandStoryScroll() {
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-20">
           <span className="text-xs font-bold text-gold-600 tracking-widest uppercase mb-2 block">
-            فلسفة دار زاد • إرث النقاء
+            إرث الأصالة المتوارث
           </span>
           <h2 className="font-serif text-3xl sm:text-5xl font-bold text-zaad-900 leading-tight">
-            حكاية تبدأ حيث تنتهي حدود المدن
+            قصة زاد
           </h2>
           <div className="w-16 h-0.5 bg-gold-500 mx-auto my-6"></div>
           <p className="text-sm sm:text-base text-charcoal-800/80 leading-relaxed font-light">
-            في عالم تسوده السرعة والإنتاج التجاري الضخم، تختار زاد التمهل والانحياز للحرفة والتوثيق، لنقدم لكم قطرة لا تشبه سواها.
+            لم تبدأ زاد كشركة، ولا كمشروع تجاري.. بل بدأت كحكاية شغف وإخلاص امتدت لأكثر من أربعين عاماً.
           </p>
         </div>
 
@@ -70,7 +70,7 @@ export default function BrandStoryScroll() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-zaad-950/60 via-transparent to-transparent"></div>
                     <div className="absolute bottom-6 right-6 bg-zaad-900/90 backdrop-blur-md px-4 py-2 rounded-lg border border-gold-400/40 text-gold-300 font-mono text-sm font-bold">
-                      {step.number} / رحلة النقاء
+                      {step.number} / قصة زاد
                     </div>
                   </div>
                 </div>
@@ -91,7 +91,7 @@ export default function BrandStoryScroll() {
                       href="/story"
                       className="inline-flex items-center gap-2 text-xs font-bold text-zaad-800 hover:text-gold-600 transition-colors group"
                     >
-                      <span>قراءة الوثيقة الكاملة لرحلة المحصول</span>
+                      <span>قراءة قصة زاد الكاملة والإرث المتوارث</span>
                       <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
                     </Link>
                   </div>
@@ -99,6 +99,18 @@ export default function BrandStoryScroll() {
               </div>
             );
           })}
+        </div>
+
+        {/* Highlight Final Quote Box */}
+        <div className="mt-20 text-center">
+          <div className="inline-block p-1 rounded-3xl bg-gradient-to-r from-gold-500/20 via-gold-500/40 to-gold-500/20 shadow-xl">
+            <div className="bg-white px-8 sm:px-14 py-8 rounded-2xl border border-gold-400/50 space-y-2">
+              <span className="text-xs text-charcoal-700/70 block uppercase tracking-wider">الخاتمة المميزة</span>
+              <h3 className="font-serif text-2xl sm:text-3xl font-bold text-zaad-900">
+                زاد... حيث يلتقي النقاء بالفخامة.
+              </h3>
+            </div>
+          </div>
         </div>
 
       </div>
