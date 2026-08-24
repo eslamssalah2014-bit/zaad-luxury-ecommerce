@@ -12,7 +12,7 @@ export default function BrandStoryScroll() {
       number: '٠١',
       titleAr: 'البداية في ثمانينيات القرن الماضي',
       descAr: 'لم تبدأ زاد كشركة ولا كمشروع تجاري، بل بدأت كهواية أحبها جدي وأخلص لها. كان يقضي ساعات طويلة بين المناحل، يحرص على أن يبقى العسل نقيًا خالصًا كما خلقته الطبيعة ويقدمه للأقارب والمعارف.',
-      image: 'https://images.unsplash.com/photo-1471943311424-646960669fbc?auto=format&fit=crop&w=800&q=80',
+      image: '/images/zaad-heritage-beekeepers.jpg',
     },
     {
       icon: Heart,

@@ -61,12 +61,12 @@ export default function StoryPage() {
               </p>
             </div>
             <div className="md:col-span-5">
-              <div className="relative h-72 rounded-2xl overflow-hidden border border-ivory-300 shadow-md">
+              <div className="relative h-80 sm:h-96 rounded-2xl overflow-hidden border border-ivory-300 shadow-md">
                 <Image
-                  src="https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?auto=format&fit=crop&w=800&q=80"
-                  alt="حرفة رعاية المناحل"
+                  src="/images/zaad-heritage-beekeepers.jpg"
+                  alt="زاد منذ أكثر من 10 أعوام - تراث تربية النحل"
                   fill
-                  className="object-cover"
+                  className="object-cover object-top"
                 />
               </div>
             </div>
