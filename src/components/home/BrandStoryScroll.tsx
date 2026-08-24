@@ -19,7 +19,7 @@ export default function BrandStoryScroll() {
       number: '٠٢',
       titleAr: 'كبر المنحل.. وذكريات الطفولة',
       descAr: 'ومع تزايد الطلب، كبر المنحل حفاظًا على الجودة التي وثق بها الناس. كبرت أنا أيضًا على هذا العسل حاضرًا على مائدتنا اليومية، وشهدت الفرق الذي يصنعه المنتج الصادق الواصل من الخلية دون إضافات.',
-      image: 'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?auto=format&fit=crop&w=800&q=80',
+      image: '/images/zaad-childhood-memories.jpg',
     },
     {
       icon: Sparkles,

@@ -80,12 +80,12 @@ export default function StoryPage() {
           {/* Section 2: Growing with Memories */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center bg-zaad-950 text-ivory-100 p-8 sm:p-12 rounded-3xl border border-gold-500/30 shadow-2xl">
             <div className="md:col-span-5 order-2 md:order-1">
-              <div className="relative h-72 rounded-2xl overflow-hidden border border-gold-500/30 shadow-lg">
+              <div className="relative h-72 sm:h-80 rounded-2xl overflow-hidden border border-gold-500/30 shadow-lg">
                 <Image
-                  src="https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=800&q=80"
-                  alt="عسل زاد الصافي"
+                  src="/images/zaad-childhood-memories.jpg"
+                  alt="عسل نوارة زاد وذكريات الطفولة والمائدة العائلية"
                   fill
-                  className="object-cover"
+                  className="object-cover object-center"
                 />
               </div>
             </div>
