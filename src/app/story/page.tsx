@@ -60,7 +60,7 @@ export default function StoryPage() {
                 لم يكن يبيع العسل في ذلك الوقت، بل كان يقدمه للأقارب والأصدقاء والمعارف. ومع مرور السنوات، أصبح الجميع ينتظر موسم العسل بشغف، لما عرفوه فيه من نقاء وجودة وطعم مختلف يصعب العثور عليه في الأسواق.
               </p>
             </div>
-            <div className="md:col-span-5 flex justify-center">
+            <div className="md:col-span-5 flex flex-col items-center">
               <div className="relative w-full aspect-[3/4] max-h-[540px] rounded-2xl overflow-hidden border border-ivory-300 shadow-md bg-ivory-50 flex items-center justify-center">
                 <Image
                   src="/images/zaad-heritage-beekeepers.jpg"
@@ -71,6 +71,9 @@ export default function StoryPage() {
                   priority
                 />
               </div>
+              <p className="text-xs text-charcoal-700/70 text-center mt-3 font-serif tracking-wide">
+                صورة حقيقية لجدي رحمه الله عليه
+              </p>
             </div>
           </div>
 

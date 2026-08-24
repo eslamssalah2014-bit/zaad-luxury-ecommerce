@@ -33,7 +33,7 @@ export default function BrandStoryScroll() {
   return (
     <section className="py-24 bg-ivory-50 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-20">
           <span className="text-xs font-bold text-gold-600 tracking-widest uppercase mb-2 block">
