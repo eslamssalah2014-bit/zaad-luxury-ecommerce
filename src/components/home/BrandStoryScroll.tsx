@@ -1,11 +1,12 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { Heart, ShieldCheck, History, Crown, ArrowLeft, Sparkles, Quote } from 'lucide-react';
 
 export default function BrandStoryScroll() {
-  const valueCards = [
+  const storySections = [
     {
       number: '01',
       tag: 'الشغف والإتقان',
@@ -14,7 +15,10 @@ export default function BrandStoryScroll() {
       content:
         'لم تولد زاد من خطة تجارية أو دراسة سوق، بل بدأت من شغف حقيقي بتربية النحل والحفاظ على جودة العسل كما خلقته الطبيعة. رحلة امتدت عبر الأجيال، حملت معها قيم الإتقان والأمانة والحرص على تقديم الأفضل.',
       highlight: 'بعض العلامات التجارية تُبنى بالأفكار... أما زاد فبُنيت بالشغف.',
-      isDark: true,
+      image: '/images/zaad-heritage-beekeepers.jpg',
+      imageAlt: 'تربية النحل والمناحل التراثية - زاد',
+      imageContain: true,
+      imageOnRight: true,
     },
     {
       number: '02',
@@ -24,7 +28,10 @@ export default function BrandStoryScroll() {
       content:
         'نؤمن أن الطبيعة قدّمت لنا الكمال بالفعل، ولذلك نحافظ على العسل في صورته الأصيلة دون إضافات أو مكونات تغير من هويته. ليصل إليك بطعمه الطبيعي وقيمته كما خرج من الخلية.',
       highlight: 'العسل يأتي من النحلة إليك... كما أرادته الطبيعة.',
-      isDark: false,
+      image: 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=1200&q=85',
+      imageAlt: 'أقراص شمع العسل النقي الخام',
+      imageContain: false,
+      imageOnRight: false,
     },
     {
       number: '03',
@@ -34,7 +41,10 @@ export default function BrandStoryScroll() {
       content:
         'منذ ثمانينيات القرن الماضي، تراكمت الخبرة جيلاً بعد جيل، ليس في إنتاج العسل فقط، بل في فهم مواسمه وخصائصه واختيار أفضل المحاصيل. إرث من المعرفة والثقة استمر لأكثر من أربعين عاماً.',
       highlight: 'خبرة لا تُكتسب في سنوات قليلة... بل تُبنى عبر الأجيال.',
-      isDark: true,
+      image: '/images/zaad-childhood-memories.jpg',
+      imageAlt: 'إرث وخبرة تربية النحل عبر العقود',
+      imageContain: false,
+      imageOnRight: true,
     },
     {
       number: '04',
@@ -44,21 +54,24 @@ export default function BrandStoryScroll() {
       content:
         'ليست كل المحاصيل تحمل اسم زاد. نختار بعناية ما ينسجم مع معاييرنا في النقاء والجودة والطعم والقيمة الغذائية، لنقدم مجموعة منتقاة تليق بمن يبحث عن الأفضل.',
       highlight: 'الفخامة الحقيقية تبدأ من حسن الاختيار.',
-      isDark: false,
+      image: '/images/zaad-story-hero-banner.jpg',
+      imageAlt: 'عسل زاد الملكي النادر',
+      imageContain: false,
+      imageOnRight: false,
     },
   ];
 
   return (
-    <section className="py-24 relative overflow-hidden bg-gradient-to-b from-ivory-100/70 via-ivory-50 to-ivory-100/80">
+    <section className="py-28 relative overflow-hidden bg-gradient-to-b from-ivory-100/70 via-ivory-50 to-ivory-100/80">
       
-      {/* Luxury Background Glow & Texture */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-gradient-to-b from-gold-400/10 to-transparent rounded-full blur-3xl pointer-events-none"></div>
+      {/* Ambient Luxury Lighting & Subtle Texture */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-gradient-to-b from-gold-400/10 to-transparent rounded-full blur-3xl pointer-events-none"></div>
       <div className="absolute inset-0 opacity-[0.035] pointer-events-none bg-[radial-gradient(#C59B27_1px,transparent_1px)] [background-size:24px_24px]"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in">
+        <div className="text-center max-w-3xl mx-auto mb-20 animate-fade-in">
           <div className="inline-flex items-center gap-2 bg-zaad-900/90 border border-gold-500/40 px-4 py-1.5 rounded-full mb-5 shadow-gold-glow">
             <Sparkles className="w-3.5 h-3.5 text-gold-400" />
             <span className="text-xs font-bold text-gold-300 tracking-wider">
@@ -77,102 +90,92 @@ export default function BrandStoryScroll() {
           </p>
 
           {/* Section Intro Statement */}
-          <div className="bg-white/80 backdrop-blur-sm border border-gold-400/30 rounded-2xl py-4 px-6 sm:px-10 max-w-2xl mx-auto shadow-sm">
+          <div className="bg-white/90 backdrop-blur-md border border-gold-400/30 rounded-2xl py-4 px-6 sm:px-10 max-w-2xl mx-auto shadow-sm">
             <p className="font-serif text-base sm:text-lg text-zaad-900 font-semibold leading-relaxed">
               &ldquo;ما يميز زاد ليس ما نبيعه فقط... بل الطريقة التي نختار بها ما نقدمه.&rdquo;
             </p>
           </div>
         </div>
 
-        {/* 4 Alternating Premium Value Cards Grid (2x2) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10 mb-20">
-          {valueCards.map((card, idx) => {
-            const Icon = card.icon;
-            const isDark = card.isDark;
+        {/* 4 Full-Width Storytelling Sections */}
+        <div className="space-y-16 lg:space-y-20 mb-24">
+          {storySections.map((section, idx) => {
+            const Icon = section.icon;
+            const isImageOnRight = section.imageOnRight;
 
             return (
               <div
                 key={idx}
-                className={`relative rounded-3xl p-8 sm:p-10 border transition-all duration-500 ease-out hover:-translate-y-2 flex flex-col justify-between overflow-hidden group ${
-                  isDark
-                    ? 'bg-gradient-to-br from-zaad-950 via-zaad-900 to-zaad-950 text-ivory-100 border-gold-500/30 shadow-2xl hover:border-gold-400 hover:shadow-gold-glow-lg'
-                    : 'bg-gradient-to-br from-white via-ivory-50 to-white text-charcoal-900 border-ivory-300 shadow-luxury hover:border-gold-400/60 hover:shadow-gold-glow'
-                }`}
+                className="bg-gradient-to-br from-zaad-950 via-zaad-900 to-zaad-950 text-ivory-100 rounded-3xl p-8 sm:p-12 lg:p-14 border-2 border-gold-500/30 shadow-2xl hover:border-gold-400/60 hover:shadow-gold-glow-lg transition-all duration-500 relative overflow-hidden group"
               >
-                {/* Large Background Decorative Number */}
-                <span
-                  className={`font-mono text-7xl sm:text-8xl font-black absolute top-3 left-6 select-none pointer-events-none transition-opacity duration-300 ${
-                    isDark
-                      ? 'text-gold-400/10 group-hover:text-gold-400/15'
-                      : 'text-zaad-950/5 group-hover:text-zaad-950/10'
-                  }`}
+                {/* Subtle Ambient Radial Shimmer */}
+                <div className="absolute top-0 right-0 w-96 h-96 bg-gold-500/5 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div
+                  className={`flex flex-col ${
+                    isImageOnRight ? 'lg:flex-row' : 'lg:flex-row-reverse'
+                  } items-center gap-10 lg:gap-14 relative z-10`}
                 >
-                  {card.number}
-                </span>
-
-                <div className="relative z-10">
-                  {/* Top Bar with Circular Icon Badge & Tag */}
-                  <div className="flex items-center justify-between mb-8 pb-5 border-b border-ivory-200/20">
-                    <div className="flex items-center gap-3.5">
-                      {/* Circular Premium Badge */}
-                      <div
-                        className={`w-14 h-14 rounded-full flex items-center justify-center shadow-lg shrink-0 transition-transform duration-500 group-hover:scale-110 ${
-                          isDark
-                            ? 'bg-ivory-100 text-zaad-900 border border-gold-400/50 shadow-gold-glow/20'
-                            : 'bg-gradient-to-br from-gold-400 to-gold-600 text-zaad-950 border border-gold-300 shadow-md'
-                        }`}
-                      >
-                        <Icon className="w-6 h-6" />
-                      </div>
-
-                      <span
-                        className={`text-xs font-bold px-3.5 py-1 rounded-full border ${
-                          isDark
-                            ? 'text-gold-300 bg-zaad-800/80 border-gold-500/30'
-                            : 'text-gold-800 bg-gold-50 border-gold-200'
-                        }`}
-                      >
-                        {card.tag}
-                      </span>
+                  {/* Large Story Image (40-50% width) */}
+                  <div className="w-full lg:w-5/12 shrink-0 flex justify-center">
+                    <div className="relative w-full h-[360px] sm:h-[440px] lg:h-[460px] rounded-2xl overflow-hidden shadow-2xl border border-gold-500/30 bg-zaad-950/60 flex items-center justify-center group/img">
+                      <Image
+                        src={section.image}
+                        alt={section.imageAlt}
+                        fill
+                        className={`${
+                          section.imageContain
+                            ? 'object-contain p-2'
+                            : 'object-cover group-hover/img:scale-105'
+                        } transition-transform duration-700 ease-out`}
+                        sizes="(max-width: 1024px) 100vw, 45vw"
+                      />
+                      {!section.imageContain && (
+                        <div className="absolute inset-0 bg-gradient-to-t from-zaad-950/60 via-transparent to-transparent pointer-events-none"></div>
+                      )}
                     </div>
                   </div>
 
-                  {/* Card Title */}
-                  <h3
-                    className={`font-serif text-2xl sm:text-3xl font-bold mb-4 leading-snug ${
-                      isDark ? 'text-ivory-50' : 'text-zaad-900'
-                    }`}
-                  >
-                    {card.title}
-                  </h3>
+                  {/* Story Content (50-60% width) */}
+                  <div className="w-full lg:w-7/12 space-y-6 text-right">
+                    
+                    {/* Top Row: Circular Icon Badge, Tag, and Big Chapter Number */}
+                    <div className="flex items-center justify-between border-b border-zaad-800/80 pb-5">
+                      <div className="flex items-center gap-3.5">
+                        <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-ivory-100 text-zaad-900 border border-gold-400/60 flex items-center justify-center shadow-gold-glow/20 shrink-0 group-hover:scale-105 transition-transform duration-300">
+                          <Icon className="w-6 h-6 text-zaad-900" />
+                        </div>
+                        <span className="text-xs sm:text-sm font-bold text-gold-300 bg-zaad-800/90 px-4 py-1.5 rounded-full border border-gold-500/30 shadow-sm">
+                          {section.tag}
+                        </span>
+                      </div>
 
-                  {/* Card Content */}
-                  <p
-                    className={`text-sm sm:text-base leading-relaxed font-light mb-8 ${
-                      isDark ? 'text-ivory-300/90' : 'text-charcoal-700/90'
-                    }`}
-                  >
-                    {card.content}
-                  </p>
-                </div>
+                      {/* Large Luxury Number */}
+                      <span className="font-mono text-4xl sm:text-5xl font-black text-gold-400/40 tracking-wider">
+                        {section.number}
+                      </span>
+                    </div>
 
-                {/* Luxury Quote Ribbon / Signature Statement */}
-                <div
-                  className={`relative z-10 rounded-2xl p-4 sm:p-5 border-r-4 shadow-sm transition-all duration-300 ${
-                    isDark
-                      ? 'bg-zaad-900/90 border-gold-400 text-gold-200'
-                      : 'bg-gold-50/80 border-gold-600 text-zaad-950'
-                  }`}
-                >
-                  <div className="flex items-start gap-2.5">
-                    <Quote
-                      className={`w-4 h-4 shrink-0 mt-0.5 ${
-                        isDark ? 'text-gold-400' : 'text-gold-600'
-                      }`}
-                    />
-                    <p className="font-serif text-sm sm:text-base font-semibold leading-relaxed">
-                      &ldquo;{card.highlight}&rdquo;
+                    {/* Luxury Title */}
+                    <h3 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-ivory-50 leading-snug">
+                      {section.title}
+                    </h3>
+
+                    {/* Description Text */}
+                    <p className="text-base sm:text-lg text-ivory-300/90 leading-relaxed font-light">
+                      {section.content}
                     </p>
+
+                    {/* Signature Quote Ribbon */}
+                    <div className="bg-zaad-900/90 border-r-4 border-gold-400 p-5 rounded-2xl shadow-inner mt-4">
+                      <div className="flex items-start gap-3">
+                        <Quote className="w-5 h-5 text-gold-400 shrink-0 mt-1" />
+                        <p className="font-serif text-base sm:text-lg font-medium text-gold-200 leading-relaxed">
+                          &ldquo;{section.highlight}&rdquo;
+                        </p>
+                      </div>
+                    </div>
+
                   </div>
                 </div>
               </div>
