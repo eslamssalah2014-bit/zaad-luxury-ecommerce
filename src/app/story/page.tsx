@@ -25,12 +25,12 @@ export default function StoryPage() {
         </div>
 
         {/* Hero Banner Image */}
-        <div className="relative h-[380px] sm:h-[480px] rounded-3xl overflow-hidden shadow-2xl border-2 border-gold-500/20 mb-16">
+        <div className="relative h-[380px] sm:h-[500px] rounded-3xl overflow-hidden shadow-2xl border-2 border-gold-500/20 mb-16">
           <Image
-            src="https://images.unsplash.com/photo-1471943311424-646960669fbc?auto=format&fit=crop&w=1600&q=85"
-            alt="المناحل والجبال الطبيعية العذراء"
+            src="/images/zaad-story-hero-banner.jpg"
+            alt="عسل نوارة زاد وإرث النحالة العائلي"
             fill
-            className="object-cover"
+            className="object-cover object-center"
             priority
           />
           <div className="absolute inset-0 bg-gradient-to-t from-zaad-950/80 via-zaad-950/20 to-transparent"></div>
