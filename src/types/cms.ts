@@ -255,6 +255,43 @@ export interface FooterConfig {
   vatOrCrNumberAr: string;
 }
 
+export interface ShopPromoBanner {
+  isEnabled: boolean;
+  badgeAr?: string;
+  titleAr: string;
+  descriptionAr: string;
+  buttonTextAr: string;
+  buttonLink: string;
+  imageUrl?: string;
+  backgroundColor?: string;
+  textColor?: string;
+}
+
+export interface ShopPageConfig {
+  heroBadgeAr: string;
+  mainTitleAr: string;
+  subtitleAr: string;
+  bannerImageUrl?: string;
+  searchPlaceholderAr: string;
+  allCategoriesLabelAr: string;
+  sortFeaturedLabelAr: string;
+  sortPriceHighLabelAr: string;
+  sortPriceLowLabelAr: string;
+  sortRatingLabelAr: string;
+  resultsCountTemplateAr: string;
+  resetFiltersLabelAr: string;
+  gridColumns: 2 | 3 | 4;
+  addToCartButtonTextAr: string;
+  quickViewButtonTextAr: string;
+  showLabBatchTag: boolean;
+  showOriginRegionTag: boolean;
+  showRatingStars: boolean;
+  emptyStateTitleAr: string;
+  emptyStateDescAr: string;
+  emptyStateButtonTextAr: string;
+  promoBanner: ShopPromoBanner;
+}
+
 export interface CmsSettingsDocument {
   version: number;
   updatedAt: string;
@@ -262,6 +299,7 @@ export interface CmsSettingsDocument {
   hero: HeroConfig;
   homepageSections: HomepageSection[];
   storyPage: StoryPageConfig;
+  shopPage: ShopPageConfig;
   announcementBar: AnnouncementBarConfig;
   navigation: NavigationMenuConfig;
   testimonials: TestimonialsSectionConfig;

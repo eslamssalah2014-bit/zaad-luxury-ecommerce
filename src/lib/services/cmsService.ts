@@ -164,7 +164,42 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
     ]
   },
 
-  // 4. Announcement Bar Configuration
+  // 4. Products / Shop Page Configuration
+  shopPage: {
+    heroBadgeAr: 'المجموعة الملكية المباشرة',
+    mainTitleAr: 'مقتنيات زاد من أندر خيرات الطبيعة',
+    subtitleAr: 'استكشف خيارات الأعسال الملكية المحصودة يدوياً والموثقة بشهادات فحص مخبرية دولية مستقلة.',
+    bannerImageUrl: '',
+    searchPlaceholderAr: 'بحث باسم الصنف أو رقم التشغيلة...',
+    allCategoriesLabelAr: 'كافة المنتجات الطبيعية',
+    sortFeaturedLabelAr: 'ترتيب: الإصدارات المميزة',
+    sortPriceHighLabelAr: 'السعر: من الأعلى للأقل',
+    sortPriceLowLabelAr: 'السعر: من الأقل للأعلى',
+    sortRatingLabelAr: 'الأعلى تقييماً',
+    resultsCountTemplateAr: 'النتائج المتاحة: {count} منتج طبيعي فاخر',
+    resetFiltersLabelAr: 'إعادة تعيين المرشحات',
+    gridColumns: 3,
+    addToCartButtonTextAr: 'اقتناء',
+    quickViewButtonTextAr: 'تفاصيل المحصول والفحص',
+    showLabBatchTag: true,
+    showOriginRegionTag: true,
+    showRatingStars: true,
+    emptyStateTitleAr: 'لم يتم العثور على مقتنيات مطابقة',
+    emptyStateDescAr: 'جرب تغيير معايير البحث أو اختيار فئة أخرى لاستعراض محاصيل زاد.',
+    emptyStateButtonTextAr: 'استعراض كافة المنتجات',
+    promoBanner: {
+      isEnabled: true,
+      badgeAr: 'ميثاق الجودة الملكية',
+      titleAr: 'الضمان الذهبي والشحن المبرد الفاخر',
+      descriptionAr: 'نضمن لك استرداداً كاملاً إذا لم تطابق نتائج أي فحص مخبري مستقل أعلى معايير النقاء الطبيعي.',
+      buttonTextAr: 'استشر الخبير الحسي',
+      buttonLink: '/#quiz',
+      backgroundColor: '#07160c',
+      textColor: '#fbf8f1'
+    }
+  },
+
+  // 5. Announcement Bar Configuration
   announcementBar: {
     isEnabled: true,
     messageTextAr: 'نقاء موثق مخبرياً بنسبة 100% مع كل برطمان | شحن ملكي مبرد وفاخر',
@@ -523,6 +558,14 @@ function mergeWithDefaults(incoming: Partial<CmsSettingsDocument>): CmsSettingsD
       chapters: incoming.storyPage?.chapters?.length
         ? incoming.storyPage.chapters
         : DEFAULT_CMS_SETTINGS.storyPage.chapters
+    },
+    shopPage: {
+      ...DEFAULT_CMS_SETTINGS.shopPage,
+      ...(incoming.shopPage || {}),
+      promoBanner: {
+        ...DEFAULT_CMS_SETTINGS.shopPage.promoBanner,
+        ...(incoming.shopPage?.promoBanner || {})
+      }
     },
     announcementBar: { ...DEFAULT_CMS_SETTINGS.announcementBar, ...(incoming.announcementBar || {}) },
     navigation: {

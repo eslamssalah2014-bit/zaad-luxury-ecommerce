@@ -33,7 +33,8 @@ import {
   Folder,
   Star,
   Quote,
-  Link2
+  Link2,
+  ShoppingBag
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import {
@@ -46,7 +47,9 @@ import {
   CmsTestimonialItem,
   FooterColumn,
   FooterLink,
-  FooterBadge
+  FooterBadge,
+  ShopPageConfig,
+  ShopPromoBanner
 } from '@/types/cms';
 import { DEFAULT_CMS_SETTINGS } from '@/lib/services/cmsService';
 import MediaLibraryModal from '@/components/admin/cms/MediaLibraryModal';
@@ -57,6 +60,7 @@ type CmsTab =
   | 'builder'
   | 'testimonials'
   | 'story'
+  | 'shop'
   | 'announcement'
   | 'navigation'
   | 'media'
@@ -69,6 +73,7 @@ const TABS: { id: CmsTab; labelAr: string; icon: any; descAr: string }[] = [
   { id: 'builder', labelAr: 'منشئ الأقسام (Page Builder)', icon: Layers, descAr: 'بناء وإعادة ترتيب أقسام الصفحة الرئيسية' },
   { id: 'testimonials', labelAr: 'آراء وشهادات النخبة (Testimonials)', icon: Star, descAr: 'إدارة تجارب وآراء العملاء وكبار المقتنين وأصداء الثقة' },
   { id: 'story', labelAr: 'القصة والتراث (Story)', icon: BookOpen, descAr: 'إدارة فصول ومحطات قصة دار زاد التراثية' },
+  { id: 'shop', labelAr: 'صفحة المنتجات (Products & Shop)', icon: ShoppingBag, descAr: 'إدارة نصوص، فلاتر، ترتيب، وتنسيق صفحة استعراض المنتجات' },
   { id: 'announcement', labelAr: 'شريط الإعلانات (Top Bar)', icon: Megaphone, descAr: 'إدارة شريط الإعلانات العلوي والعروض' },
   { id: 'navigation', labelAr: 'القائمة العلوية (Navigation)', icon: MenuIcon, descAr: 'إدارة روابط القائمة الرئيسية والشعار' },
   { id: 'media', labelAr: 'مكتبة الوسائط (Media Library)', icon: ImageIcon, descAr: 'رفع وإدارة صور المتجر وملفات الوسائط' },
@@ -977,6 +982,633 @@ export default function AdminCmsPage() {
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          TAB: PRODUCTS & SHOP PAGE MANAGER (إدارة صفحة المنتجات والمقتنيات)
+      ========================================================================= */}
+      {activeTab === 'shop' && (
+        <div className="space-y-8 animate-fade-in">
+          
+          {/* 1. Header & Page Intro Card */}
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-ivory-300 shadow-sm space-y-6">
+            <div className="border-b border-ivory-200 pb-4">
+              <h2 className="font-serif text-xl font-bold text-zaad-900">1. رأس صفحة المنتجات والعناوين الرئيسية (Page Header & Intro)</h2>
+              <p className="text-xs text-charcoal-700/80 mt-1">تخصيص الشارة العلوية، العنوان التحريري الرئيسي، والوصف التوضيحي لصفحة المتجر</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">شارة الهيرو العلوية (Hero Badge):</label>
+                <input
+                  type="text"
+                  value={settings.shopPage?.heroBadgeAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    shopPage: {
+                      ...settings.shopPage,
+                      heroBadgeAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="المجموعة الملكية المباشرة"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">العنوان الرئيسي لصفحة المنتجات (Main Title):</label>
+                <input
+                  type="text"
+                  value={settings.shopPage?.mainTitleAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    shopPage: {
+                      ...settings.shopPage,
+                      mainTitleAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 font-serif font-bold text-sm"
+                  placeholder="مقتنيات زاد من أندر خيرات الطبيعة"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block font-bold text-zaad-900 mb-1">الوصف التوضيحي (Subtitle / Description):</label>
+                <textarea
+                  rows={2}
+                  value={settings.shopPage?.subtitleAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    shopPage: {
+                      ...settings.shopPage,
+                      subtitleAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 leading-relaxed"
+                  placeholder="استكشف خيارات الأعسال الملكية المحصودة يدوياً..."
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block font-bold text-zaad-900 mb-1">صورة بانر خلفية اختيارية (Optional Banner Image):</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="text"
+                    value={settings.shopPage?.bannerImageUrl || ''}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      shopPage: {
+                        ...settings.shopPage,
+                        bannerImageUrl: e.target.value
+                      }
+                    })}
+                    className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-2.5 font-mono text-left text-xs"
+                    placeholder="https://... أو /images/..."
+                  />
+                  <button
+                    type="button"
+                    onClick={() => openMediaPicker((url) => {
+                      setSettings({
+                        ...settings,
+                        shopPage: {
+                          ...settings.shopPage,
+                          bannerImageUrl: url
+                        }
+                      });
+                    }, 'banners')}
+                    className="shrink-0 bg-zaad-900 hover:bg-zaad-800 text-gold-300 px-4 py-2.5 rounded-xl font-bold text-xs"
+                  >
+                    اختر صورة
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 2. Search, Filters & Sorting Labels Card */}
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-ivory-300 shadow-sm space-y-6">
+            <div className="border-b border-ivory-200 pb-4">
+              <h2 className="font-serif text-xl font-bold text-zaad-900">2. نصوص البحث، الفلاتر، والترتيب (Search, Filters & Sorting)</h2>
+              <p className="text-xs text-charcoal-700/80 mt-1">التحكم في كافة النصوص والخيارات المعروضة في شريط التصفية والفرز</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">نص خانة البحث (Search Placeholder):</label>
+                <input
+                  type="text"
+                  value={settings.shopPage?.searchPlaceholderAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    shopPage: {
+                      ...settings.shopPage,
+                      searchPlaceholderAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="بحث باسم الصنف أو رقم التشغيلة..."
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">تسمية خيار جميع الفئات (All Categories Label):</label>
+                <input
+                  type="text"
+                  value={settings.shopPage?.allCategoriesLabelAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    shopPage: {
+                      ...settings.shopPage,
+                      allCategoriesLabelAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="كافة المنتجات الطبيعية"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">تسمية الترتيب: المميزة (Sort Featured):</label>
+                <input
+                  type="text"
+                  value={settings.shopPage?.sortFeaturedLabelAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    shopPage: {
+                      ...settings.shopPage,
+                      sortFeaturedLabelAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="ترتيب: الإصدارات المميزة"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">تسمية الترتيب: السعر من الأعلى (Price High):</label>
+                <input
+                  type="text"
+                  value={settings.shopPage?.sortPriceHighLabelAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    shopPage: {
+                      ...settings.shopPage,
+                      sortPriceHighLabelAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="السعر: من الأعلى للأقل"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">تسمية الترتيب: السعر من الأقل (Price Low):</label>
+                <input
+                  type="text"
+                  value={settings.shopPage?.sortPriceLowLabelAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    shopPage: {
+                      ...settings.shopPage,
+                      sortPriceLowLabelAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="السعر: من الأقل للأعلى"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">تسمية الترتيب: الأعلى تقييماً (Top Rating):</label>
+                <input
+                  type="text"
+                  value={settings.shopPage?.sortRatingLabelAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    shopPage: {
+                      ...settings.shopPage,
+                      sortRatingLabelAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="الأعلى تقييماً"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">قالب نص عداد النتائج (استخدم {'{count}'}):</label>
+                <input
+                  type="text"
+                  value={settings.shopPage?.resultsCountTemplateAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    shopPage: {
+                      ...settings.shopPage,
+                      resultsCountTemplateAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="النتائج المتاحة: {count} منتج طبيعي فاخر"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">نص زر إعادة تعيين الفلاتر (Reset Filters):</label>
+                <input
+                  type="text"
+                  value={settings.shopPage?.resetFiltersLabelAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    shopPage: {
+                      ...settings.shopPage,
+                      resetFiltersLabelAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="إعادة تعيين المرشحات"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* 3. Product Grid & Display Layout Card */}
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-ivory-300 shadow-sm space-y-6">
+            <div className="border-b border-ivory-200 pb-4">
+              <h2 className="font-serif text-xl font-bold text-zaad-900">3. تنسيق شبكة العرض والبطاقات (Grid & Product Cards)</h2>
+              <p className="text-xs text-charcoal-700/80 mt-1">تحديد عدد الأعمدة في الشاشات الكبيرة والتحكم في إظهار أو إخفاء وسوم البطاقات</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">عدد الأعمدة في الشاشات الكبيرة (Desktop Grid):</label>
+                <select
+                  value={settings.shopPage?.gridColumns || 3}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    shopPage: {
+                      ...settings.shopPage,
+                      gridColumns: Number(e.target.value) as 2 | 3 | 4
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 font-bold text-zaad-900"
+                >
+                  <option value={2}>عمودان (2 Columns - عرض عريض وفاخر)</option>
+                  <option value={3}>3 أعمدة (3 Columns - التنسيق القياسي)</option>
+                  <option value={4}>4 أعمدة (4 Columns - عرض مدمج)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">نص زر الشراء السريع (Add to Cart Button):</label>
+                <input
+                  type="text"
+                  value={settings.shopPage?.addToCartButtonTextAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    shopPage: {
+                      ...settings.shopPage,
+                      addToCartButtonTextAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="اقتناء"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">نص زر تفاصيل المنتج (Quick View Button):</label>
+                <input
+                  type="text"
+                  value={settings.shopPage?.quickViewButtonTextAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    shopPage: {
+                      ...settings.shopPage,
+                      quickViewButtonTextAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="تفاصيل المحصول والفحص"
+                />
+              </div>
+            </div>
+
+            {/* Checkbox Toggles */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-ivory-200 text-xs">
+              <label className="flex items-center gap-2 cursor-pointer bg-ivory-50 p-3 rounded-xl border border-ivory-300">
+                <input
+                  type="checkbox"
+                  checked={settings.shopPage?.showLabBatchTag !== false}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    shopPage: {
+                      ...settings.shopPage,
+                      showLabBatchTag: e.target.checked
+                    }
+                  })}
+                  className="accent-gold-600 w-4 h-4 rounded"
+                />
+                <span className="font-bold text-zaad-900">إظهار وسم رقم التشغيلة المخبرية</span>
+              </label>
+
+              <label className="flex items-center gap-2 cursor-pointer bg-ivory-50 p-3 rounded-xl border border-ivory-300">
+                <input
+                  type="checkbox"
+                  checked={settings.shopPage?.showOriginRegionTag !== false}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    shopPage: {
+                      ...settings.shopPage,
+                      showOriginRegionTag: e.target.checked
+                    }
+                  })}
+                  className="accent-gold-600 w-4 h-4 rounded"
+                />
+                <span className="font-bold text-zaad-900">إظهار وسم منطقة المنشأ</span>
+              </label>
+
+              <label className="flex items-center gap-2 cursor-pointer bg-ivory-50 p-3 rounded-xl border border-ivory-300">
+                <input
+                  type="checkbox"
+                  checked={settings.shopPage?.showRatingStars !== false}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    shopPage: {
+                      ...settings.shopPage,
+                      showRatingStars: e.target.checked
+                    }
+                  })}
+                  className="accent-gold-600 w-4 h-4 rounded"
+                />
+                <span className="font-bold text-zaad-900">إظهار النجوم والتقييم</span>
+              </label>
+            </div>
+          </div>
+
+          {/* 4. Empty State Card */}
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-ivory-300 shadow-sm space-y-6">
+            <div className="border-b border-ivory-200 pb-4">
+              <h2 className="font-serif text-xl font-bold text-zaad-900">4. حالة عدم وجود نتائج (Empty State)</h2>
+              <p className="text-xs text-charcoal-700/80 mt-1">الرسائل التوجيهية التي تظهر للعميل عند البحث عن صنف غير متوفر</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">عنوان رسالة عدم التوفر (Title):</label>
+                <input
+                  type="text"
+                  value={settings.shopPage?.emptyStateTitleAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    shopPage: {
+                      ...settings.shopPage,
+                      emptyStateTitleAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 font-bold"
+                  placeholder="لم يتم العثور على مقتنيات مطابقة"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">الوصف الإرشادي للعميل (Description):</label>
+                <input
+                  type="text"
+                  value={settings.shopPage?.emptyStateDescAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    shopPage: {
+                      ...settings.shopPage,
+                      emptyStateDescAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="جرب تغيير معايير البحث أو اختيار فئة أخرى..."
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">نص زر استعراض الكل (Button Text):</label>
+                <input
+                  type="text"
+                  value={settings.shopPage?.emptyStateButtonTextAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    shopPage: {
+                      ...settings.shopPage,
+                      emptyStateButtonTextAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="استعراض كافة المنتجات"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* 5. Promotional & Guarantee Banner Card */}
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-ivory-300 shadow-sm space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-ivory-200 pb-4">
+              <div>
+                <h2 className="font-serif text-xl font-bold text-zaad-900">5. بانر الضمان والجودة أسفل الصفحة (Promo & Guarantee Banner)</h2>
+                <p className="text-xs text-charcoal-700/80 mt-1">تخصيص بانر الضمان الذهبي وميثاق النقاء المعروض أسفل صفحة المقتنيات</p>
+              </div>
+              <label className="flex items-center gap-2 cursor-pointer bg-ivory-50 px-4 py-2 rounded-xl border border-ivory-300">
+                <input
+                  type="checkbox"
+                  checked={settings.shopPage?.promoBanner?.isEnabled ?? true}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    shopPage: {
+                      ...settings.shopPage,
+                      promoBanner: {
+                        ...settings.shopPage.promoBanner,
+                        isEnabled: e.target.checked
+                      }
+                    }
+                  })}
+                  className="accent-gold-600 w-4 h-4 rounded"
+                />
+                <span className="text-xs font-bold text-zaad-900">تفعيل ظهور البانر</span>
+              </label>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">شارة البانر (Badge):</label>
+                <input
+                  type="text"
+                  value={settings.shopPage?.promoBanner?.badgeAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    shopPage: {
+                      ...settings.shopPage,
+                      promoBanner: {
+                        ...settings.shopPage.promoBanner,
+                        badgeAr: e.target.value
+                      }
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="ميثاق الجودة الملكية"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">عنوان البانر الرئيسي (Title):</label>
+                <input
+                  type="text"
+                  value={settings.shopPage?.promoBanner?.titleAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    shopPage: {
+                      ...settings.shopPage,
+                      promoBanner: {
+                        ...settings.shopPage.promoBanner,
+                        titleAr: e.target.value
+                      }
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 font-serif font-bold text-sm"
+                  placeholder="الضمان الذهبي والشحن المبرد الفاخر"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block font-bold text-zaad-900 mb-1">وصف ميثاق الضمان (Description):</label>
+                <textarea
+                  rows={2}
+                  value={settings.shopPage?.promoBanner?.descriptionAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    shopPage: {
+                      ...settings.shopPage,
+                      promoBanner: {
+                        ...settings.shopPage.promoBanner,
+                        descriptionAr: e.target.value
+                      }
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 leading-relaxed"
+                  placeholder="نضمن لك استرداداً كاملاً إذا لم تطابق نتائج أي فحص مخبري..."
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">نص زر التحويل (Button Text):</label>
+                <input
+                  type="text"
+                  value={settings.shopPage?.promoBanner?.buttonTextAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    shopPage: {
+                      ...settings.shopPage,
+                      promoBanner: {
+                        ...settings.shopPage.promoBanner,
+                        buttonTextAr: e.target.value
+                      }
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="استشر الخبير الحسي"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">رابط زر التحويل (Button Link):</label>
+                <input
+                  type="text"
+                  value={settings.shopPage?.promoBanner?.buttonLink || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    shopPage: {
+                      ...settings.shopPage,
+                      promoBanner: {
+                        ...settings.shopPage.promoBanner,
+                        buttonLink: e.target.value
+                      }
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 font-mono text-left"
+                  placeholder="/#quiz"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">لون خلفية البانر:</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={settings.shopPage?.promoBanner?.backgroundColor || '#07160c'}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      shopPage: {
+                        ...settings.shopPage,
+                        promoBanner: {
+                          ...settings.shopPage.promoBanner,
+                          backgroundColor: e.target.value
+                        }
+                      }
+                    })}
+                    className="w-10 h-10 rounded-lg cursor-pointer border border-ivory-300"
+                  />
+                  <input
+                    type="text"
+                    value={settings.shopPage?.promoBanner?.backgroundColor || '#07160c'}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      shopPage: {
+                        ...settings.shopPage,
+                        promoBanner: {
+                          ...settings.shopPage.promoBanner,
+                          backgroundColor: e.target.value
+                        }
+                      }
+                    })}
+                    className="bg-ivory-50 border border-ivory-300 rounded-xl p-2.5 font-mono text-left w-28 text-xs"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">لون نص البانر:</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={settings.shopPage?.promoBanner?.textColor || '#fbf8f1'}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      shopPage: {
+                        ...settings.shopPage,
+                        promoBanner: {
+                          ...settings.shopPage.promoBanner,
+                          textColor: e.target.value
+                        }
+                      }
+                    })}
+                    className="w-10 h-10 rounded-lg cursor-pointer border border-ivory-300"
+                  />
+                  <input
+                    type="text"
+                    value={settings.shopPage?.promoBanner?.textColor || '#fbf8f1'}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      shopPage: {
+                        ...settings.shopPage,
+                        promoBanner: {
+                          ...settings.shopPage.promoBanner,
+                          textColor: e.target.value
+                        }
+                      }
+                    })}
+                    className="bg-ivory-50 border border-ivory-300 rounded-xl p-2.5 font-mono text-left w-28 text-xs"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       )}
 
