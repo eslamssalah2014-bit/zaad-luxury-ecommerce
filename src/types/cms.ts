@@ -130,6 +130,31 @@ export interface NavigationMenuConfig {
   items: NavItem[];
 }
 
+export interface CmsTestimonialItem {
+  id: string;
+  customerName: string;
+  customerTitleAr?: string;
+  headingAr: string;
+  contentAr: string;
+  rating: number; // 1 to 5
+  customerImageUrl?: string;
+  isVisible: boolean;
+  order: number;
+  productPurchasedAr?: string;
+}
+
+export interface TestimonialsSectionConfig {
+  isEnabled: boolean;
+  mainTitleAr: string;
+  subtitleAr: string;
+  descriptionAr: string;
+  backgroundColor: string;
+  textColor?: string;
+  displayCount: number;
+  layoutType: 'grid' | 'carousel';
+  items: CmsTestimonialItem[];
+}
+
 export interface DesignTokens {
   primaryGreen: string;
   darkGreen: string;
@@ -217,6 +242,7 @@ export interface CmsSettingsDocument {
   storyPage: StoryPageConfig;
   announcementBar: AnnouncementBarConfig;
   navigation: NavigationMenuConfig;
+  testimonials: TestimonialsSectionConfig;
   design: DesignTokens;
   seo: SeoConfig;
   footer: FooterConfig;

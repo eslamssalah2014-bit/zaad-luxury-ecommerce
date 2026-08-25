@@ -30,7 +30,9 @@ import {
   Layers,
   Sliders,
   Check,
-  Folder
+  Folder,
+  Star,
+  Quote
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import {
@@ -39,7 +41,8 @@ import {
   StoryChapter,
   NavItem,
   CmsSectionType,
-  MediaFolder
+  MediaFolder,
+  CmsTestimonialItem
 } from '@/types/cms';
 import { DEFAULT_CMS_SETTINGS } from '@/lib/services/cmsService';
 import MediaLibraryModal from '@/components/admin/cms/MediaLibraryModal';
@@ -47,11 +50,12 @@ import LivePreviewModal from '@/components/admin/cms/LivePreviewModal';
 
 type CmsTab =
   | 'home'
+  | 'builder'
+  | 'testimonials'
   | 'story'
   | 'announcement'
   | 'navigation'
   | 'media'
-  | 'builder'
   | 'design'
   | 'seo'
   | 'footer';
@@ -59,6 +63,7 @@ type CmsTab =
 const TABS: { id: CmsTab; labelAr: string; icon: any; descAr: string }[] = [
   { id: 'home', labelAr: 'الرئيسية (Hero & Trust)', icon: LayoutTemplate, descAr: 'إدارة الهيرو، البانر الرئيسي، ومؤشرات الثقة' },
   { id: 'builder', labelAr: 'منشئ الأقسام (Page Builder)', icon: Layers, descAr: 'بناء وإعادة ترتيب أقسام الصفحة الرئيسية' },
+  { id: 'testimonials', labelAr: 'آراء وشهادات النخبة (Testimonials)', icon: Star, descAr: 'إدارة تجارب وآراء العملاء وكبار المقتنين وأصداء الثقة' },
   { id: 'story', labelAr: 'القصة والتراث (Story)', icon: BookOpen, descAr: 'إدارة فصول ومحطات قصة دار زاد التراثية' },
   { id: 'announcement', labelAr: 'شريط الإعلانات (Top Bar)', icon: Megaphone, descAr: 'إدارة شريط الإعلانات العلوي والعروض' },
   { id: 'navigation', labelAr: 'القائمة العلوية (Navigation)', icon: MenuIcon, descAr: 'إدارة روابط القائمة الرئيسية والشعار' },
@@ -1488,6 +1493,433 @@ export default function AdminCmsPage() {
                 })}
                 className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-2.5"
               />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          TAB: TESTIMONIALS (آراء وشهادات النخبة)
+      ========================================================================= */}
+      {activeTab === 'testimonials' && (
+        <div className="space-y-8 animate-fade-in">
+          {/* Section Settings Header Card */}
+          <div className="bg-white p-6 sm:p-8 rounded-3xl border border-ivory-300 shadow-sm space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-ivory-200 pb-4">
+              <div>
+                <h3 className="font-serif text-xl font-bold text-zaad-900">إعدادات قسم أصداء الثقة والشهادات</h3>
+                <p className="text-xs text-charcoal-700/80 mt-1">تخصيص العناوين، نمط العرض (شبكة أو سلايدر)، وألوان الخلفية</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <label className="flex items-center gap-2 cursor-pointer bg-ivory-50 px-4 py-2 rounded-xl border border-ivory-300">
+                  <input
+                    type="checkbox"
+                    checked={settings.testimonials?.isEnabled ?? true}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      testimonials: { ...settings.testimonials, isEnabled: e.target.checked }
+                    })}
+                    className="accent-gold-600 w-4 h-4 rounded"
+                  />
+                  <span className="text-xs font-bold text-zaad-900">تفعيل ظهور القسم في المتجر</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">العنوان الرئيسي للقسم (Main Title):</label>
+                <input
+                  type="text"
+                  value={settings.testimonials?.mainTitleAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    testimonials: { ...settings.testimonials, mainTitleAr: e.target.value }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="أصداء الثقة في رحاب زاد"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">العنوان الفرعي / الشارة (Subtitle):</label>
+                <input
+                  type="text"
+                  value={settings.testimonials?.subtitleAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    testimonials: { ...settings.testimonials, subtitleAr: e.target.value }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="شهادات النخبة وكبار المقتنين"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block font-bold text-zaad-900 mb-1">الوصف التوضيحي (Description):</label>
+                <textarea
+                  rows={2}
+                  value={settings.testimonials?.descriptionAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    testimonials: { ...settings.testimonials, descriptionAr: e.target.value }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 leading-relaxed"
+                  placeholder="تجارب حقيقية موثقة من عملاء..."
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">نمط التصميم والعرض (Layout Type):</label>
+                <select
+                  value={settings.testimonials?.layoutType || 'grid'}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    testimonials: { ...settings.testimonials, layoutType: e.target.value as 'grid' | 'carousel' }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 font-semibold text-zaad-900"
+                >
+                  <option value="grid">شبكة بطاقات ثابتة (Grid Cards)</option>
+                  <option value="carousel">سلايدر متحرك تفاعلي (Slider / Carousel)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">عدد الآراء المعروضة في الصفحة:</label>
+                <select
+                  value={settings.testimonials?.displayCount || 3}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    testimonials: { ...settings.testimonials, displayCount: Number(e.target.value) }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 font-semibold text-zaad-900"
+                >
+                  <option value={3}>3 آراء</option>
+                  <option value={6}>6 آراء</option>
+                  <option value={9}>9 آراء</option>
+                  <option value={12}>12 رأياً</option>
+                </select>
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block font-bold text-zaad-900 mb-1">لون خلفية القسم:</label>
+                <div className="flex flex-wrap items-center gap-3">
+                  <input
+                    type="color"
+                    value={settings.testimonials?.backgroundColor || '#faf7f0'}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      testimonials: { ...settings.testimonials, backgroundColor: e.target.value }
+                    })}
+                    className="w-10 h-10 rounded-lg cursor-pointer border border-ivory-300"
+                  />
+                  <input
+                    type="text"
+                    value={settings.testimonials?.backgroundColor || '#faf7f0'}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      testimonials: { ...settings.testimonials, backgroundColor: e.target.value }
+                    })}
+                    className="bg-ivory-50 border border-ivory-300 rounded-xl p-2.5 font-mono text-left w-36 text-xs"
+                  />
+                  <div className="flex gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setSettings({
+                        ...settings,
+                        testimonials: { ...settings.testimonials, backgroundColor: '#faf7f0', textColor: '#0f2918' }
+                      })}
+                      className="text-[11px] font-bold bg-ivory-100 hover:bg-ivory-200 text-zaad-900 border border-ivory-300 px-3 py-1.5 rounded-lg"
+                    >
+                      عاجي فاخر
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSettings({
+                        ...settings,
+                        testimonials: { ...settings.testimonials, backgroundColor: '#07160c', textColor: '#fbf8f1' }
+                      })}
+                      className="text-[11px] font-bold bg-zaad-950 text-gold-300 border border-gold-500/40 px-3 py-1.5 rounded-lg"
+                    >
+                      أخضر ملكي
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSettings({
+                        ...settings,
+                        testimonials: { ...settings.testimonials, backgroundColor: '#ffffff', textColor: '#0f2918' }
+                      })}
+                      className="text-[11px] font-bold bg-white text-zaad-900 border border-ivory-300 px-3 py-1.5 rounded-lg"
+                    >
+                      أبيض ناصع
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Testimonials Items Management */}
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h3 className="font-serif text-xl font-bold text-zaad-900">سجل الآراء والشهادات ({settings.testimonials?.items?.length || 0})</h3>
+                <p className="text-xs text-charcoal-700/80 mt-0.5">أضف، عدّل، رتب، أو احذف أي شهادة لتظهر فوراً على المتجر</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  const newItem: CmsTestimonialItem = {
+                    id: `test-${Date.now()}`,
+                    customerName: 'عميل جديد',
+                    customerTitleAr: 'مقتني معتمد',
+                    headingAr: 'تجربة ملكية استثنائية',
+                    contentAr: 'أعجبني النقاء العالي والاهتمام الفائق بأدق التفاصيل والتوثيق المخبري.',
+                    rating: 5,
+                    customerImageUrl: '',
+                    isVisible: true,
+                    order: (settings.testimonials?.items?.length || 0) + 1,
+                    productPurchasedAr: 'عسل سدر دوعني ملكي'
+                  };
+                  setSettings({
+                    ...settings,
+                    testimonials: {
+                      ...settings.testimonials,
+                      items: [...(settings.testimonials?.items || []), newItem]
+                    }
+                  });
+                }}
+                className="flex items-center gap-2 bg-zaad-900 hover:bg-zaad-800 text-gold-300 px-5 py-2.5 rounded-xl text-xs font-bold shadow-sm transition-all"
+              >
+                <Plus className="w-4 h-4" />
+                <span>إضافة شهادة جديدة</span>
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {(settings.testimonials?.items || []).map((item, idx) => (
+                <div
+                  key={item.id}
+                  className={`bg-white p-6 sm:p-8 rounded-3xl border transition-all ${
+                    item.isVisible ? 'border-ivory-300 shadow-sm' : 'border-dashed border-red-200 bg-red-50/20 opacity-70'
+                  }`}
+                >
+                  {/* Header / Actions bar */}
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-ivory-200 pb-4 mb-6">
+                    <div className="flex items-center gap-3">
+                      <span className="w-8 h-8 rounded-full bg-gold-50 text-gold-700 font-bold flex items-center justify-center text-xs border border-gold-200">
+                        {idx + 1}
+                      </span>
+                      <div>
+                        <h4 className="font-bold text-zaad-900 text-sm">{item.customerName || 'بدون اسم'}</h4>
+                        <p className="text-[11px] text-gold-700 font-serif">{item.customerTitleAr || item.headingAr}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      {/* Visibility */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = [...settings.testimonials.items];
+                          updated[idx] = { ...updated[idx], isVisible: !updated[idx].isVisible };
+                          setSettings({
+                            ...settings,
+                            testimonials: { ...settings.testimonials, items: updated }
+                          });
+                        }}
+                        className={`text-xs px-3 py-1.5 rounded-lg border font-bold flex items-center gap-1.5 transition-colors ${
+                          item.isVisible
+                            ? 'bg-green-50 text-green-800 border-green-200'
+                            : 'bg-charcoal-100 text-charcoal-600 border-charcoal-300'
+                        }`}
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                        <span>{item.isVisible ? 'ظاهر للزوار' : 'مخفي'}</span>
+                      </button>
+
+                      {/* Move Up */}
+                      <button
+                        type="button"
+                        disabled={idx === 0}
+                        onClick={() => {
+                          if (idx === 0) return;
+                          const updated = [...settings.testimonials.items];
+                          const temp = updated[idx];
+                          updated[idx] = updated[idx - 1];
+                          updated[idx - 1] = temp;
+                          updated.forEach((it, i) => it.order = i + 1);
+                          setSettings({
+                            ...settings,
+                            testimonials: { ...settings.testimonials, items: updated }
+                          });
+                        }}
+                        className="p-1.5 rounded-lg border border-ivory-300 text-charcoal-700 hover:bg-ivory-100 disabled:opacity-30"
+                        title="تحريك لأعلى"
+                      >
+                        <ArrowUp className="w-4 h-4" />
+                      </button>
+
+                      {/* Move Down */}
+                      <button
+                        type="button"
+                        disabled={idx === settings.testimonials.items.length - 1}
+                        onClick={() => {
+                          if (idx === settings.testimonials.items.length - 1) return;
+                          const updated = [...settings.testimonials.items];
+                          const temp = updated[idx];
+                          updated[idx] = updated[idx + 1];
+                          updated[idx + 1] = temp;
+                          updated.forEach((it, i) => it.order = i + 1);
+                          setSettings({
+                            ...settings,
+                            testimonials: { ...settings.testimonials, items: updated }
+                          });
+                        }}
+                        className="p-1.5 rounded-lg border border-ivory-300 text-charcoal-700 hover:bg-ivory-100 disabled:opacity-30"
+                        title="تحريك لأسفل"
+                      >
+                        <ArrowDown className="w-4 h-4" />
+                      </button>
+
+                      {/* Delete */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (confirm(`هل أنت متأكد من حذف شهادة "${item.customerName}"؟`)) {
+                            const updated = settings.testimonials.items.filter((_, i) => i !== idx);
+                            updated.forEach((it, i) => it.order = i + 1);
+                            setSettings({
+                              ...settings,
+                              testimonials: { ...settings.testimonials, items: updated }
+                            });
+                          }
+                        }}
+                        className="p-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50"
+                        title="حذف الشهادة"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Inputs Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+                    <div>
+                      <label className="block font-bold text-zaad-900 mb-1">اسم العميل / المقتني (Customer Name):</label>
+                      <input
+                        type="text"
+                        value={item.customerName}
+                        onChange={(e) => {
+                          const updated = [...settings.testimonials.items];
+                          updated[idx] = { ...updated[idx], customerName: e.target.value };
+                          setSettings({ ...settings, testimonials: { ...settings.testimonials, items: updated } });
+                        }}
+                        className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                        placeholder="مثال: سعادة الدكتور / فهد العتيبي"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-zaad-900 mb-1">اللقب أو الصفة (Title / Subtitle - اختياري):</label>
+                      <input
+                        type="text"
+                        value={item.customerTitleAr || ''}
+                        onChange={(e) => {
+                          const updated = [...settings.testimonials.items];
+                          updated[idx] = { ...updated[idx], customerTitleAr: e.target.value };
+                          setSettings({ ...settings, testimonials: { ...settings.testimonials, items: updated } });
+                        }}
+                        className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                        placeholder="مثال: مقتني معتمد لكبار الشخصيات"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-zaad-900 mb-1">التقييم بالنجوم (Star Rating):</label>
+                      <div className="flex items-center gap-2 bg-ivory-50 border border-ivory-300 rounded-xl p-2.5">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <button
+                            key={star}
+                            type="button"
+                            onClick={() => {
+                              const updated = [...settings.testimonials.items];
+                              updated[idx] = { ...updated[idx], rating: star };
+                              setSettings({ ...settings, testimonials: { ...settings.testimonials, items: updated } });
+                            }}
+                            className="p-1 hover:scale-110 transition-transform"
+                          >
+                            <Star
+                              className={`w-5 h-5 ${
+                                star <= (item.rating || 5) ? 'fill-gold-500 text-gold-500' : 'text-gray-300'
+                              }`}
+                            />
+                          </button>
+                        ))}
+                        <span className="text-xs font-bold text-zaad-900 mr-2">({item.rating || 5} من 5)</span>
+                      </div>
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label className="block font-bold text-zaad-900 mb-1">عنوان الشهادة (Testimonial Heading):</label>
+                      <input
+                        type="text"
+                        value={item.headingAr}
+                        onChange={(e) => {
+                          const updated = [...settings.testimonials.items];
+                          updated[idx] = { ...updated[idx], headingAr: e.target.value };
+                          setSettings({ ...settings, testimonials: { ...settings.testimonials, items: updated } });
+                        }}
+                        className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 font-semibold text-zaad-900"
+                        placeholder="مثال: نقاء دوعني استثنائي لا يقارن"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-zaad-900 mb-1">صورة العميل (Avatar - اختياري):</label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={item.customerImageUrl || ''}
+                          onChange={(e) => {
+                            const updated = [...settings.testimonials.items];
+                            updated[idx] = { ...updated[idx], customerImageUrl: e.target.value };
+                            setSettings({ ...settings, testimonials: { ...settings.testimonials, items: updated } });
+                          }}
+                          className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-2.5 font-mono text-left text-xs"
+                          placeholder="/images/... أو رابط"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => openMediaPicker((url) => {
+                            const updated = [...settings.testimonials.items];
+                            updated[idx] = { ...updated[idx], customerImageUrl: url };
+                            setSettings({ ...settings, testimonials: { ...settings.testimonials, items: updated } });
+                          }, 'general')}
+                          className="shrink-0 bg-zaad-900 hover:bg-zaad-800 text-gold-300 px-3 py-2.5 rounded-xl font-bold text-xs"
+                        >
+                          اختر صورة
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="md:col-span-3">
+                      <label className="block font-bold text-zaad-900 mb-1">نص الشهادة والتجربة (Testimonial Content):</label>
+                      <textarea
+                        rows={3}
+                        value={item.contentAr}
+                        onChange={(e) => {
+                          const updated = [...settings.testimonials.items];
+                          updated[idx] = { ...updated[idx], contentAr: e.target.value };
+                          setSettings({ ...settings, testimonials: { ...settings.testimonials, items: updated } });
+                        }}
+                        className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 leading-relaxed"
+                        placeholder="اكتب تجربة العميل بالتفصيل..."
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

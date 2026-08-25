@@ -189,7 +189,57 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
     ]
   },
 
-  // 6. Design & Theme Tokens
+  // 6. Testimonials Section Configuration (Echoes of Trust in ZAAD)
+  testimonials: {
+    isEnabled: true,
+    mainTitleAr: 'أصداء الثقة في رحاب زاد',
+    subtitleAr: 'شهادات النخبة وكبار المقتنين',
+    descriptionAr: 'تجارب حقيقية موثقة من عملاء انتقوا التميز واعتمدوا نقاء زاد جزءاً من أسلوب حياتهم الراقي.',
+    backgroundColor: '#faf7f0',
+    textColor: '#0f2918',
+    displayCount: 3,
+    layoutType: 'grid',
+    items: [
+      {
+        id: 'test-1',
+        customerName: 'د. خالد بن سلطان آل سعود',
+        customerTitleAr: 'مقتني معتمد لكبار الشخصيات',
+        headingAr: 'نقاء دوعني استثنائي لا يقارن',
+        contentAr: 'أقتني الأعسال النادرة منذ أكثر من عقدين، ولكن عسل السدر الدوعني الملكي من دار زاد فاق كل التوقعات بقوامه المخملي ورائحته الزكية وتوثيقه المخبري الصارم.',
+        rating: 5,
+        customerImageUrl: '',
+        isVisible: true,
+        order: 1,
+        productPurchasedAr: 'عسل سدر دوعني ملكي معتق'
+      },
+      {
+        id: 'test-2',
+        customerName: 'سعادة المهندس فيصل الشمري',
+        customerTitleAr: 'مهتم بالصحة الحيوية والطب الطبيعي',
+        headingAr: 'خام 100% بكامل خواصه العلاجية والإنزيمات الحية',
+        contentAr: 'أهم ما يميز زاد هو شفافية الفحص المخبري وخلو العسل تماماً من أي تسخين حراري. الإنزيمات الحية واضحة في المذاق والطاقة الحيوية التي يمنحها للجسم.',
+        rating: 5,
+        customerImageUrl: '',
+        isVisible: true,
+        order: 2,
+        productPurchasedAr: 'عسل سمر بري جبلي نادر'
+      },
+      {
+        id: 'test-3',
+        customerName: 'الأستاذة نورة المنصور',
+        customerTitleAr: 'سفيرة الفخامة والإهداء الراقي',
+        headingAr: 'صندوق إهداء ملكي يبهر أصحاب الذوق الرفيع',
+        contentAr: 'اخترت صندوق الإهداء الملكي لتقديمه في مناسبة رسمية، وكانت التجربة من التغليف المذهب والزجاج المعتم وحافظات البرودة في الشحن في قمة الاحترافية والرفعة.',
+        rating: 5,
+        customerImageUrl: '',
+        isVisible: true,
+        order: 3,
+        productPurchasedAr: 'صندوق الاحتياط الملكي المذهب'
+      }
+    ]
+  },
+
+  // 7. Design & Theme Tokens
   design: {
     primaryGreen: '#0f2918',
     darkGreen: '#07160c',
@@ -203,7 +253,7 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
     enableGlowEffects: true
   },
 
-  // 7. SEO Configuration
+  // 8. SEO Configuration
   seo: {
     defaultMetaTitle: 'زاد | دار النقاء الطبيعي للأعسال الفاخرة',
     defaultMetaDescription: 'زاد (ZAAD) تقدم أفخر أنواع العسل الطبيعي النقي 100% من أودية دوعن وجبال عسير العذراء وفق أعلى معايير النقاء والفحص المخبري.',
@@ -236,7 +286,7 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
     ]
   },
 
-  // 8. Footer Configuration
+  // 9. Footer Configuration
   footer: {
     brandSloganAr: 'زَاد | دَارُ النَّقَاءِ الطَّبِيعِي',
     aboutTextAr: 'زاد ليست مجرد متجر للمنتجات الطبيعية؛ زاد هي عهد أصيل بحفظ التراث الطبيعي للأعسال النادرة، وتوثيق أعلى مستويات النقاء المخبري بعيداً عن المعالجات التجارية، لتصلكم خيرات الأرض كما أرادتها الطبيعة.',
@@ -479,6 +529,13 @@ function mergeWithDefaults(incoming: Partial<CmsSettingsDocument>): CmsSettingsD
       items: incoming.navigation?.items?.length
         ? incoming.navigation.items
         : DEFAULT_CMS_SETTINGS.navigation.items
+    },
+    testimonials: {
+      ...DEFAULT_CMS_SETTINGS.testimonials,
+      ...(incoming.testimonials || {}),
+      items: incoming.testimonials?.items?.length
+        ? incoming.testimonials.items
+        : DEFAULT_CMS_SETTINGS.testimonials.items
     },
     design: { ...DEFAULT_CMS_SETTINGS.design, ...(incoming.design || {}) },
     seo: {
