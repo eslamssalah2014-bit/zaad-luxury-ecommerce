@@ -173,9 +173,7 @@ export default function AdminProductsPage() {
       setStockQuantity(25);
       setLowStockThreshold(5);
       setWeightGrams(500);
-      setOriginRegionAr('حضرموت - وادي دوعن');
       setOriginRegionEn('Hadramout - Doan Valley');
-      setFloralSourceAr('أزهار أشجار السدر البرية الجبلية');
       setFloralSourceEn('Wild Mountain Sidr Blossom');
       setShortDescAr('');
       setFullStoryAr('');
@@ -403,7 +401,7 @@ export default function AdminProductsPage() {
 
   return (
     <div className="space-y-8 animate-fade-in font-arabic">
-      
+
       {/* Top Banner & Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -427,9 +425,8 @@ export default function AdminProductsPage() {
 
       {/* Notification Toast */}
       {notification && (
-        <div className={`p-4 rounded-2xl text-xs font-semibold flex items-center gap-2 animate-fade-in border ${
-          notification.type === 'success' ? 'bg-green-50 border-green-300 text-green-800' : 'bg-red-50 border-red-300 text-red-800'
-        }`}>
+        <div className={`p-4 rounded-2xl text-xs font-semibold flex items-center gap-2 animate-fade-in border ${notification.type === 'success' ? 'bg-green-50 border-green-300 text-green-800' : 'bg-red-50 border-red-300 text-red-800'
+          }`}>
           {notification.type === 'success' ? <CheckCircle2 className="w-4 h-4 text-green-600 shrink-0" /> : <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />}
           <span>{notification.message}</span>
         </div>
@@ -577,9 +574,8 @@ export default function AdminProductsPage() {
                         </td>
 
                         <td className="p-4">
-                          <span className={`inline-flex items-center gap-1 font-mono text-[11px] font-bold px-2 py-0.5 rounded-full ${
-                            margin >= 50 ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-amber-50 text-amber-700 border border-amber-200'
-                          }`}>
+                          <span className={`inline-flex items-center gap-1 font-mono text-[11px] font-bold px-2 py-0.5 rounded-full ${margin >= 50 ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-amber-50 text-amber-700 border border-amber-200'
+                            }`}>
                             <TrendingUp className="w-3 h-3" />
                             <span>{margin}%</span>
                           </span>
@@ -603,15 +599,14 @@ export default function AdminProductsPage() {
                           <select
                             value={p.visibilityStatus || 'published'}
                             onChange={(e) => handleQuickToggleVisibility(p, e.target.value as ProductVisibility)}
-                            className={`text-[11px] font-bold px-2.5 py-1 rounded-xl border focus:outline-none ${
-                              p.visibilityStatus === 'published'
-                                ? 'bg-green-50 text-green-700 border-green-300'
-                                : (p.visibilityStatus === 'draft'
-                                  ? 'bg-ivory-100 text-charcoal-700 border-ivory-300'
-                                  : (p.visibilityStatus === 'hidden'
-                                    ? 'bg-amber-50 text-amber-700 border-amber-300'
-                                    : 'bg-red-50 text-red-700 border-red-300'))
-                            }`}
+                            className={`text-[11px] font-bold px-2.5 py-1 rounded-xl border focus:outline-none ${p.visibilityStatus === 'published'
+                              ? 'bg-green-50 text-green-700 border-green-300'
+                              : (p.visibilityStatus === 'draft'
+                                ? 'bg-ivory-100 text-charcoal-700 border-ivory-300'
+                                : (p.visibilityStatus === 'hidden'
+                                  ? 'bg-amber-50 text-amber-700 border-amber-300'
+                                  : 'bg-red-50 text-red-700 border-red-300'))
+                              }`}
                           >
                             <option value="published">منشور بالمتجر</option>
                             <option value="draft">مسودة</option>
@@ -652,7 +647,7 @@ export default function AdminProductsPage() {
       {productModalOpen && (
         <div className="fixed inset-0 bg-zaad-950/70 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-white rounded-3xl max-w-4xl w-full border border-ivory-300 shadow-2xl overflow-hidden my-8 animate-scale-in">
-            
+
             {/* Modal Header */}
             <div className="bg-zaad-950 text-ivory-50 p-6 flex items-center justify-between border-b border-zaad-800">
               <div>
@@ -674,45 +669,40 @@ export default function AdminProductsPage() {
               <button
                 type="button"
                 onClick={() => setModalTab('basic')}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
-                  modalTab === 'basic' ? 'bg-zaad-900 text-gold-400 shadow-sm' : 'text-charcoal-700 hover:text-zaad-900'
-                }`}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${modalTab === 'basic' ? 'bg-zaad-900 text-gold-400 shadow-sm' : 'text-charcoal-700 hover:text-zaad-900'
+                  }`}
               >
                 البيانات الأساسية والتصنيف
               </button>
               <button
                 type="button"
                 onClick={() => setModalTab('pricing')}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
-                  modalTab === 'pricing' ? 'bg-zaad-900 text-gold-400 shadow-sm' : 'text-charcoal-700 hover:text-zaad-900'
-                }`}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${modalTab === 'pricing' ? 'bg-zaad-900 text-gold-400 shadow-sm' : 'text-charcoal-700 hover:text-zaad-900'
+                  }`}
               >
                 التسعير والتكلفة وهامش الربح
               </button>
               <button
                 type="button"
                 onClick={() => setModalTab('inventory')}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
-                  modalTab === 'inventory' ? 'bg-zaad-900 text-gold-400 shadow-sm' : 'text-charcoal-700 hover:text-zaad-900'
-                }`}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${modalTab === 'inventory' ? 'bg-zaad-900 text-gold-400 shadow-sm' : 'text-charcoal-700 hover:text-zaad-900'
+                  }`}
               >
                 المخزون وحالة الظهور
               </button>
               <button
                 type="button"
                 onClick={() => setModalTab('media')}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
-                  modalTab === 'media' ? 'bg-zaad-900 text-gold-400 shadow-sm' : 'text-charcoal-700 hover:text-zaad-900'
-                }`}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${modalTab === 'media' ? 'bg-zaad-900 text-gold-400 shadow-sm' : 'text-charcoal-700 hover:text-zaad-900'
+                  }`}
               >
                 معرض الصور والوسائط ({images.length})
               </button>
               <button
                 type="button"
                 onClick={() => setModalTab('lab')}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
-                  modalTab === 'lab' ? 'bg-zaad-900 text-gold-400 shadow-sm' : 'text-charcoal-700 hover:text-zaad-900'
-                }`}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${modalTab === 'lab' ? 'bg-zaad-900 text-gold-400 shadow-sm' : 'text-charcoal-700 hover:text-zaad-900'
+                  }`}
               >
                 شهادة فحص النقاء والمختبر
               </button>
@@ -720,7 +710,7 @@ export default function AdminProductsPage() {
 
             {/* Modal Form Body */}
             <form onSubmit={handleSaveProduct} className="p-6 sm:p-8 space-y-6 text-xs max-h-[70vh] overflow-y-auto">
-              
+
               {/* TAB 1: BASIC INFO */}
               {modalTab === 'basic' && (
                 <div className="space-y-4 animate-fade-in">
@@ -917,9 +907,8 @@ export default function AdminProductsPage() {
 
                     <div className="flex items-center justify-between pt-2 border-t border-zaad-800/80">
                       <span className="text-xs text-ivory-300">هامش الربح الإجمالي (Profit Margin):</span>
-                      <span className={`font-mono text-base font-bold px-3 py-1 rounded-full ${
-                        liveMarginPercent >= 50 ? 'bg-green-500/20 text-green-400 border border-green-500/40' : 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
-                      }`}>
+                      <span className={`font-mono text-base font-bold px-3 py-1 rounded-full ${liveMarginPercent >= 50 ? 'bg-green-500/20 text-green-400 border border-green-500/40' : 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
+                        }`}>
                         {liveMarginPercent}%
                       </span>
                     </div>
@@ -995,7 +984,7 @@ export default function AdminProductsPage() {
               {/* TAB 4: MEDIA GALLERY & CLOUD STORAGE UPLOAD */}
               {modalTab === 'media' && (
                 <div className="space-y-6 animate-fade-in">
-                  
+
                   {/* Direct File Upload & Drag-and-Drop Zone */}
                   <div
                     onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
@@ -1007,11 +996,10 @@ export default function AdminProductsPage() {
                         handleFileUpload(e.dataTransfer.files);
                       }
                     }}
-                    className={`relative border-2 border-dashed rounded-3xl p-8 text-center transition-all duration-300 ${
-                      dragOver
-                        ? 'border-gold-500 bg-gold-500/10 scale-[1.01]'
-                        : 'border-ivory-300 bg-ivory-50/70 hover:border-gold-400 hover:bg-ivory-100/50'
-                    }`}
+                    className={`relative border-2 border-dashed rounded-3xl p-8 text-center transition-all duration-300 ${dragOver
+                      ? 'border-gold-500 bg-gold-500/10 scale-[1.01]'
+                      : 'border-ivory-300 bg-ivory-50/70 hover:border-gold-400 hover:bg-ivory-100/50'
+                      }`}
                   >
                     <input
                       ref={fileInputRef}
@@ -1084,11 +1072,10 @@ export default function AdminProductsPage() {
                       {images.map((img, idx) => (
                         <div
                           key={idx}
-                          className={`relative rounded-2xl overflow-hidden bg-ivory-100 border-2 transition-all group aspect-square flex flex-col justify-between ${
-                            idx === 0
-                              ? 'border-gold-500 ring-2 ring-gold-400/30 shadow-md'
-                              : 'border-ivory-300 hover:border-gold-300'
-                          }`}
+                          className={`relative rounded-2xl overflow-hidden bg-ivory-100 border-2 transition-all group aspect-square flex flex-col justify-between ${idx === 0
+                            ? 'border-gold-500 ring-2 ring-gold-400/30 shadow-md'
+                            : 'border-ivory-300 hover:border-gold-300'
+                            }`}
                         >
                           <Image
                             src={img}
@@ -1114,7 +1101,7 @@ export default function AdminProductsPage() {
 
                           {/* Actions Overlay */}
                           <div className="relative z-10 p-2 bg-gradient-to-t from-zaad-950/90 via-zaad-950/60 to-transparent flex items-center justify-between gap-1 opacity-90 group-hover:opacity-100 transition-opacity">
-                            
+
                             {/* Reorder Buttons */}
                             <div className="flex items-center gap-1">
                               {idx > 0 && (
