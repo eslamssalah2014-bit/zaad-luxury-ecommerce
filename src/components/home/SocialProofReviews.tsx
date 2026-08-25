@@ -6,26 +6,19 @@ import { Star, ShieldCheck, Quote, ChevronLeft, ChevronRight } from 'lucide-reac
 import { DEFAULT_CMS_SETTINGS } from '@/lib/services/cmsService';
 import { TestimonialsSectionConfig, CmsTestimonialItem } from '@/types/cms';
 
-export default function SocialProofReviews() {
-  const [config, setConfig] = useState<TestimonialsSectionConfig>(DEFAULT_CMS_SETTINGS.testimonials);
+interface SocialProofReviewsProps {
+  initialConfig?: TestimonialsSectionConfig;
+}
+
+export default function SocialProofReviews({ initialConfig }: SocialProofReviewsProps) {
+  const [config, setConfig] = useState<TestimonialsSectionConfig>(
+    initialConfig || DEFAULT_CMS_SETTINGS.testimonials
+  );
   const [carouselIndex, setCarouselIndex] = useState(0);
 
   useEffect(() => {
-    let isMounted = true;
-    async function loadTestimonials() {
-      try {
-        const res = await fetch('/api/cms/content');
-        const json = await res.json();
-        if (isMounted && json.success && json.data?.testimonials) {
-          setConfig(json.data.testimonials);
-        }
-      } catch (err) {
-        console.warn('Testimonials using default luxury fallback:', err);
-      }
-    }
-    loadTestimonials();
-    return () => { isMounted = false; };
-  }, []);
+    if (initialConfig) setConfig(initialConfig);
+  }, [initialConfig]);
 
   if (!config.isEnabled) return null;
 

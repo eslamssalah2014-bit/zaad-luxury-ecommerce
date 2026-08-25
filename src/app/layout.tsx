@@ -7,6 +7,10 @@ import { WishlistProvider } from '@/context/WishlistContext';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import CartDrawer from '@/components/layout/CartDrawer';
+import { getCmsSettings } from '@/lib/services/cmsService';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 const ibmPlexArabic = IBM_Plex_Sans_Arabic({
   subsets: ['arabic', 'latin'],
@@ -46,22 +50,27 @@ export const metadata: Metadata = {
   }
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cmsSettings = await getCmsSettings(false);
+
   return (
     <html lang="ar" dir="rtl" className={`${ibmPlexArabic.variable} ${alexandria.variable} ${amiri.variable}`}>
       <body className="bg-ivory-100 text-charcoal-900 selection:bg-gold-500 selection:text-white font-arabic antialiased flex flex-col min-h-screen">
         <CurrencyProvider>
           <CartProvider>
             <WishlistProvider>
-              <Header />
+              <Header
+                initialAnnouncement={cmsSettings.announcementBar}
+                initialNavigation={cmsSettings.navigation}
+              />
               <main className="flex-grow">
                 {children}
               </main>
-              <Footer />
+              <Footer initialFooter={cmsSettings.footer} />
               <CartDrawer />
             </WishlistProvider>
           </CartProvider>

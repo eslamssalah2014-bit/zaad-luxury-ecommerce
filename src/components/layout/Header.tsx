@@ -10,7 +10,12 @@ import { useCurrency, CURRENCIES, CurrencyCode } from '@/context/CurrencyContext
 import { DEFAULT_CMS_SETTINGS } from '@/lib/services/cmsService';
 import { AnnouncementBarConfig, NavigationMenuConfig } from '@/types/cms';
 
-export default function Header() {
+interface HeaderProps {
+  initialAnnouncement?: AnnouncementBarConfig;
+  initialNavigation?: NavigationMenuConfig;
+}
+
+export default function Header({ initialAnnouncement, initialNavigation }: HeaderProps) {
   const pathname = usePathname();
   const { itemCount, openDrawer, total } = useCart();
   const { currentCurrency, setCurrency, formatPrice } = useCurrency();
@@ -18,8 +23,17 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currencyOpen, setCurrencyOpen] = useState(false);
 
-  const [announcement, setAnnouncement] = useState<AnnouncementBarConfig>(DEFAULT_CMS_SETTINGS.announcementBar);
-  const [navigation, setNavigation] = useState<NavigationMenuConfig>(DEFAULT_CMS_SETTINGS.navigation);
+  const [announcement, setAnnouncement] = useState<AnnouncementBarConfig>(
+    initialAnnouncement || DEFAULT_CMS_SETTINGS.announcementBar
+  );
+  const [navigation, setNavigation] = useState<NavigationMenuConfig>(
+    initialNavigation || DEFAULT_CMS_SETTINGS.navigation
+  );
+
+  useEffect(() => {
+    if (initialAnnouncement) setAnnouncement(initialAnnouncement);
+    if (initialNavigation) setNavigation(initialNavigation);
+  }, [initialAnnouncement, initialNavigation]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -27,24 +41,6 @@ export default function Header() {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  useEffect(() => {
-    let isMounted = true;
-    async function loadCmsNav() {
-      try {
-        const res = await fetch('/api/cms/content');
-        const json = await res.json();
-        if (isMounted && json.success && json.data) {
-          if (json.data.announcementBar) setAnnouncement(json.data.announcementBar);
-          if (json.data.navigation) setNavigation(json.data.navigation);
-        }
-      } catch (e) {
-        console.warn('Could not load CMS nav from API, using default fallback:', e);
-      }
-    }
-    loadCmsNav();
-    return () => { isMounted = false; };
   }, []);
 
   const visibleNavItems = navigation.items.filter(item => item.isVisible);

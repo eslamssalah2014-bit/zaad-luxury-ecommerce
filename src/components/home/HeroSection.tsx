@@ -7,25 +7,16 @@ import { ArrowLeft, ShieldCheck, Award, Sparkles, Compass } from 'lucide-react';
 import { DEFAULT_CMS_SETTINGS } from '@/lib/services/cmsService';
 import { HeroConfig } from '@/types/cms';
 
-export default function HeroSection() {
-  const [hero, setHero] = useState<HeroConfig>(DEFAULT_CMS_SETTINGS.hero);
+interface HeroSectionProps {
+  initialHero?: HeroConfig;
+}
+
+export default function HeroSection({ initialHero }: HeroSectionProps) {
+  const [hero, setHero] = useState<HeroConfig>(initialHero || DEFAULT_CMS_SETTINGS.hero);
 
   useEffect(() => {
-    let isMounted = true;
-    async function loadHero() {
-      try {
-        const res = await fetch('/api/cms/content');
-        const json = await res.json();
-        if (isMounted && json.success && json.data?.hero) {
-          setHero(json.data.hero);
-        }
-      } catch (e) {
-        console.warn('Hero using default fallback:', e);
-      }
-    }
-    loadHero();
-    return () => { isMounted = false; };
-  }, []);
+    if (initialHero) setHero(initialHero);
+  }, [initialHero]);
 
   return (
     <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden bg-zaad-950 text-white">

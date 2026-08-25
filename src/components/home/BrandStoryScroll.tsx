@@ -17,25 +17,20 @@ import {
 import { DEFAULT_CMS_SETTINGS } from '@/lib/services/cmsService';
 import { HomepageSection } from '@/types/cms';
 
-export default function BrandStoryScroll() {
-  const [sections, setSections] = useState<HomepageSection[]>(DEFAULT_CMS_SETTINGS.homepageSections);
+interface BrandStoryScrollProps {
+  initialSections?: HomepageSection[];
+}
+
+export default function BrandStoryScroll({ initialSections }: BrandStoryScrollProps) {
+  const [sections, setSections] = useState<HomepageSection[]>(
+    initialSections ? initialSections.filter(s => s.isVisible) : DEFAULT_CMS_SETTINGS.homepageSections
+  );
 
   useEffect(() => {
-    let isMounted = true;
-    async function loadSections() {
-      try {
-        const res = await fetch('/api/cms/content');
-        const json = await res.json();
-        if (isMounted && json.success && json.data?.homepageSections) {
-          setSections(json.data.homepageSections.filter((s: HomepageSection) => s.isVisible));
-        }
-      } catch (e) {
-        console.warn('BrandStoryScroll using default fallback:', e);
-      }
+    if (initialSections) {
+      setSections(initialSections.filter(s => s.isVisible));
     }
-    loadSections();
-    return () => { isMounted = false; };
-  }, []);
+  }, [initialSections]);
 
   return (
     <div className="relative overflow-hidden font-arabic">

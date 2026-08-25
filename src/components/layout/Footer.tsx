@@ -7,25 +7,16 @@ import { ShieldCheck, Award, Sparkles, Truck, Lock, ArrowUpRight, MessageCircle,
 import { DEFAULT_CMS_SETTINGS } from '@/lib/services/cmsService';
 import { FooterConfig } from '@/types/cms';
 
-export default function Footer() {
-  const [footer, setFooter] = useState<FooterConfig>(DEFAULT_CMS_SETTINGS.footer);
+interface FooterProps {
+  initialFooter?: FooterConfig;
+}
+
+export default function Footer({ initialFooter }: FooterProps) {
+  const [footer, setFooter] = useState<FooterConfig>(initialFooter || DEFAULT_CMS_SETTINGS.footer);
 
   useEffect(() => {
-    let isMounted = true;
-    async function loadFooter() {
-      try {
-        const res = await fetch('/api/cms/content');
-        const json = await res.json();
-        if (isMounted && json.success && json.data?.footer) {
-          setFooter(json.data.footer);
-        }
-      } catch (e) {
-        console.warn('Footer using default fallback:', e);
-      }
-    }
-    loadFooter();
-    return () => { isMounted = false; };
-  }, []);
+    if (initialFooter) setFooter(initialFooter);
+  }, [initialFooter]);
 
   const badgeIcons = {
     award: Award,

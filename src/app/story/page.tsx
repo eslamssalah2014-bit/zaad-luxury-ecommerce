@@ -1,33 +1,16 @@
-'use client';
-
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Sparkles, ArrowLeft, Heart, History, Award, CheckCircle2 } from 'lucide-react';
-import { DEFAULT_CMS_SETTINGS } from '@/lib/services/cmsService';
-import { StoryPageConfig } from '@/types/cms';
+import { getCmsSettings } from '@/lib/services/cmsService';
 
-export default function StoryPage() {
-  const [story, setStory] = useState<StoryPageConfig>(DEFAULT_CMS_SETTINGS.storyPage);
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
-  useEffect(() => {
-    let isMounted = true;
-    async function loadStory() {
-      try {
-        const res = await fetch('/api/cms/content');
-        const json = await res.json();
-        if (isMounted && json.success && json.data?.storyPage) {
-          setStory(json.data.storyPage);
-        }
-      } catch (e) {
-        console.warn('Story page using default fallback:', e);
-      }
-    }
-    loadStory();
-    return () => { isMounted = false; };
-  }, []);
-
-  const visibleChapters = story.chapters.filter(c => c.isVisible);
+export default async function StoryPage() {
+  const cmsSettings = await getCmsSettings(false);
+  const story = cmsSettings.storyPage;
+  const visibleChapters = (story.chapters || []).filter((c) => c.isVisible);
 
   return (
     <div className="min-h-screen bg-ivory-100 py-12 font-arabic">
@@ -105,7 +88,7 @@ export default function StoryPage() {
                     {chapter.titleAr}
                   </h3>
 
-                  {chapter.descriptionParagraphs.map((p, pIdx) => (
+                  {(chapter.descriptionParagraphs || []).map((p, pIdx) => (
                     <p key={pIdx} className={isDark ? 'text-ivory-300 font-light text-sm sm:text-base leading-relaxed' : 'text-charcoal-700 leading-relaxed'}>
                       {p}
                     </p>
