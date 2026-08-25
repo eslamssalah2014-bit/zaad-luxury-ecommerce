@@ -32,7 +32,8 @@ import {
   Check,
   Folder,
   Star,
-  Quote
+  Quote,
+  Link2
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import {
@@ -42,7 +43,10 @@ import {
   NavItem,
   CmsSectionType,
   MediaFolder,
-  CmsTestimonialItem
+  CmsTestimonialItem,
+  FooterColumn,
+  FooterLink,
+  FooterBadge
 } from '@/types/cms';
 import { DEFAULT_CMS_SETTINGS } from '@/lib/services/cmsService';
 import MediaLibraryModal from '@/components/admin/cms/MediaLibraryModal';
@@ -1398,101 +1402,880 @@ export default function AdminCmsPage() {
       )}
 
       {/* =========================================================================
-          TAB 9: FOOTER MANAGER
+          TAB 9: FOOTER MANAGEMENT SYSTEM (إدارة تذييل المتجر الشاملة)
       ========================================================================= */}
       {activeTab === 'footer' && (
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-ivory-300 shadow-sm space-y-6 animate-fade-in max-w-4xl">
-          <div>
-            <h2 className="font-serif text-xl font-bold text-zaad-900">إدارة تذييل المتجر (Footer & Socials)</h2>
-            <p className="text-xs text-charcoal-700/70">تخصيص نصوص الفوتر، وسائل التواصل، أرقام الواتساب، وبيانات السجل التجاري</p>
+        <div className="space-y-8 animate-fade-in">
+          
+          {/* 1. Brand Information & Logo Card */}
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-ivory-300 shadow-sm space-y-6">
+            <div className="border-b border-ivory-200 pb-4">
+              <h2 className="font-serif text-xl font-bold text-zaad-900">1. هوية وشعار المتجر في التذييل (Brand & Identity)</h2>
+              <p className="text-xs text-charcoal-700/80 mt-1">تخصيص شعار الفوتر، الاسم التجاري، النبذة التعريفية، وحقوق الملكية والسجل الضريبي</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">شعار الفوتر (Footer Logo):</label>
+                <div className="flex items-center gap-3">
+                  <div className="relative w-12 h-12 rounded-full overflow-hidden border border-gold-400/50 bg-white p-0.5 shrink-0 shadow-sm">
+                    <Image
+                      src={settings.footer.logoUrl || '/images/zaad-logo.png'}
+                      alt="شعار الفوتر"
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                  <input
+                    type="text"
+                    value={settings.footer.logoUrl || ''}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      footer: { ...settings.footer, logoUrl: e.target.value }
+                    })}
+                    className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-2.5 font-mono text-left text-xs"
+                    placeholder="/images/zaad-logo.png"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => openMediaPicker((url) => {
+                      setSettings({
+                        ...settings,
+                        footer: { ...settings.footer, logoUrl: url }
+                      });
+                    }, 'general')}
+                    className="shrink-0 bg-zaad-900 hover:bg-zaad-800 text-gold-300 px-3.5 py-2.5 rounded-xl font-bold text-xs"
+                  >
+                    اختر صورة
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">اسم العلامة التجارية (Brand Name):</label>
+                <input
+                  type="text"
+                  value={settings.footer.brandNameAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    footer: { ...settings.footer, brandNameAr: e.target.value }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="زاد | ZAAD"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block font-bold text-zaad-900 mb-1">الشعار اللفظي (Slogan):</label>
+                <input
+                  type="text"
+                  value={settings.footer.brandSloganAr}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    footer: { ...settings.footer, brandSloganAr: e.target.value }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="زَاد | دَارُ النَّقَاءِ الطَّبِيعِي"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block font-bold text-zaad-900 mb-1">النبذة التعريفية لدار زاد (About Description):</label>
+                <textarea
+                  rows={3}
+                  value={settings.footer.aboutTextAr}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    footer: { ...settings.footer, aboutTextAr: e.target.value }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 leading-relaxed"
+                  placeholder="اكتب نبذة عن الدار..."
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">نص حقوق الملكية (Copyright):</label>
+                <input
+                  type="text"
+                  value={settings.footer.copyrightTextAr}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    footer: { ...settings.footer, copyrightTextAr: e.target.value }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="© 2026 دار زاد للنقاء الطبيعي. جميع الحقوق محفوظة."
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">رقم السجل التجاري والضريبي (VAT & CR):</label>
+                <input
+                  type="text"
+                  value={settings.footer.vatOrCrNumberAr}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    footer: { ...settings.footer, vatOrCrNumberAr: e.target.value }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 font-mono"
+                  placeholder="سجل تجاري: 1010894210 • الرقم الضريبي: 31098421000003"
+                />
+              </div>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-            <div className="md:col-span-2">
-              <label className="block font-bold text-zaad-900 mb-1">شعار الفوتر (Slogan):</label>
-              <input
-                type="text"
-                value={settings.footer.brandSloganAr}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  footer: { ...settings.footer, brandSloganAr: e.target.value }
-                })}
-                className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-2.5"
-              />
+          {/* 2. Styling & Layout Colors Card */}
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-ivory-300 shadow-sm space-y-6">
+            <div className="border-b border-ivory-200 pb-4">
+              <h2 className="font-serif text-xl font-bold text-zaad-900">2. ألوان وتنسيق الفوتر (Footer Styling & Colors)</h2>
+              <p className="text-xs text-charcoal-700/80 mt-1">تخصيص لون الخلفية، النصوص، واللمسات الذهبية</p>
             </div>
 
-            <div className="md:col-span-2">
-              <label className="block font-bold text-zaad-900 mb-1">نبذة عن دار زاد في الفوتر:</label>
-              <textarea
-                rows={3}
-                value={settings.footer.aboutTextAr}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  footer: { ...settings.footer, aboutTextAr: e.target.value }
-                })}
-                className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-2.5 leading-relaxed"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">لون خلفية الفوتر:</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={settings.footer.backgroundColor || '#07160c'}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      footer: { ...settings.footer, backgroundColor: e.target.value }
+                    })}
+                    className="w-10 h-10 rounded-lg cursor-pointer border border-ivory-300"
+                  />
+                  <input
+                    type="text"
+                    value={settings.footer.backgroundColor || '#07160c'}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      footer: { ...settings.footer, backgroundColor: e.target.value }
+                    })}
+                    className="bg-ivory-50 border border-ivory-300 rounded-xl p-2.5 font-mono text-left w-28 text-xs"
+                  />
+                </div>
+                <div className="flex flex-wrap gap-1 mt-2">
+                  <button
+                    type="button"
+                    onClick={() => setSettings({
+                      ...settings,
+                      footer: { ...settings.footer, backgroundColor: '#07160c', textColor: '#fbf8f1' }
+                    })}
+                    className="text-[10px] font-bold bg-zaad-950 text-gold-300 border border-gold-500/40 px-2 py-1 rounded"
+                  >
+                    أخضر ملكي
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSettings({
+                      ...settings,
+                      footer: { ...settings.footer, backgroundColor: '#030a05', textColor: '#fbf8f1' }
+                    })}
+                    className="text-[10px] font-bold bg-black text-gold-400 border border-gold-600/40 px-2 py-1 rounded"
+                  >
+                    سواد ملكي
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSettings({
+                      ...settings,
+                      footer: { ...settings.footer, backgroundColor: '#faf7f0', textColor: '#0f2918' }
+                    })}
+                    className="text-[10px] font-bold bg-ivory-100 text-zaad-900 border border-ivory-300 px-2 py-1 rounded"
+                  >
+                    عاجي فاخر
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">لون النصوص الأساسية:</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={settings.footer.textColor || '#fbf8f1'}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      footer: { ...settings.footer, textColor: e.target.value }
+                    })}
+                    className="w-10 h-10 rounded-lg cursor-pointer border border-ivory-300"
+                  />
+                  <input
+                    type="text"
+                    value={settings.footer.textColor || '#fbf8f1'}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      footer: { ...settings.footer, textColor: e.target.value }
+                    })}
+                    className="bg-ivory-50 border border-ivory-300 rounded-xl p-2.5 font-mono text-left w-28 text-xs"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">لون العناوين والأيقونات الذهبية:</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={settings.footer.accentColor || '#c59b27'}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      footer: { ...settings.footer, accentColor: e.target.value }
+                    })}
+                    className="w-10 h-10 rounded-lg cursor-pointer border border-ivory-300"
+                  />
+                  <input
+                    type="text"
+                    value={settings.footer.accentColor || '#c59b27'}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      footer: { ...settings.footer, accentColor: e.target.value }
+                    })}
+                    className="bg-ivory-50 border border-ivory-300 rounded-xl p-2.5 font-mono text-left w-28 text-xs"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 3. Contact & Concierge Information Card */}
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-ivory-300 shadow-sm space-y-6">
+            <div className="border-b border-ivory-200 pb-4">
+              <h2 className="font-serif text-xl font-bold text-zaad-900">3. بيانات التواصل وخدمة كبار الشخصيات (Contact & Concierge)</h2>
+              <p className="text-xs text-charcoal-700/80 mt-1">إدارة رقم الواتساب، البريد الإلكتروني، هاتف الدار، وأوقات العمل</p>
             </div>
 
-            <div>
-              <label className="block font-bold text-zaad-900 mb-1">رقم الواتساب المباشر:</label>
-              <input
-                type="text"
-                value={settings.footer.contact.whatsappNumber}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  footer: {
-                    ...settings.footer,
-                    contact: { ...settings.footer.contact, whatsappNumber: e.target.value }
-                  }
-                })}
-                className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-2.5 font-mono text-left"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">رقم الواتساب المباشر:</label>
+                <input
+                  type="text"
+                  value={settings.footer.contact?.whatsappNumber || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    footer: {
+                      ...settings.footer,
+                      contact: { ...settings.footer.contact, whatsappNumber: e.target.value }
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 font-mono text-left"
+                  placeholder="+966500000000"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">رسالة الواتساب التلقائية:</label>
+                <input
+                  type="text"
+                  value={settings.footer.contact?.whatsappPrefilledMessageAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    footer: {
+                      ...settings.footer,
+                      contact: { ...settings.footer.contact, whatsappPrefilledMessageAr: e.target.value }
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="مرحباً دار زاد، أرغب بالاستفسار..."
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">بريد خدمة العملاء والنخبة (Email):</label>
+                <input
+                  type="email"
+                  value={settings.footer.contact?.customerSupportEmail || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    footer: {
+                      ...settings.footer,
+                      contact: { ...settings.footer.contact, customerSupportEmail: e.target.value }
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 font-mono text-left"
+                  placeholder="concierge@zaad.sa"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">رقم الهاتف المباشر (Phone):</label>
+                <input
+                  type="text"
+                  value={settings.footer.contact?.supportPhone || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    footer: {
+                      ...settings.footer,
+                      contact: { ...settings.footer.contact, supportPhone: e.target.value }
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 font-mono text-left"
+                  placeholder="+966 800 123 9223"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">أوقات العمل وساعات الخدمة:</label>
+                <input
+                  type="text"
+                  value={settings.footer.contact?.workingHoursAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    footer: {
+                      ...settings.footer,
+                      contact: { ...settings.footer.contact, workingHoursAr: e.target.value }
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="يومياً من 9:00 ص حتى 11:00 م"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">عنوان المقر الرئيسي (Address):</label>
+                <input
+                  type="text"
+                  value={settings.footer.contact?.addressAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    footer: {
+                      ...settings.footer,
+                      contact: { ...settings.footer.contact, addressAr: e.target.value }
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="المملكة العربية السعودية • الرياض • حي حطين"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* 4. Social Media Channels Card */}
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-ivory-300 shadow-sm space-y-6">
+            <div className="border-b border-ivory-200 pb-4">
+              <h2 className="font-serif text-xl font-bold text-zaad-900">4. وسائل التواصل الاجتماعي (Social Media Channels)</h2>
+              <p className="text-xs text-charcoal-700/80 mt-1">تفعيل وإدارة روابط صفحات دار زاد الرسمية</p>
             </div>
 
-            <div>
-              <label className="block font-bold text-zaad-900 mb-1">بريد خدمة العملاء والنخبة:</label>
-              <input
-                type="email"
-                value={settings.footer.contact.customerSupportEmail}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  footer: {
-                    ...settings.footer,
-                    contact: { ...settings.footer.contact, customerSupportEmail: e.target.value }
-                  }
-                })}
-                className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-2.5 font-mono text-left"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">رابط إنستجرام (Instagram):</label>
+                <input
+                  type="text"
+                  value={settings.footer.social?.instagram || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    footer: {
+                      ...settings.footer,
+                      social: { ...settings.footer.social, instagram: e.target.value }
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-2.5 font-mono text-left"
+                  placeholder="https://instagram.com/zaad_honey"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">رابط إكس / تويتر (Twitter / X):</label>
+                <input
+                  type="text"
+                  value={settings.footer.social?.twitter || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    footer: {
+                      ...settings.footer,
+                      social: { ...settings.footer.social, twitter: e.target.value }
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-2.5 font-mono text-left"
+                  placeholder="https://twitter.com/zaad_honey"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">رابط تيك توك (TikTok):</label>
+                <input
+                  type="text"
+                  value={settings.footer.social?.tiktok || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    footer: {
+                      ...settings.footer,
+                      social: { ...settings.footer.social, tiktok: e.target.value }
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-2.5 font-mono text-left"
+                  placeholder="https://tiktok.com/@zaad_honey"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">رابط يوتيوب (YouTube):</label>
+                <input
+                  type="text"
+                  value={settings.footer.social?.youtube || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    footer: {
+                      ...settings.footer,
+                      social: { ...settings.footer.social, youtube: e.target.value }
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-2.5 font-mono text-left"
+                  placeholder="https://youtube.com/@zaad_honey"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">رابط فيسبوك (Facebook):</label>
+                <input
+                  type="text"
+                  value={settings.footer.social?.facebook || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    footer: {
+                      ...settings.footer,
+                      social: { ...settings.footer.social, facebook: e.target.value }
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-2.5 font-mono text-left"
+                  placeholder="https://facebook.com/zaadhoney"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">رابط لينكد إن (LinkedIn):</label>
+                <input
+                  type="text"
+                  value={settings.footer.social?.linkedin || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    footer: {
+                      ...settings.footer,
+                      social: { ...settings.footer.social, linkedin: e.target.value }
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-2.5 font-mono text-left"
+                  placeholder="https://linkedin.com/company/zaad"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* 5. Quality Badges Tier Card */}
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-ivory-300 shadow-sm space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-ivory-200 pb-4">
+              <div>
+                <h2 className="font-serif text-xl font-bold text-zaad-900">5. شريط أوسمة الجودة والضمان (Quality Badges Tier)</h2>
+                <p className="text-xs text-charcoal-700/80 mt-1">إدارة الأوسمة الأربعة أعلى الفوتر (فحص مخبري، شحن مبرد، إنزيمات حية)</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  const newBadge: FooterBadge = {
+                    id: `badge-${Date.now()}`,
+                    titleAr: 'وسام جودة جديد',
+                    subtitleAr: 'وصف الوسام والضمان',
+                    icon: 'award',
+                    isVisible: true,
+                    order: (settings.footer.badges?.length || 0) + 1
+                  };
+                  setSettings({
+                    ...settings,
+                    footer: {
+                      ...settings.footer,
+                      badges: [...(settings.footer.badges || []), newBadge]
+                    }
+                  });
+                }}
+                className="flex items-center gap-2 bg-zaad-900 hover:bg-zaad-800 text-gold-300 px-4 py-2 rounded-xl text-xs font-bold shadow-sm transition-all"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>إضافة وسام جديد</span>
+              </button>
             </div>
 
-            <div>
-              <label className="block font-bold text-zaad-900 mb-1">رابط إنستجرام:</label>
-              <input
-                type="text"
-                value={settings.footer.social.instagram || ''}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  footer: {
-                    ...settings.footer,
-                    social: { ...settings.footer.social, instagram: e.target.value }
-                  }
-                })}
-                className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-2.5 font-mono text-left"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {(settings.footer.badges || []).map((badge, bIdx) => (
+                <div
+                  key={badge.id}
+                  className={`p-4 rounded-2xl border transition-all ${
+                    badge.isVisible !== false ? 'bg-ivory-50/60 border-ivory-300' : 'bg-red-50/20 border-dashed border-red-200 opacity-70'
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <span className="w-6 h-6 rounded-full bg-gold-100 text-gold-800 font-bold text-xs flex items-center justify-center">
+                      {bIdx + 1}
+                    </span>
+
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = [...settings.footer.badges];
+                          updated[bIdx] = { ...updated[bIdx], isVisible: updated[bIdx].isVisible === false ? true : false };
+                          setSettings({ ...settings, footer: { ...settings.footer, badges: updated } });
+                        }}
+                        className={`text-[11px] px-2.5 py-1 rounded-lg border font-bold ${
+                          badge.isVisible !== false ? 'bg-green-50 text-green-800 border-green-200' : 'bg-charcoal-100 text-charcoal-600'
+                        }`}
+                      >
+                        {badge.isVisible !== false ? 'ظاهر' : 'مخفي'}
+                      </button>
+
+                      <button
+                        type="button"
+                        disabled={bIdx === 0}
+                        onClick={() => {
+                          if (bIdx === 0) return;
+                          const updated = [...settings.footer.badges];
+                          const temp = updated[bIdx];
+                          updated[bIdx] = updated[bIdx - 1];
+                          updated[bIdx - 1] = temp;
+                          setSettings({ ...settings, footer: { ...settings.footer, badges: updated } });
+                        }}
+                        className="p-1 rounded border border-ivory-300 text-charcoal-700 hover:bg-ivory-100 disabled:opacity-30"
+                      >
+                        <ArrowUp className="w-3.5 h-3.5" />
+                      </button>
+
+                      <button
+                        type="button"
+                        disabled={bIdx === settings.footer.badges.length - 1}
+                        onClick={() => {
+                          if (bIdx === settings.footer.badges.length - 1) return;
+                          const updated = [...settings.footer.badges];
+                          const temp = updated[bIdx];
+                          updated[bIdx] = updated[bIdx + 1];
+                          updated[bIdx + 1] = temp;
+                          setSettings({ ...settings, footer: { ...settings.footer, badges: updated } });
+                        }}
+                        className="p-1 rounded border border-ivory-300 text-charcoal-700 hover:bg-ivory-100 disabled:opacity-30"
+                      >
+                        <ArrowDown className="w-3.5 h-3.5" />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = settings.footer.badges.filter((_, i) => i !== bIdx);
+                          setSettings({ ...settings, footer: { ...settings.footer, badges: updated } });
+                        }}
+                        className="p-1 rounded border border-red-200 text-red-600 hover:bg-red-50"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 text-xs">
+                    <input
+                      type="text"
+                      value={badge.titleAr}
+                      onChange={(e) => {
+                        const updated = [...settings.footer.badges];
+                        updated[bIdx] = { ...updated[bIdx], titleAr: e.target.value };
+                        setSettings({ ...settings, footer: { ...settings.footer, badges: updated } });
+                      }}
+                      className="w-full bg-white border border-ivory-300 rounded-xl p-2 font-bold text-zaad-900"
+                      placeholder="عنوان الوسام..."
+                    />
+                    <input
+                      type="text"
+                      value={badge.subtitleAr}
+                      onChange={(e) => {
+                        const updated = [...settings.footer.badges];
+                        updated[bIdx] = { ...updated[bIdx], subtitleAr: e.target.value };
+                        setSettings({ ...settings, footer: { ...settings.footer, badges: updated } });
+                      }}
+                      className="w-full bg-white border border-ivory-300 rounded-xl p-2 text-charcoal-700"
+                      placeholder="وصف الوسام..."
+                    />
+                    <select
+                      value={badge.icon}
+                      onChange={(e) => {
+                        const updated = [...settings.footer.badges];
+                        updated[bIdx] = { ...updated[bIdx], icon: e.target.value as any };
+                        setSettings({ ...settings, footer: { ...settings.footer, badges: updated } });
+                      }}
+                      className="w-full bg-white border border-ivory-300 rounded-xl p-2 font-semibold text-zaad-900"
+                    >
+                      <option value="award">أيقونة الوسام والشهادة (Award / Lab)</option>
+                      <option value="shield">أيقونة درع الحماية (Shield / Enzyme)</option>
+                      <option value="truck">أيقونة الشحن المبرد (Truck / Express)</option>
+                      <option value="lock">أيقونة الأمان المالي (Lock / Security)</option>
+                      <option value="sparkles">أيقونة البريق الملكي (Sparkles / Luxury)</option>
+                    </select>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 6. Footer Columns & Links Management Card */}
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-ivory-300 shadow-sm space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-ivory-200 pb-4">
+              <div>
+                <h2 className="font-serif text-xl font-bold text-zaad-900">6. أعمدة وقوائم الروابط (Footer Columns & Links)</h2>
+                <p className="text-xs text-charcoal-700/80 mt-1">إنشاء أعمدة روابط غير محدودة، إعادة ترتيبها، وإدارة الروابط الداخلية والخارجية</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  const newCol: FooterColumn = {
+                    id: `col-${Date.now()}`,
+                    titleAr: 'قائمة جديدة',
+                    isVisible: true,
+                    order: (settings.footer.columns?.length || 0) + 1,
+                    links: [
+                      { id: `link-${Date.now()}-1`, labelAr: 'رابط جديد', href: '/shop', openInNewTab: false, isVisible: true, order: 1 }
+                    ]
+                  };
+                  setSettings({
+                    ...settings,
+                    footer: {
+                      ...settings.footer,
+                      columns: [...(settings.footer.columns || []), newCol]
+                    }
+                  });
+                }}
+                className="flex items-center gap-2 bg-zaad-900 hover:bg-zaad-800 text-gold-300 px-4 py-2 rounded-xl text-xs font-bold shadow-sm transition-all"
+              >
+                <Plus className="w-4 h-4" />
+                <span>إضافة عمود روابط جديد</span>
+              </button>
             </div>
 
-            <div>
-              <label className="block font-bold text-zaad-900 mb-1">حقوق الملكية ورقم السجل الضريبي:</label>
-              <input
-                type="text"
-                value={settings.footer.vatOrCrNumberAr}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  footer: { ...settings.footer, vatOrCrNumberAr: e.target.value }
-                })}
-                className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-2.5"
-              />
+            <div className="space-y-6">
+              {(settings.footer.columns || []).map((col, colIdx) => (
+                <div
+                  key={col.id}
+                  className={`p-6 rounded-3xl border transition-all ${
+                    col.isVisible !== false ? 'bg-white border-ivory-300 shadow-sm' : 'bg-red-50/20 border-dashed border-red-200 opacity-75'
+                  }`}
+                >
+                  {/* Column Header */}
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-ivory-200 pb-4 mb-4">
+                    <div className="flex items-center gap-3">
+                      <span className="w-8 h-8 rounded-full bg-gold-50 text-gold-800 font-bold flex items-center justify-center text-xs border border-gold-200">
+                        {colIdx + 1}
+                      </span>
+                      <input
+                        type="text"
+                        value={col.titleAr}
+                        onChange={(e) => {
+                          const updated = [...settings.footer.columns];
+                          updated[colIdx] = { ...updated[colIdx], titleAr: e.target.value };
+                          setSettings({ ...settings, footer: { ...settings.footer, columns: updated } });
+                        }}
+                        className="bg-ivory-50 border border-ivory-300 rounded-xl p-2 font-bold text-zaad-900 text-sm w-48 sm:w-64"
+                        placeholder="عنوان العمود..."
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = [...settings.footer.columns];
+                          updated[colIdx] = { ...updated[colIdx], isVisible: updated[colIdx].isVisible === false ? true : false };
+                          setSettings({ ...settings, footer: { ...settings.footer, columns: updated } });
+                        }}
+                        className={`text-xs px-3 py-1.5 rounded-lg border font-bold ${
+                          col.isVisible !== false ? 'bg-green-50 text-green-800 border-green-200' : 'bg-charcoal-100 text-charcoal-600'
+                        }`}
+                      >
+                        {col.isVisible !== false ? 'العمود ظاهر' : 'العمود مخفي'}
+                      </button>
+
+                      <button
+                        type="button"
+                        disabled={colIdx === 0}
+                        onClick={() => {
+                          if (colIdx === 0) return;
+                          const updated = [...settings.footer.columns];
+                          const temp = updated[colIdx];
+                          updated[colIdx] = updated[colIdx - 1];
+                          updated[colIdx - 1] = temp;
+                          setSettings({ ...settings, footer: { ...settings.footer, columns: updated } });
+                        }}
+                        className="p-1.5 rounded-lg border border-ivory-300 text-charcoal-700 hover:bg-ivory-100 disabled:opacity-30"
+                        title="تحريك لأعلى"
+                      >
+                        <ArrowUp className="w-4 h-4" />
+                      </button>
+
+                      <button
+                        type="button"
+                        disabled={colIdx === settings.footer.columns.length - 1}
+                        onClick={() => {
+                          if (colIdx === settings.footer.columns.length - 1) return;
+                          const updated = [...settings.footer.columns];
+                          const temp = updated[colIdx];
+                          updated[colIdx] = updated[colIdx + 1];
+                          updated[colIdx + 1] = temp;
+                          setSettings({ ...settings, footer: { ...settings.footer, columns: updated } });
+                        }}
+                        className="p-1.5 rounded-lg border border-ivory-300 text-charcoal-700 hover:bg-ivory-100 disabled:opacity-30"
+                        title="تحريك لأسفل"
+                      >
+                        <ArrowDown className="w-4 h-4" />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (confirm(`هل أنت متأكد من حذف عمود "${col.titleAr}" وجميع روابطه؟`)) {
+                            const updated = settings.footer.columns.filter((_, i) => i !== colIdx);
+                            setSettings({ ...settings, footer: { ...settings.footer, columns: updated } });
+                          }
+                        }}
+                        className="p-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50"
+                        title="حذف العمود"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Links List in Column */}
+                  <div className="space-y-3 pl-2 sm:pl-6">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-charcoal-700">روابط هذا العمود ({col.links?.length || 0}):</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newLink: FooterLink = {
+                            id: `l-${Date.now()}`,
+                            labelAr: 'رابط جديد',
+                            href: '/shop',
+                            openInNewTab: false,
+                            isVisible: true,
+                            order: (col.links?.length || 0) + 1
+                          };
+                          const updated = [...settings.footer.columns];
+                          updated[colIdx] = {
+                            ...updated[colIdx],
+                            links: [...(updated[colIdx].links || []), newLink]
+                          };
+                          setSettings({ ...settings, footer: { ...settings.footer, columns: updated } });
+                        }}
+                        className="text-xs font-bold text-gold-700 hover:text-gold-900 flex items-center gap-1 bg-gold-50 border border-gold-200 px-3 py-1 rounded-lg"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>إضافة رابط</span>
+                      </button>
+                    </div>
+
+                    <div className="space-y-2">
+                      {(col.links || []).map((link, lIdx) => (
+                        <div
+                          key={link.id}
+                          className="flex flex-wrap sm:flex-nowrap items-center gap-2 bg-ivory-50 p-2.5 rounded-xl border border-ivory-200 text-xs"
+                        >
+                          <span className="text-charcoal-400 font-mono text-[11px] w-5 text-center">{lIdx + 1}</span>
+
+                          <input
+                            type="text"
+                            value={link.labelAr}
+                            onChange={(e) => {
+                              const updated = [...settings.footer.columns];
+                              const newLinks = [...updated[colIdx].links];
+                              newLinks[lIdx] = { ...newLinks[lIdx], labelAr: e.target.value };
+                              updated[colIdx] = { ...updated[colIdx], links: newLinks };
+                              setSettings({ ...settings, footer: { ...settings.footer, columns: updated } });
+                            }}
+                            className="bg-white border border-ivory-300 rounded-lg p-2 font-medium text-zaad-900 w-full sm:w-1/3"
+                            placeholder="نص الرابط..."
+                          />
+
+                          <input
+                            type="text"
+                            value={link.href}
+                            onChange={(e) => {
+                              const updated = [...settings.footer.columns];
+                              const newLinks = [...updated[colIdx].links];
+                              newLinks[lIdx] = { ...newLinks[lIdx], href: e.target.value };
+                              updated[colIdx] = { ...updated[colIdx], links: newLinks };
+                              setSettings({ ...settings, footer: { ...settings.footer, columns: updated } });
+                            }}
+                            className="bg-white border border-ivory-300 rounded-lg p-2 font-mono text-left w-full sm:w-1/3 text-xs"
+                            placeholder="/shop أو https://..."
+                          />
+
+                          <label className="flex items-center gap-1.5 cursor-pointer shrink-0">
+                            <input
+                              type="checkbox"
+                              checked={link.openInNewTab || false}
+                              onChange={(e) => {
+                                const updated = [...settings.footer.columns];
+                                const newLinks = [...updated[colIdx].links];
+                                newLinks[lIdx] = { ...newLinks[lIdx], openInNewTab: e.target.checked };
+                                updated[colIdx] = { ...updated[colIdx], links: newLinks };
+                                setSettings({ ...settings, footer: { ...settings.footer, columns: updated } });
+                              }}
+                              className="accent-gold-600 rounded"
+                            />
+                            <span className="text-[11px] text-charcoal-700">تبويب جديد</span>
+                          </label>
+
+                          <div className="flex items-center gap-1 mr-auto shrink-0">
+                            <button
+                              type="button"
+                              disabled={lIdx === 0}
+                              onClick={() => {
+                                if (lIdx === 0) return;
+                                const updated = [...settings.footer.columns];
+                                const newLinks = [...updated[colIdx].links];
+                                const temp = newLinks[lIdx];
+                                newLinks[lIdx] = newLinks[lIdx - 1];
+                                newLinks[lIdx - 1] = temp;
+                                updated[colIdx] = { ...updated[colIdx], links: newLinks };
+                                setSettings({ ...settings, footer: { ...settings.footer, columns: updated } });
+                              }}
+                              className="p-1 rounded border border-ivory-300 text-charcoal-700 hover:bg-white disabled:opacity-30"
+                            >
+                              <ArrowUp className="w-3 h-3" />
+                            </button>
+
+                            <button
+                              type="button"
+                              disabled={lIdx === col.links.length - 1}
+                              onClick={() => {
+                                if (lIdx === col.links.length - 1) return;
+                                const updated = [...settings.footer.columns];
+                                const newLinks = [...updated[colIdx].links];
+                                const temp = newLinks[lIdx];
+                                newLinks[lIdx] = newLinks[lIdx + 1];
+                                newLinks[lIdx + 1] = temp;
+                                updated[colIdx] = { ...updated[colIdx], links: newLinks };
+                                setSettings({ ...settings, footer: { ...settings.footer, columns: updated } });
+                              }}
+                              className="p-1 rounded border border-ivory-300 text-charcoal-700 hover:bg-white disabled:opacity-30"
+                            >
+                              <ArrowDown className="w-3 h-3" />
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const updated = [...settings.footer.columns];
+                                updated[colIdx] = {
+                                  ...updated[colIdx],
+                                  links: updated[colIdx].links.filter((_, i) => i !== lIdx)
+                                };
+                                setSettings({ ...settings, footer: { ...settings.footer, columns: updated } });
+                              }}
+                              className="p-1 rounded border border-red-200 text-red-600 hover:bg-red-50"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

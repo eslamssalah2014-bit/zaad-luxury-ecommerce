@@ -288,31 +288,40 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
 
   // 9. Footer Configuration
   footer: {
+    logoUrl: '/images/zaad-logo.png',
+    brandNameAr: 'زاد | ZAAD',
     brandSloganAr: 'زَاد | دَارُ النَّقَاءِ الطَّبِيعِي',
     aboutTextAr: 'زاد ليست مجرد متجر للمنتجات الطبيعية؛ زاد هي عهد أصيل بحفظ التراث الطبيعي للأعسال النادرة، وتوثيق أعلى مستويات النقاء المخبري بعيداً عن المعالجات التجارية، لتصلكم خيرات الأرض كما أرادتها الطبيعة.',
+    backgroundColor: '#07160c',
+    textColor: '#fbf8f1',
+    accentColor: '#c59b27',
     badges: [
-      { id: 'b1', titleAr: 'نقاء دوعني موثق 100%', subtitleAr: 'فحص مخبري أوروبي لكل تشغيلة', icon: 'award' },
-      { id: 'b2', titleAr: 'إنزيمات حية كاملة', subtitleAr: 'بدون أي بسترة أو تسخين حراري', icon: 'shield' },
-      { id: 'b3', titleAr: 'شحن مبرد فاخر', subtitleAr: 'سيارات مكيفة للحفاظ على الخواص', icon: 'truck' },
-      { id: 'b4', titleAr: 'مطابقة مالية فورية', subtitleAr: 'تحقق آمن وفوري لإيصالات التحويل', icon: 'lock' }
+      { id: 'b1', titleAr: 'نقاء دوعني موثق 100%', subtitleAr: 'فحص مخبري أوروبي لكل تشغيلة', icon: 'award', isVisible: true, order: 1 },
+      { id: 'b2', titleAr: 'إنزيمات حية كاملة', subtitleAr: 'بدون أي بسترة أو تسخين حراري', icon: 'shield', isVisible: true, order: 2 },
+      { id: 'b3', titleAr: 'شحن مبرد فاخر', subtitleAr: 'سيارات مكيفة للحفاظ على الخواص', icon: 'truck', isVisible: true, order: 3 },
+      { id: 'b4', titleAr: 'مطابقة مالية فورية', subtitleAr: 'تحقق آمن وفوري لإيصالات التحويل', icon: 'lock', isVisible: true, order: 4 }
     ],
     columns: [
       {
         id: 'col-2',
         titleAr: 'عالم دار زاد',
+        isVisible: true,
+        order: 1,
         links: [
-          { id: 'l5', labelAr: 'إرث وقصة دار زاد', href: '/story' },
-          { id: 'l6', labelAr: 'ميثاق النقاء والتوثيق المخبري', href: '/story' },
-          { id: 'l7', labelAr: 'المساعد الحسي لاختيار العسل', href: '/#quiz' }
+          { id: 'l5', labelAr: 'إرث وقصة دار زاد', href: '/story', openInNewTab: false, isVisible: true, order: 1 },
+          { id: 'l6', labelAr: 'ميثاق النقاء والتوثيق المخبري', href: '/story', openInNewTab: false, isVisible: true, order: 2 },
+          { id: 'l7', labelAr: 'المساعد الحسي لاختيار العسل', href: '/#quiz', openInNewTab: false, isVisible: true, order: 3 }
         ]
       },
       {
         id: 'col-3',
         titleAr: 'خدمة كبار الشخصيات',
+        isVisible: true,
+        order: 2,
         links: [
-          { id: 'l8', labelAr: 'تتبع الشحنات والطلبات', href: '/cart' },
-          { id: 'l9', labelAr: 'الضمان الذهبي للاسترجاع', href: '/story' },
-          { id: 'l10', labelAr: 'التواصل المباشر مع الدار', href: 'https://wa.me/966500000000' }
+          { id: 'l8', labelAr: 'تتبع الشحنات والطلبات', href: '/cart', openInNewTab: false, isVisible: true, order: 1 },
+          { id: 'l9', labelAr: 'الضمان الذهبي للاسترجاع', href: '/story', openInNewTab: false, isVisible: true, order: 2 },
+          { id: 'l10', labelAr: 'التواصل المباشر مع الدار', href: 'https://wa.me/966500000000', openInNewTab: true, isVisible: true, order: 3 }
         ]
       }
     ],
@@ -328,7 +337,10 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
       instagram: 'https://instagram.com/zaad_honey',
       twitter: 'https://twitter.com/zaad_honey',
       whatsapp: 'https://wa.me/966500000000',
-      tiktok: 'https://tiktok.com/@zaad_honey'
+      tiktok: 'https://tiktok.com/@zaad_honey',
+      youtube: '',
+      facebook: '',
+      linkedin: ''
     },
     copyrightTextAr: '© 2026 دار زاد للنقاء الطبيعي (House of ZAAD). جميع الحقوق محفوظة.',
     vatOrCrNumberAr: 'سجل تجاري: 1010894210 • الرقم الضريبي: 31098421000003'
@@ -536,8 +548,8 @@ function mergeWithDefaults(incoming: Partial<CmsSettingsDocument>): CmsSettingsD
     footer: {
       ...DEFAULT_CMS_SETTINGS.footer,
       ...(incoming.footer || {}),
-      badges: incoming.footer?.badges?.length ? incoming.footer.badges : DEFAULT_CMS_SETTINGS.footer.badges,
-      columns: incoming.footer?.columns?.length ? incoming.footer.columns : DEFAULT_CMS_SETTINGS.footer.columns,
+      badges: incoming.footer?.badges !== undefined ? incoming.footer.badges : DEFAULT_CMS_SETTINGS.footer.badges,
+      columns: incoming.footer?.columns !== undefined ? incoming.footer.columns : DEFAULT_CMS_SETTINGS.footer.columns,
       contact: { ...DEFAULT_CMS_SETTINGS.footer.contact, ...(incoming.footer?.contact || {}) },
       social: { ...DEFAULT_CMS_SETTINGS.footer.social, ...(incoming.footer?.social || {}) }
     }

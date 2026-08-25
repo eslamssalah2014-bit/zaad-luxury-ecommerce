@@ -189,18 +189,34 @@ export interface FooterBadge {
   titleAr: string;
   subtitleAr: string;
   icon: 'award' | 'shield' | 'truck' | 'lock' | 'sparkles';
+  isVisible?: boolean;
+  order?: number;
 }
 
 export interface FooterLink {
   id: string;
   labelAr: string;
   href: string;
+  openInNewTab?: boolean;
+  isVisible?: boolean;
+  order?: number;
 }
 
 export interface FooterColumn {
   id: string;
   titleAr: string;
+  icon?: string;
+  isVisible?: boolean;
+  order?: number;
   links: FooterLink[];
+}
+
+export interface SocialLinkItem {
+  id: string;
+  platform: 'instagram' | 'whatsapp' | 'tiktok' | 'twitter' | 'facebook' | 'youtube' | 'linkedin' | 'custom';
+  labelAr: string;
+  url: string;
+  isVisible: boolean;
 }
 
 export interface SocialLinks {
@@ -223,12 +239,18 @@ export interface ContactInfo {
 }
 
 export interface FooterConfig {
+  logoUrl?: string;
+  brandNameAr?: string;
   brandSloganAr: string;
   aboutTextAr: string;
+  backgroundColor?: string;
+  textColor?: string;
+  accentColor?: string;
   badges: FooterBadge[];
   columns: FooterColumn[];
   contact: ContactInfo;
   social: SocialLinks;
+  socialItems?: SocialLinkItem[];
   copyrightTextAr: string;
   vatOrCrNumberAr: string;
 }
