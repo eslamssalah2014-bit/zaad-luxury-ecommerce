@@ -34,20 +34,49 @@ const amiri = Amiri({
 });
 
 export const metadata: Metadata = {
-  title: 'زاد | دار النقاء الملكي والمنتجات الطبيعية الفاخرة',
+  metadataBase: new URL('https://www.zaadstore.com'),
+  title: {
+    default: 'زاد | دار النقاء الملكي والمنتجات الطبيعية الفاخرة',
+    template: '%s | زاد (ZAAD)',
+  },
   description: 'زاد (ZAAD) ليست مجرد متجر لبيع العسل، بل دار أصيلة لتوثيق النقاء الملكي، وأندر أعسال السدر الدوعني والسمر الجبلي الموثقة مخبرياً بأعلى معايير الفخامة الهادئة.',
   keywords: ['عسل سدر دوعني', 'عسل فاخر', 'زاد', 'عسل طبيعي نقي', 'عسل سمر جبلي', 'فخامة هادئة', 'أعسال نادرة'],
+  authors: [{ name: 'دار زاد للنقاء الطبيعي' }],
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/icon.png', type: 'image/png', sizes: '32x32' },
+      { url: '/favicon-32x32.png', type: 'image/png', sizes: '32x32' },
+      { url: '/favicon-16x16.png', type: 'image/png', sizes: '16x16' },
+    ],
+    shortcut: '/favicon.ico',
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
+  manifest: '/manifest.webmanifest',
   openGraph: {
     title: 'زاد | دار النقاء الملكي والمنتجات الطبيعية الفاخرة',
     description: 'إرث من النقاء الطبيعي، مستخلص من أودية دوعن وجبال عسير العذراء وفق أرقى معايير الجودة العالمية.',
+    url: 'https://www.zaadstore.com',
+    siteName: 'زاد (ZAAD)',
     type: 'website',
     locale: 'ar_SA',
+    images: [
+      {
+        url: '/images/zaad-logo.png',
+        width: 800,
+        height: 800,
+        alt: 'شعار زاد الملكي',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'زاد | دار النقاء الملكي والمنتجات الطبيعية الفاخرة',
+    description: 'إرث من النقاء الطبيعي، مستخلص من أودية دوعن وجبال عسير العذراء وفق أرقى معايير الجودة العالمية.',
     images: ['/images/zaad-logo.png'],
   },
-  icons: {
-    icon: '/images/zaad-logo.png',
-    apple: '/images/zaad-logo.png',
-  }
 };
 
 export default async function RootLayout({
