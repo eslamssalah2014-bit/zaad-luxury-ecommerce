@@ -1816,7 +1816,22 @@ export default function AdminCmsPage() {
                           setSettings({ ...settings, testimonials: { ...settings.testimonials, items: updated } });
                         }}
                         className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
-                        placeholder="مثال: سعادة الدكتور / فهد العتيبي"
+                        placeholder="مثال: عمرو بلال"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-zaad-900 mb-1 text-gold-800">نوع العسل / اسم المنتج المقتنى (Product Name):</label>
+                      <input
+                        type="text"
+                        value={item.productPurchasedAr || ''}
+                        onChange={(e) => {
+                          const updated = [...settings.testimonials.items];
+                          updated[idx] = { ...updated[idx], productPurchasedAr: e.target.value };
+                          setSettings({ ...settings, testimonials: { ...settings.testimonials, items: updated } });
+                        }}
+                        className="w-full bg-gold-50/50 border border-gold-300 rounded-xl p-3 font-medium text-zaad-900"
+                        placeholder="مثال: عسل سمر بري جبلي نادر"
                       />
                     </div>
 

@@ -262,18 +262,18 @@ function TestimonialCard({
             }`}>
               {item.customerName}
             </h4>
-            {item.customerTitleAr && (
-              <p className={`text-xs mt-1 font-light ${
-                isDark ? 'text-gold-300/80' : 'text-gold-700'
-              }`}>
-                {item.customerTitleAr}
-              </p>
-            )}
-            {item.productPurchasedAr && !item.customerTitleAr && (
-              <p className={`text-[11px] mt-1 ${
-                isDark ? 'text-ivory-400' : 'text-charcoal-500'
+            {item.productPurchasedAr && (
+              <p className={`text-xs mt-1.5 font-medium ${
+                isDark ? 'text-gold-300' : 'text-charcoal-700'
               }`}>
                 {item.productPurchasedAr}
+              </p>
+            )}
+            {item.customerTitleAr && (
+              <p className={`text-[11px] mt-0.5 font-light ${
+                isDark ? 'text-gold-400/80' : 'text-gold-700'
+              }`}>
+                {item.customerTitleAr}
               </p>
             )}
           </div>
