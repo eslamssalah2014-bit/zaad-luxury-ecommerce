@@ -301,10 +301,10 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
 let cachedLiveSettings: CmsSettingsDocument | null = null;
 let cachedDraftSettings: CmsSettingsDocument | null = null;
 let lastFetchTime = 0;
-const CACHE_TTL_MS = 10000; // 10 seconds
+const CACHE_TTL_MS = 5000; // 5 seconds
 
 /**
- * Loads published or draft CMS configuration from Supabase with instant fallback
+ * Loads published or draft CMS configuration from Supabase cms_blocks with instant fallback
  */
 export async function getCmsSettings(isDraft = false): Promise<CmsSettingsDocument> {
   const now = Date.now();
@@ -318,19 +318,20 @@ export async function getCmsSettings(isDraft = false): Promise<CmsSettingsDocume
   try {
     const client = typeof window === 'undefined' ? supabaseAdmin : supabase;
     const { data, error } = await client
-      .from('cms_settings')
+      .from('cms_blocks')
       .select('*')
-      .eq('key', 'master_cms')
+      .eq('key', 'master_cms_settings')
       .maybeSingle();
 
     if (error) {
-      console.warn('⚠️ cms_settings query notice (falling back to defaults):', error.message);
+      console.warn('⚠️ cms_blocks query notice (falling back to defaults):', error.message);
       return DEFAULT_CMS_SETTINGS;
     }
 
-    if (data) {
-      const liveData = data.data as CmsSettingsDocument;
-      const draftData = (data.draft_data || data.data) as CmsSettingsDocument;
+    if (data && data.metadata) {
+      const meta = data.metadata as any;
+      const liveData = (meta.data || meta) as CmsSettingsDocument;
+      const draftData = (meta.draft_data || meta.data || meta) as CmsSettingsDocument;
 
       if (liveData) cachedLiveSettings = mergeWithDefaults(liveData);
       if (draftData) cachedDraftSettings = mergeWithDefaults(draftData);
@@ -344,15 +345,22 @@ export async function getCmsSettings(isDraft = false): Promise<CmsSettingsDocume
     // If record doesn't exist in Supabase yet, attempt to auto-seed it seamlessly
     if (typeof window === 'undefined') {
       try {
-        await supabaseAdmin.from('cms_settings').upsert({
-          key: 'master_cms',
-          data: DEFAULT_CMS_SETTINGS,
-          draft_data: DEFAULT_CMS_SETTINGS,
-          is_published: true,
+        await supabaseAdmin.from('cms_blocks').upsert({
+          key: 'master_cms_settings',
+          title_ar: 'إعدادات المحتوى الشامل (Master CMS)',
+          subtitle_ar: 'هوية ومحتوى الموقع',
+          headline_ar: DEFAULT_CMS_SETTINGS.hero.headlineAr,
+          body_ar: DEFAULT_CMS_SETTINGS.hero.descriptionAr,
+          metadata: {
+            data: DEFAULT_CMS_SETTINGS,
+            draft_data: DEFAULT_CMS_SETTINGS,
+            is_published: true
+          },
+          is_active: true,
           updated_at: new Date().toISOString()
-        });
+        }, { onConflict: 'key' });
       } catch (seedErr) {
-        console.warn('Could not auto-seed cms_settings (non-fatal):', seedErr);
+        console.warn('Could not auto-seed cms_blocks master_cms_settings (non-fatal):', seedErr);
       }
     }
 
@@ -364,7 +372,7 @@ export async function getCmsSettings(isDraft = false): Promise<CmsSettingsDocume
 }
 
 /**
- * Saves draft configuration in Supabase
+ * Saves draft configuration in Supabase cms_blocks table
  */
 export async function saveCmsDraft(draftDoc: CmsSettingsDocument): Promise<{ success: boolean; error?: string }> {
   try {
@@ -373,11 +381,23 @@ export async function saveCmsDraft(draftDoc: CmsSettingsDocument): Promise<{ suc
       updatedAt: new Date().toISOString()
     };
 
+    // Fetch existing live data to preserve published state
+    const currentLive = cachedLiveSettings || DEFAULT_CMS_SETTINGS;
+
     const { error } = await supabaseAdmin
-      .from('cms_settings')
+      .from('cms_blocks')
       .upsert({
-        key: 'master_cms',
-        draft_data: updatedDraft,
+        key: 'master_cms_settings',
+        title_ar: 'إعدادات المحتوى الشامل (Master CMS)',
+        subtitle_ar: 'هوية ومحتوى الموقع',
+        headline_ar: updatedDraft.hero?.headlineAr || 'زاد',
+        body_ar: updatedDraft.hero?.descriptionAr || 'دار النقاء',
+        metadata: {
+          data: currentLive,
+          draft_data: updatedDraft,
+          is_published: true
+        },
+        is_active: true,
         updated_at: new Date().toISOString()
       }, { onConflict: 'key' });
 
@@ -394,7 +414,7 @@ export async function saveCmsDraft(draftDoc: CmsSettingsDocument): Promise<{ suc
 }
 
 /**
- * Publishes draft configuration to live storefront in Supabase
+ * Publishes draft configuration to live storefront in Supabase cms_blocks table
  */
 export async function publishCmsSettings(docToPublish: CmsSettingsDocument): Promise<{ success: boolean; error?: string }> {
   try {
@@ -405,12 +425,19 @@ export async function publishCmsSettings(docToPublish: CmsSettingsDocument): Pro
     };
 
     const { error } = await supabaseAdmin
-      .from('cms_settings')
+      .from('cms_blocks')
       .upsert({
-        key: 'master_cms',
-        data: publishedDoc,
-        draft_data: publishedDoc,
-        is_published: true,
+        key: 'master_cms_settings',
+        title_ar: 'إعدادات المحتوى الشامل (Master CMS)',
+        subtitle_ar: 'هوية ومحتوى الموقع',
+        headline_ar: publishedDoc.hero?.headlineAr || 'زاد',
+        body_ar: publishedDoc.hero?.descriptionAr || 'دار النقاء',
+        metadata: {
+          data: publishedDoc,
+          draft_data: publishedDoc,
+          is_published: true
+        },
+        is_active: true,
         updated_at: new Date().toISOString()
       }, { onConflict: 'key' });
 

@@ -72,38 +72,57 @@ export async function GET(request: NextRequest) {
     const folder = searchParams.get('folder') as MediaFolder | 'all' | null;
     const search = searchParams.get('search')?.toLowerCase() || '';
 
-    // Fetch from Supabase cms_media table if available
-    let dbMedia: CmsMediaItem[] = [];
+    // 1. Fetch direct from Supabase Storage bucket 'product-images'
+    const storageMedia: CmsMediaItem[] = [];
     try {
-      const { data, error } = await supabaseAdmin
-        .from('cms_media')
-        .select('*')
-        .order('created_at', { ascending: false });
+      const { data: storageFiles, error: storageErr } = await supabaseAdmin.storage
+        .from('product-images')
+        .list('', { limit: 100, sortBy: { column: 'created_at', order: 'desc' } });
 
-      if (!error && data) {
-        dbMedia = data.map((d: any) => ({
-          id: d.id,
-          name: d.name,
-          url: d.url,
-          folder: d.folder || 'general',
-          fileType: d.file_type || 'image/jpeg',
-          sizeBytes: Number(d.size_bytes || 0),
-          createdAt: d.created_at || new Date().toISOString()
-        }));
+      if (!storageErr && storageFiles) {
+        storageFiles.forEach((file) => {
+          if (!file.name || file.name.startsWith('.')) return;
+
+          const { data: urlData } = supabaseAdmin.storage
+            .from('product-images')
+            .getPublicUrl(file.name);
+
+          // Infer folder from prefix or name (e.g. cms_homepage_..., cms_story_...)
+          let inferredFolder: MediaFolder = 'general';
+          if (file.name.includes('_homepage_') || file.name.startsWith('hero_')) inferredFolder = 'homepage';
+          else if (file.name.includes('_story_')) inferredFolder = 'story';
+          else if (file.name.includes('_banners_') || file.name.includes('banner')) inferredFolder = 'banners';
+          else if (file.name.includes('_products_') || file.name.startsWith('prod_')) inferredFolder = 'products';
+          else if (file.name.includes('_logos_') || file.name.includes('logo')) inferredFolder = 'logos';
+          else if (file.name.includes('_certificates_') || file.name.includes('cert')) inferredFolder = 'certificates';
+
+          const ext = file.name.split('.').pop()?.toLowerCase() || 'jpeg';
+          const mimeType = ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : ext === 'svg' ? 'image/svg+xml' : 'image/jpeg';
+
+          storageMedia.push({
+            id: file.id || `storage-${file.name}`,
+            name: file.name,
+            url: urlData.publicUrl,
+            folder: inferredFolder,
+            fileType: mimeType,
+            sizeBytes: (file.metadata as any)?.size || 150000,
+            createdAt: file.created_at || new Date().toISOString()
+          });
+        });
       }
-    } catch (e) {
-      console.warn('Notice: cms_media table not initialized yet:', e);
+    } catch (sErr) {
+      console.warn('Storage list notice:', sErr);
     }
 
-    // Merge static and dynamic media, avoid duplicates
-    const allMedia = [...dbMedia];
+    // 2. Merge Storage files with Static fallback assets (avoiding duplicates by URL)
+    const allMedia = [...storageMedia];
     STATIC_ASSETS.forEach(stat => {
-      if (!allMedia.some(m => m.url === stat.url)) {
+      if (!allMedia.some(m => m.url === stat.url || m.name === stat.name)) {
         allMedia.push(stat);
       }
     });
 
-    // Apply filtering
+    // 3. Apply filtering
     let filtered = allMedia;
     if (folder && folder !== 'all') {
       filtered = filtered.filter(item => item.folder === folder);
@@ -227,21 +246,6 @@ export async function POST(request: NextRequest) {
         createdAt: new Date().toISOString()
       };
 
-      // Try recording in cms_media table
-      try {
-        await supabaseAdmin.from('cms_media').insert({
-          id: mediaItem.id,
-          name: mediaItem.name,
-          url: mediaItem.url,
-          folder: mediaItem.folder,
-          file_type: mediaItem.fileType,
-          size_bytes: mediaItem.sizeBytes,
-          created_at: mediaItem.createdAt
-        });
-      } catch (dbErr) {
-        console.warn('Could not insert into cms_media table (non-fatal):', dbErr);
-      }
-
       uploadedItems.push(mediaItem);
     }
 
@@ -270,16 +274,20 @@ export async function DELETE(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url);
-    const mediaId = searchParams.get('id');
+    const mediaName = searchParams.get('name');
     const mediaUrl = searchParams.get('url');
 
-    if (!mediaId && !mediaUrl) {
-      return NextResponse.json({ success: false, error: 'معرّف الصورة مطلوب للحذف' }, { status: 400 });
+    if (!mediaName && !mediaUrl) {
+      return NextResponse.json({ success: false, error: 'اسم الصورة أو الرابط مطلوب للحذف' }, { status: 400 });
     }
 
-    // Attempt delete from cms_media table
-    if (mediaId) {
-      await supabaseAdmin.from('cms_media').delete().eq('id', mediaId);
+    let fileNameToDelete = mediaName;
+    if (!fileNameToDelete && mediaUrl) {
+      fileNameToDelete = mediaUrl.split('/').pop() || '';
+    }
+
+    if (fileNameToDelete) {
+      await supabaseAdmin.storage.from('product-images').remove([fileNameToDelete]);
     }
 
     return NextResponse.json({ success: true, message: 'تم حذف الملف من المكتبة بنجاح' });
