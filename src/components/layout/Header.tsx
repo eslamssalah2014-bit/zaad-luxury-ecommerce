@@ -95,24 +95,20 @@ export default function Header({ initialAnnouncement, initialNavigation }: Heade
             </button>
           </div>
 
-          {/* Brand Logo with Luxury Green and Gold Flourish */}
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="relative w-11 h-11 rounded-full overflow-hidden border border-gold-400/40 shadow-sm bg-white p-0.5 group-hover:border-gold-500 transition-all">
+          {/* Primary Circular Brand Seal Logo */}
+          <Link
+            href="/"
+            className="flex items-center group focus:outline-none transition-transform"
+            aria-label="دار زاد للنقاء - الصفحة الرئيسية"
+          >
+            <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-gold-400/50 shadow-sm bg-white p-0.5 group-hover:border-gold-500 group-hover:scale-105 group-hover:shadow-md transition-all duration-300">
               <Image
-                src="/images/zaad-logo.png"
+                src={navigation.logoUrl || '/images/zaad-logo.png'}
                 alt="زاد | دار النقاء"
                 fill
                 className="object-contain"
                 priority
               />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-serif text-2xl font-bold tracking-widest text-zaad-800 leading-none group-hover:text-zaad-900 transition-colors">
-                Z<span className="text-gold-500 font-normal">AA</span>D
-              </span>
-              <span className="text-[10px] text-gold-600 tracking-wider font-medium mt-0.5">
-                زَاد | دَارُ النَّقَاءِ
-              </span>
             </div>
           </Link>
 
