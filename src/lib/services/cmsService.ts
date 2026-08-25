@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { supabase } from '@/lib/supabase/client';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { CmsSettingsDocument } from '@/types/cms';
@@ -388,12 +389,12 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
 let cachedLiveSettings: CmsSettingsDocument | null = null;
 let cachedDraftSettings: CmsSettingsDocument | null = null;
 let lastFetchTime = 0;
-const CACHE_TTL_MS = 5000; // 5 seconds
+const CACHE_TTL_MS = 30000; // 30 seconds
 
 /**
  * Loads published or draft CMS configuration from Supabase cms_blocks with instant fallback
  */
-export async function getCmsSettings(isDraft = false): Promise<CmsSettingsDocument> {
+export const getCmsSettings = cache(async function getCmsSettings(isDraft = false): Promise<CmsSettingsDocument> {
   const now = Date.now();
   if (isDraft && cachedDraftSettings && now - lastFetchTime < CACHE_TTL_MS) {
     return cachedDraftSettings;
@@ -456,7 +457,7 @@ export async function getCmsSettings(isDraft = false): Promise<CmsSettingsDocume
     console.error('Error in getCmsSettings, using default luxury fallback:', err);
     return DEFAULT_CMS_SETTINGS;
   }
-}
+});
 
 /**
  * Saves draft configuration in Supabase cms_blocks table
@@ -493,6 +494,7 @@ export async function saveCmsDraft(draftDoc: CmsSettingsDocument): Promise<{ suc
     }
 
     cachedDraftSettings = updatedDraft;
+    lastFetchTime = Date.now();
     return { success: true };
   } catch (err: any) {
     console.error('Error saving CMS draft:', err);
@@ -534,6 +536,7 @@ export async function publishCmsSettings(docToPublish: CmsSettingsDocument): Pro
 
     cachedLiveSettings = publishedDoc;
     cachedDraftSettings = publishedDoc;
+    lastFetchTime = Date.now();
     return { success: true };
   } catch (err: any) {
     console.error('Error publishing CMS settings:', err);

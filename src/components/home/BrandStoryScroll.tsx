@@ -22,15 +22,7 @@ interface BrandStoryScrollProps {
 }
 
 export default function BrandStoryScroll({ initialSections }: BrandStoryScrollProps) {
-  const [sections, setSections] = useState<HomepageSection[]>(
-    initialSections ? initialSections.filter(s => s.isVisible) : DEFAULT_CMS_SETTINGS.homepageSections
-  );
-
-  useEffect(() => {
-    if (initialSections) {
-      setSections(initialSections.filter(s => s.isVisible));
-    }
-  }, [initialSections]);
+  const sections = (initialSections || DEFAULT_CMS_SETTINGS.homepageSections).filter(s => s.isVisible);
 
   return (
     <div className="relative overflow-hidden font-arabic">

@@ -1,6 +1,17 @@
+import { cache } from 'react';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { supabase } from '@/lib/supabase/client';
 import { Product, Category } from '@/types';
+
+// In-memory server cache
+let cachedLiveProducts: { data: Product[]; timestamp: number } | null = null;
+let cachedCategories: { data: Category[]; timestamp: number } | null = null;
+const PRODUCTS_CACHE_TTL_MS = 60000; // 60 seconds
+
+export function invalidateProductsCache() {
+  cachedLiveProducts = null;
+  cachedCategories = null;
+}
 
 /**
  * Format raw Supabase database row into application Product interface
@@ -98,9 +109,16 @@ export function formatSupabaseProduct(d: any): Product {
 }
 
 /**
- * Fetch all live products directly from Supabase (Client or Server safe)
+ * Fetch all live products directly from Supabase with smart in-memory caching (Client or Server safe)
  */
-export async function getLiveProducts(categoryId?: string, includeHidden = false): Promise<Product[]> {
+export const getLiveProducts = cache(async function getLiveProducts(categoryId?: string, includeHidden = false): Promise<Product[]> {
+  const now = Date.now();
+  if (!categoryId || categoryId === 'all') {
+    if (!includeHidden && cachedLiveProducts && now - cachedLiveProducts.timestamp < PRODUCTS_CACHE_TTL_MS) {
+      return cachedLiveProducts.data;
+    }
+  }
+
   try {
     const client = typeof window === 'undefined' ? supabaseAdmin : supabase;
     let query = client
@@ -123,22 +141,28 @@ export async function getLiveProducts(categoryId?: string, includeHidden = false
     const { data, error } = await query;
     if (!error && data) {
       const prods = data.map(formatSupabaseProduct);
-      if (!includeHidden) {
-        return prods.filter(p => p.visibilityStatus !== 'hidden' && p.visibilityStatus !== 'draft');
+      const filtered = !includeHidden
+        ? prods.filter(p => p.visibilityStatus !== 'hidden' && p.visibilityStatus !== 'draft')
+        : prods;
+
+      if (!categoryId || categoryId === 'all') {
+        if (!includeHidden) {
+          cachedLiveProducts = { data: filtered, timestamp: now };
+        }
       }
-      return prods;
+      return filtered;
     }
   } catch (err) {
     console.error('Error fetching live products from Supabase:', err);
   }
 
-  return [];
-}
+  return cachedLiveProducts ? cachedLiveProducts.data : [];
+});
 
 /**
  * Fetch a single live product by its slug directly from Supabase
  */
-export async function getLiveProductBySlug(slug: string): Promise<Product | null> {
+export const getLiveProductBySlug = cache(async function getLiveProductBySlug(slug: string): Promise<Product | null> {
   try {
     const client = typeof window === 'undefined' ? supabaseAdmin : supabase;
     const { data, error } = await client
@@ -159,12 +183,17 @@ export async function getLiveProductBySlug(slug: string): Promise<Product | null
   }
 
   return null;
-}
+});
 
 /**
- * Fetch all categories directly from Supabase
+ * Fetch all categories directly from Supabase with smart in-memory caching
  */
-export async function getLiveCategories(): Promise<Category[]> {
+export const getLiveCategories = cache(async function getLiveCategories(): Promise<Category[]> {
+  const now = Date.now();
+  if (cachedCategories && now - cachedCategories.timestamp < PRODUCTS_CACHE_TTL_MS) {
+    return cachedCategories.data;
+  }
+
   try {
     const client = typeof window === 'undefined' ? supabaseAdmin : supabase;
     const { data, error } = await client
@@ -174,7 +203,7 @@ export async function getLiveCategories(): Promise<Category[]> {
       .order('sort_order', { ascending: true });
 
     if (!error && data && data.length > 0) {
-      return data.map((c: any) => ({
+      const formatted = data.map((c: any) => ({
         id: c.id,
         nameAr: c.name_ar,
         nameEn: c.name_en,
@@ -184,10 +213,13 @@ export async function getLiveCategories(): Promise<Category[]> {
         sortOrder: c.sort_order || 0,
         itemCount: 4
       }));
+      cachedCategories = { data: formatted, timestamp: now };
+      return formatted;
     }
   } catch (err) {
     console.error('Error fetching live categories from Supabase:', err);
   }
 
-  return [];
-}
+  return cachedCategories ? cachedCategories.data : [];
+});
+

@@ -11,14 +11,8 @@ interface SocialProofReviewsProps {
 }
 
 export default function SocialProofReviews({ initialConfig }: SocialProofReviewsProps) {
-  const [config, setConfig] = useState<TestimonialsSectionConfig>(
-    initialConfig || DEFAULT_CMS_SETTINGS.testimonials
-  );
+  const config = initialConfig || DEFAULT_CMS_SETTINGS.testimonials;
   const [carouselIndex, setCarouselIndex] = useState(0);
-
-  useEffect(() => {
-    if (initialConfig) setConfig(initialConfig);
-  }, [initialConfig]);
 
   if (!config.isEnabled) return null;
 

@@ -12,11 +12,7 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({ initialHero }: HeroSectionProps) {
-  const [hero, setHero] = useState<HeroConfig>(initialHero || DEFAULT_CMS_SETTINGS.hero);
-
-  useEffect(() => {
-    if (initialHero) setHero(initialHero);
-  }, [initialHero]);
+  const hero = initialHero || DEFAULT_CMS_SETTINGS.hero;
 
   return (
     <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden bg-zaad-950 text-white">
