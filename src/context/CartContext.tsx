@@ -74,7 +74,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
             productId: product.id,
             productNameAr: product.nameAr,
             productSlug: product.slug,
-            productImage: product.images[0] || 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=400&q=80',
+            productImage: product.images[0] || '/images/zaad-nature-honey-clover.jpg',
             price: product.price,
             quantity,
             total: product.price * quantity,

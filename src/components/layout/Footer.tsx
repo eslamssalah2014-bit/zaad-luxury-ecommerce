@@ -1,11 +1,42 @@
-import React from 'react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ShieldCheck, Award, Sparkles, Truck, Lock, ArrowUpRight } from 'lucide-react';
+import { ShieldCheck, Award, Sparkles, Truck, Lock, ArrowUpRight, MessageCircle, Mail, Phone, Clock, MapPin } from 'lucide-react';
+import { DEFAULT_CMS_SETTINGS } from '@/lib/services/cmsService';
+import { FooterConfig } from '@/types/cms';
 
 export default function Footer() {
+  const [footer, setFooter] = useState<FooterConfig>(DEFAULT_CMS_SETTINGS.footer);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadFooter() {
+      try {
+        const res = await fetch('/api/cms/content');
+        const json = await res.json();
+        if (isMounted && json.success && json.data?.footer) {
+          setFooter(json.data.footer);
+        }
+      } catch (e) {
+        console.warn('Footer using default fallback:', e);
+      }
+    }
+    loadFooter();
+    return () => { isMounted = false; };
+  }, []);
+
+  const badgeIcons = {
+    award: Award,
+    shield: ShieldCheck,
+    truck: Truck,
+    lock: Lock,
+    sparkles: Sparkles
+  };
+
   return (
-    <footer className="bg-zaad-950 text-ivory-200 pt-16 pb-12 border-t-2 border-gold-600/40 relative overflow-hidden">
+    <footer className="bg-zaad-950 text-ivory-200 pt-16 pb-12 border-t-2 border-gold-600/40 relative overflow-hidden font-arabic">
       
       {/* Subtle Background Pattern */}
       <div className="absolute inset-0 opacity-5 pointer-events-none bg-[radial-gradient(#C59B27_1px,transparent_1px)] [background-size:24px_24px]"></div>
@@ -14,47 +45,20 @@ export default function Footer() {
         
         {/* Quality Badges Tier */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pb-12 border-b border-zaad-800 text-center sm:text-right">
-          
-          <div className="flex items-center gap-3.5 bg-zaad-900/60 p-4 rounded-lg border border-gold-500/20">
-            <div className="w-10 h-10 rounded-full bg-gold-500/10 flex items-center justify-center text-gold-400 shrink-0">
-              <Award className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="text-xs font-bold text-ivory-100">نقاء دوعني موثق 100%</h4>
-              <p className="text-[11px] text-ivory-400 mt-0.5">فحص مخبري أوروبي لكل تشغيلة</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3.5 bg-zaad-900/60 p-4 rounded-lg border border-gold-500/20">
-            <div className="w-10 h-10 rounded-full bg-gold-500/10 flex items-center justify-center text-gold-400 shrink-0">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="text-xs font-bold text-ivory-100">إنزيمات حية كاملة</h4>
-              <p className="text-[11px] text-ivory-400 mt-0.5">بدون أي بسترة أو تسخين حراري</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3.5 bg-zaad-900/60 p-4 rounded-lg border border-gold-500/20">
-            <div className="w-10 h-10 rounded-full bg-gold-500/10 flex items-center justify-center text-gold-400 shrink-0">
-              <Truck className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="text-xs font-bold text-ivory-100">شحن مبرد فاخر</h4>
-              <p className="text-[11px] text-ivory-400 mt-0.5">سيارات مكيفة للحفاظ على الخواص</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3.5 bg-zaad-900/60 p-4 rounded-lg border border-gold-500/20">
-            <div className="w-10 h-10 rounded-full bg-gold-500/10 flex items-center justify-center text-gold-400 shrink-0">
-              <Lock className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="text-xs font-bold text-ivory-100">مطابقة مالية فورية</h4>
-              <p className="text-[11px] text-ivory-400 mt-0.5">تحقق آمن وفوري لإيصالات التحويل</p>
-            </div>
-          </div>
-
+          {footer.badges.map((b) => {
+            const Icon = badgeIcons[b.icon] || Award;
+            return (
+              <div key={b.id} className="flex items-center gap-3.5 bg-zaad-900/60 p-4 rounded-lg border border-gold-500/20">
+                <div className="w-10 h-10 rounded-full bg-gold-500/10 flex items-center justify-center text-gold-400 shrink-0">
+                  <Icon className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-ivory-100">{b.titleAr}</h4>
+                  <p className="text-[11px] text-ivory-400 mt-0.5">{b.subtitleAr}</p>
+                </div>
+              </div>
+            );
+          })}
         </div>
 
         {/* Main Footer Links */}
@@ -75,74 +79,66 @@ export default function Footer() {
                 <span className="font-serif text-2xl font-bold tracking-widest text-ivory-50">
                   Z<span className="text-gold-400 font-normal">AA</span>D
                 </span>
-                <p className="text-[10px] text-gold-400 tracking-wider">زَاد | دَارُ النَّقَاءِ الطَّبِيعِي</p>
+                <p className="text-[10px] text-gold-400 tracking-wider">{footer.brandSloganAr}</p>
               </div>
             </div>
             <p className="text-xs text-ivory-300/80 leading-relaxed max-w-md">
-              زاد ليست مجرد متجر للمنتجات الطبيعية؛ زاد هي عهد أصيل بحفظ التراث الطبيعي للأعسال النادرة، وتوثيق أعلى مستويات النقاء المخبري بعيداً عن المعالجات التجارية، لتصلكم خيرات الأرض كما أرادتها الطبيعة.
+              {footer.aboutTextAr}
             </p>
-            <div className="pt-2">
-              <Link
-                href="/story"
-                className="inline-flex items-center gap-2 text-xs text-gold-400 hover:text-gold-300 font-medium group"
-              >
-                <span>اكتشف ميثاق النقاء وقصة الحصاد الطبيعي</span>
-                <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-              </Link>
+            
+            {/* Direct Contact Links */}
+            <div className="pt-2 flex flex-wrap items-center gap-4 text-xs text-gold-400">
+              {footer.contact?.whatsappNumber && (
+                <a
+                  href={`https://wa.me/${footer.contact.whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(footer.contact.whatsappPrefilledMessageAr || 'مرحباً دار زاد')}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-gold-300 flex items-center gap-1.5 font-bold transition-colors"
+                >
+                  <MessageCircle className="w-4 h-4 text-green-400" />
+                  <span>محادثة واتساب مباشرة</span>
+                </a>
+              )}
+              {footer.contact?.customerSupportEmail && (
+                <a
+                  href={`mailto:${footer.contact.customerSupportEmail}`}
+                  className="hover:text-gold-300 flex items-center gap-1.5 font-medium transition-colors text-ivory-300"
+                >
+                  <Mail className="w-3.5 h-3.5" />
+                  <span>{footer.contact.customerSupportEmail}</span>
+                </a>
+              )}
             </div>
           </div>
 
-          {/* Quick Links 1 */}
-          <div>
-            <h4 className="text-sm font-bold text-gold-300 mb-4 border-r-2 border-gold-500 pr-2">المحصول الملكي</h4>
-            <ul className="space-y-2.5 text-xs text-ivory-300">
-              <li><Link href="/shop" className="hover:text-gold-300 transition-colors">عسل سدر دوعني ملكي</Link></li>
-              <li><Link href="/shop" className="hover:text-gold-300 transition-colors">عسل سمر بري جبلي</Link></li>
-              <li><Link href="/shop" className="hover:text-gold-300 transition-colors">عسل المروج البيضاء</Link></li>
-              <li><Link href="/shop" className="hover:text-gold-300 transition-colors">صناديق الإهداء الملكي</Link></li>
-              <li><Link href="/shop" className="hover:text-gold-300 transition-colors">غذاء الملكات والعكبر النقي</Link></li>
-            </ul>
-          </div>
-
-          {/* Quick Links 2 */}
-          <div>
-            <h4 className="text-sm font-bold text-gold-300 mb-4 border-r-2 border-gold-500 pr-2">خدمات النخبة</h4>
-            <ul className="space-y-2.5 text-xs text-ivory-300">
-              <li><Link href="/story" className="hover:text-gold-300 transition-colors">ميثاق النقاء والأصالة</Link></li>
-              <li><Link href="/shop" className="hover:text-gold-300 transition-colors">المحصول الملكي الحصري</Link></li>
-              <li><Link href="/checkout" className="hover:text-gold-300 transition-colors">طرق التحويل والاعتماد</Link></li>
-              <li><Link href="/story" className="hover:text-gold-300 transition-colors">الشحن المبرد الفاخر</Link></li>
-              <li><Link href="/story" className="hover:text-gold-300 transition-colors">الأسئلة الشائعة</Link></li>
-            </ul>
-          </div>
-
-          {/* Quality Assurance & Purity Standards */}
-          <div>
-            <h4 className="text-sm font-bold text-gold-300 mb-4 border-r-2 border-gold-500 pr-2">الضمان والأصالة</h4>
-            <ul className="space-y-2.5 text-xs text-ivory-300">
-              <li>
-                <Link href="/story" className="text-gold-400 hover:text-gold-200 font-semibold flex items-center gap-1.5 transition-colors">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>ميثاق الجودة والنقاء الطبيعي</span>
-                </Link>
-              </li>
-              <li><Link href="/shop" className="hover:text-gold-300 transition-colors">كتالوج المحاصيل النادرة</Link></li>
-              <li><Link href="/checkout" className="hover:text-gold-300 transition-colors">الشحن المبرد وضمان الوصول</Link></li>
-              <li><Link href="/checkout" className="hover:text-gold-300 transition-colors">خيارات الدفع والتحويل البنكي</Link></li>
-              <li><Link href="/shop" className="hover:text-gold-300 transition-colors">باقات الهدايا الفاخرة</Link></li>
-            </ul>
-          </div>
+          {/* Quick Links Dynamic Columns */}
+          {footer.columns.map((col) => (
+            <div key={col.id}>
+              <h4 className="text-sm font-bold text-gold-300 mb-4 border-r-2 border-gold-500 pr-2">{col.titleAr}</h4>
+              <ul className="space-y-2.5 text-xs text-ivory-300">
+                {col.links.map((link) => (
+                  <li key={link.id}>
+                    <Link href={link.href} className="hover:text-gold-300 transition-colors">
+                      {link.labelAr}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
 
         </div>
 
         {/* Bottom Copyright & Security */}
         <div className="pt-8 flex flex-col md:flex-row items-center justify-between text-xs text-ivory-400 gap-4">
           <div className="flex items-center gap-2">
-            <span>جميع الحقوق محفوظة © {new Date().getFullYear()} لدار زاد للنقاء (ZAAD Luxury)</span>
+            <span>{footer.copyrightTextAr}</span>
           </div>
-          <div className="flex items-center gap-4 text-[11px] text-ivory-400">
-            <span>مدفوعات آمنة: تحويل بنكي فوري • إنستاباي • مدى • فودافون كاش</span>
-          </div>
+          {footer.vatOrCrNumberAr && (
+            <div className="flex items-center gap-4 text-[11px] text-ivory-400 font-mono">
+              <span>{footer.vatOrCrNumberAr}</span>
+            </div>
+          )}
         </div>
 
       </div>

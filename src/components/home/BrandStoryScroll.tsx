@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -12,13 +12,33 @@ import {
   Sparkles,
   Quote,
   Award,
-  Clock,
-  CheckCircle2,
+  Clock
 } from 'lucide-react';
+import { DEFAULT_CMS_SETTINGS } from '@/lib/services/cmsService';
+import { HomepageSection } from '@/types/cms';
 
 export default function BrandStoryScroll() {
+  const [sections, setSections] = useState<HomepageSection[]>(DEFAULT_CMS_SETTINGS.homepageSections);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadSections() {
+      try {
+        const res = await fetch('/api/cms/content');
+        const json = await res.json();
+        if (isMounted && json.success && json.data?.homepageSections) {
+          setSections(json.data.homepageSections.filter((s: HomepageSection) => s.isVisible));
+        }
+      } catch (e) {
+        console.warn('BrandStoryScroll using default fallback:', e);
+      }
+    }
+    loadSections();
+    return () => { isMounted = false; };
+  }, []);
+
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative overflow-hidden font-arabic">
 
       {/* =========================================================================
           SECTION 1: Header & Luxury Trust Pillars
@@ -91,271 +111,162 @@ export default function BrandStoryScroll() {
       </section>
 
       {/* =========================================================================
-          SECTION 2: إرث من الشغف لا من التجارة (White Background Split Section)
+          DYNAMIC HOMEPAGE SECTIONS
       ========================================================================= */}
-      <section className="py-24 sm:py-32 bg-white border-b border-ivory-300 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
-            
-            {/* Image (Right Side in RTL) */}
-            <div className="w-full lg:w-1/2 flex justify-center">
-              <div className="relative w-full aspect-[4/3] sm:aspect-[16/11] max-h-[500px] rounded-3xl overflow-hidden shadow-2xl border-2 border-ivory-300 group bg-ivory-100 flex items-center justify-center">
-                <Image
-                  src="/images/zaad-heritage-beekeepers.jpg"
-                  alt="إرث تربية النحل - زاد"
-                  fill
-                  className="object-contain p-3 group-hover:scale-105 transition-transform duration-700 ease-out"
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                />
-              </div>
-            </div>
+      {sections.map((sec) => {
+        const isDark = sec.backgroundColor?.startsWith('#0') || sec.backgroundColor?.includes('zaad') || sec.backgroundColor === '#07160c';
+        const isImageLeft = sec.imagePosition === 'left';
 
-            {/* Content (Left Side in RTL) */}
-            <div className="w-full lg:w-1/2 space-y-6 text-right">
-              <div className="inline-flex items-center gap-2 text-xs font-bold text-gold-700 bg-gold-50 px-3.5 py-1 rounded-full border border-gold-200">
-                <Heart className="w-3.5 h-3.5 text-gold-600" />
-                <span>الفلسفة الأولى • البدايات والشغف</span>
-              </div>
+        return (
+          <section
+            key={sec.id}
+            style={{
+              backgroundColor: sec.backgroundColor || (isDark ? '#07160c' : '#ffffff'),
+              color: sec.textColor || (isDark ? '#fbf8f1' : '#0f2918')
+            }}
+            className={`py-24 sm:py-32 border-b relative overflow-hidden ${
+              isDark ? 'border-gold-500/30' : 'border-ivory-300'
+            }`}
+          >
+            {/* Subtle Ambient Radial Shimmer on Dark Sections */}
+            {isDark && (
+              <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gold-500/5 rounded-full blur-3xl pointer-events-none"></div>
+            )}
 
-              <h3 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-zaad-900 leading-tight">
-                إرث من الشغف لا من التجارة
-              </h3>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+              <div className={`flex flex-col items-center gap-12 lg:gap-16 ${
+                isImageLeft ? 'lg:flex-row-reverse' : 'lg:flex-row'
+              }`}>
+                
+                {/* Image Container */}
+                {sec.imageUrl && (
+                  <div className="w-full lg:w-1/2 flex justify-center">
+                    <div className={`relative w-full aspect-[16/10] max-h-[500px] rounded-3xl overflow-hidden shadow-2xl border-2 group ${
+                      isDark
+                        ? 'border-gold-500/30 bg-zaad-950/80'
+                        : 'border-ivory-300 bg-ivory-100 flex items-center justify-center'
+                    }`}>
+                      <Image
+                        src={sec.imageUrl}
+                        alt={sec.imageAltAr || sec.titleAr}
+                        fill
+                        className="object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
+                        sizes="(max-width: 1024px) 100vw, 50vw"
+                        quality={90}
+                      />
+                      {isDark && (
+                        <div className="absolute inset-0 bg-gradient-to-t from-zaad-950/30 via-transparent to-transparent pointer-events-none"></div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
-              <p className="text-base sm:text-lg text-charcoal-700/90 leading-relaxed font-light">
-                لم تبدأ زاد كخطة تجارية أو مشروع استثماري، بل بدأت من شغف حقيقي بتربية النحل والمحافظة على جودة العسل كما خلقته الطبيعة. امتد هذا الشغف عبر الأجيال ليصبح إرثًا نحمله اليوم بكل فخر.
-              </p>
+                {/* Content Container */}
+                <div className={`w-full ${sec.imageUrl ? 'lg:w-1/2' : 'max-w-3xl mx-auto text-center'} space-y-6 text-right`}>
+                  
+                  {/* Badge */}
+                  {sec.subtitleAr && (
+                    <div className={`inline-flex items-center gap-2 text-xs font-bold px-3.5 py-1 rounded-full border ${
+                      isDark
+                        ? 'text-gold-400 bg-zaad-900/90 border-gold-500/30'
+                        : 'text-gold-700 bg-gold-50 border-gold-200'
+                    }`}>
+                      <Sparkles className="w-3.5 h-3.5 text-gold-400" />
+                      <span>{sec.subtitleAr}</span>
+                    </div>
+                  )}
 
-              {/* Highlighted Quote Box */}
-              <div className="bg-gold-50/80 border-r-4 border-gold-500 p-5 rounded-2xl shadow-sm">
-                <div className="flex items-start gap-3">
-                  <Quote className="w-5 h-5 text-gold-600 shrink-0 mt-0.5" />
-                  <p className="font-serif text-base sm:text-lg font-bold text-zaad-950 leading-relaxed">
-                    &ldquo;بعض العلامات التجارية تُبنى بالأفكار... أما زاد فبُنيت بالشغف.&rdquo;
-                  </p>
+                  <h3 className={`font-serif text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight ${
+                    isDark ? 'text-ivory-50' : 'text-zaad-900'
+                  }`}>
+                    {sec.titleAr}
+                  </h3>
+
+                  {sec.bodyAr && (
+                    <p className={`text-base sm:text-lg leading-relaxed font-light ${
+                      isDark ? 'text-ivory-300/90' : 'text-charcoal-700/90'
+                    }`}>
+                      {sec.bodyAr}
+                    </p>
+                  )}
+
+                  {/* Feature Bullets */}
+                  {sec.features && sec.features.length > 0 && (
+                    <div className={`border rounded-2xl p-4 sm:p-5 space-y-1.5 font-serif text-sm sm:text-base ${
+                      isDark
+                        ? 'bg-zaad-900/60 border-gold-500/20 text-gold-300'
+                        : 'bg-gold-50/60 border-gold-200 text-gold-800'
+                    }`}>
+                      {sec.features.map((feat, fIdx) => (
+                        <p key={fIdx} className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-gold-400"></span>
+                          <span>{feat}</span>
+                        </p>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Stats Grid if defined */}
+                  {sec.stats && sec.stats.length > 0 && (
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                      {sec.stats.map(st => (
+                        <div key={st.id} className="bg-white p-4 rounded-2xl border border-ivory-300 shadow-sm text-center">
+                          <span className="font-mono text-xl font-bold text-zaad-900 block">{st.value}</span>
+                          <span className="text-xs text-charcoal-700/80 mt-1 block font-medium">{st.labelAr}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Quote Box */}
+                  {sec.quoteAr && (
+                    <div className={`p-5 rounded-2xl shadow-sm border-r-4 ${
+                      isDark
+                        ? 'bg-zaad-900/90 border-gold-400 shadow-inner'
+                        : 'bg-gold-50/80 border-gold-500'
+                    }`}>
+                      <div className="flex items-start gap-3">
+                        <Quote className="w-5 h-5 text-gold-400 shrink-0 mt-0.5" />
+                        <p className={`font-serif text-base sm:text-lg font-bold leading-relaxed ${
+                          isDark ? 'text-gold-200' : 'text-zaad-950'
+                        }`}>
+                          &ldquo;{sec.quoteAr}&rdquo;
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* CTA Link */}
+                  {sec.ctaTextAr && (
+                    <div className="pt-2">
+                      <Link
+                        href={sec.ctaLink || '/story'}
+                        className={`inline-flex items-center gap-2 text-xs sm:text-sm font-bold transition-colors group ${
+                          isDark ? 'text-gold-400 hover:text-gold-300' : 'text-zaad-900 hover:text-gold-600'
+                        }`}
+                      >
+                        <span>{sec.ctaTextAr}</span>
+                        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                      </Link>
+                    </div>
+                  )}
+
                 </div>
-              </div>
 
-              <div className="pt-2">
-                <Link
-                  href="/story"
-                  className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-zaad-900 hover:text-gold-600 transition-colors group"
-                >
-                  <span>اكتشف قصة زاد التراثية الكاملة</span>
-                  <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                </Link>
               </div>
             </div>
-
-          </div>
-        </div>
-      </section>
+          </section>
+        );
+      })}
 
       {/* =========================================================================
-          SECTION 3: من الخلية إلى المائدة كما خلقته الطبيعة (Deep ZAAD Green)
-      ========================================================================= */}
-      <section className="py-24 sm:py-32 bg-gradient-to-br from-zaad-950 via-zaad-900 to-zaad-950 text-ivory-100 border-b border-gold-500/30 relative overflow-hidden">
-        
-        {/* Subtle Ambient Radial Shimmer */}
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gold-500/5 rounded-full blur-3xl pointer-events-none"></div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="flex flex-col lg:flex-row-reverse items-center gap-12 lg:gap-16">
-            
-            {/* Large Immersive Image (Left Side in RTL) */}
-            <div className="w-full lg:w-1/2 flex justify-center">
-              <div className="relative w-full aspect-[4/3] sm:aspect-[16/11] max-h-[500px] rounded-3xl overflow-hidden shadow-2xl border-2 border-gold-500/30 group bg-zaad-950/80">
-                <Image
-                  src="https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=1200&q=85"
-                  alt="أقراص شمع العسل النقي الخام"
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-zaad-950/60 via-transparent to-transparent pointer-events-none"></div>
-              </div>
-            </div>
-
-            {/* Content (Right Side in RTL) */}
-            <div className="w-full lg:w-1/2 space-y-6 text-right">
-              <div className="inline-flex items-center gap-2 text-xs font-bold text-gold-400 bg-zaad-900/90 px-3.5 py-1 rounded-full border border-gold-500/30">
-                <ShieldCheck className="w-3.5 h-3.5 text-gold-400" />
-                <span>النقاء المطلق • ميثاق الطبيعة</span>
-              </div>
-
-              <h3 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-ivory-50 leading-tight">
-                من الخلية إلى المائدة كما خلقته الطبيعة
-              </h3>
-
-              <p className="text-base sm:text-lg text-ivory-300/90 leading-relaxed font-light">
-                نؤمن أن الطبيعة قدمت لنا الكمال بالفعل، لذلك نحافظ على العسل في صورته الأصيلة دون إضافات أو معالجات تفقده هويته وقيمته الطبيعية.
-              </p>
-
-              {/* Poetic Philosophy Strip */}
-              <div className="bg-zaad-900/60 border border-gold-500/20 rounded-2xl p-4 sm:p-5 space-y-1.5 text-gold-300 font-serif text-sm sm:text-base">
-                <p className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-gold-400"></span>
-                  <span>لا نضيف شيئاً...</span>
-                </p>
-                <p className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-gold-400"></span>
-                  <span>ولا ننزع شيئاً...</span>
-                </p>
-                <p className="flex items-center gap-2 font-bold text-gold-200">
-                  <span className="w-1.5 h-1.5 rounded-full bg-gold-400"></span>
-                  <span>نحافظ فقط على ما منحته الطبيعة.</span>
-                </p>
-              </div>
-
-              {/* Highlighted Quote Box */}
-              <div className="bg-zaad-900/90 border-r-4 border-gold-400 p-5 rounded-2xl shadow-inner">
-                <div className="flex items-start gap-3">
-                  <Quote className="w-5 h-5 text-gold-400 shrink-0 mt-0.5" />
-                  <p className="font-serif text-base sm:text-lg font-bold text-gold-200 leading-relaxed">
-                    &ldquo;العسل يأتي من النحلة إليك... كما أرادته الطبيعة.&rdquo;
-                  </p>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          SECTION 4: أكثر من أربعة عقود من الخبرة المتوارثة (Timeline & Stats)
-      ========================================================================= */}
-      <section className="py-24 sm:py-32 bg-ivory-100/90 border-b border-ivory-300 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
-            
-            {/* Image (Right Side in RTL) */}
-            <div className="w-full lg:w-1/2 flex justify-center">
-              <div className="relative w-full aspect-[4/3] sm:aspect-[16/11] max-h-[500px] rounded-3xl overflow-hidden shadow-2xl border-2 border-ivory-300 group bg-ivory-200/50">
-                <Image
-                  src="/images/zaad-childhood-memories.jpg"
-                  alt="أربعة عقود من الخبرة المتوارثة - زاد"
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                />
-              </div>
-            </div>
-
-            {/* Content (Left Side in RTL) */}
-            <div className="w-full lg:w-1/2 space-y-6 text-right">
-              <div className="inline-flex items-center gap-2 text-xs font-bold text-gold-700 bg-gold-50 px-3.5 py-1 rounded-full border border-gold-200">
-                <History className="w-3.5 h-3.5 text-gold-600" />
-                <span>أصالة التراث • أربعة عقود</span>
-              </div>
-
-              <h3 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-zaad-900 leading-tight">
-                أكثر من أربعة عقود من الخبرة المتوارثة
-              </h3>
-
-              <p className="text-base sm:text-lg text-charcoal-700/90 leading-relaxed font-light">
-                منذ ثمانينيات القرن الماضي تراكمت المعرفة والخبرة جيلاً بعد جيل، ليس فقط في إنتاج العسل، بل في فهم مواسمه واختيار أفضل المحاصيل والمحافظة على أعلى مستويات الجودة.
-              </p>
-
-              {/* Luxury Timeline / Statistics Display */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-                <div className="bg-white p-4 rounded-2xl border border-ivory-300 shadow-sm text-center">
-                  <span className="font-mono text-xl font-bold text-zaad-900 block">+40 عاماً</span>
-                  <span className="text-xs text-charcoal-700/80 mt-1 block font-medium">من الخبرة</span>
-                </div>
-
-                <div className="bg-white p-4 rounded-2xl border border-ivory-300 shadow-sm text-center">
-                  <span className="font-serif text-lg font-bold text-zaad-900 block">ثمانينيات</span>
-                  <span className="text-xs text-charcoal-700/80 mt-1 block font-medium">القرن الماضي</span>
-                </div>
-
-                <div className="bg-white p-4 rounded-2xl border border-ivory-300 shadow-sm text-center">
-                  <span className="font-serif text-lg font-bold text-zaad-900 block">أجيال متعاقبة</span>
-                  <span className="text-xs text-charcoal-700/80 mt-1 block font-medium">من الشغف</span>
-                </div>
-              </div>
-
-              {/* Highlighted Quote Box */}
-              <div className="bg-gold-50/80 border-r-4 border-gold-500 p-5 rounded-2xl shadow-sm">
-                <div className="flex items-start gap-3">
-                  <Quote className="w-5 h-5 text-gold-600 shrink-0 mt-0.5" />
-                  <p className="font-serif text-base sm:text-lg font-bold text-zaad-950 leading-relaxed">
-                    &ldquo;خبرة لا تُكتسب في سنوات قليلة... بل تُبنى عبر الأجيال.&rdquo;
-                  </p>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          SECTION 5: انتقاء ملكي لأفضل المحاصيل (Luxury Curation Section)
-      ========================================================================= */}
-      <section className="py-24 sm:py-32 bg-gradient-to-br from-zaad-950 via-zaad-900 to-zaad-950 text-ivory-100 border-b border-gold-500/30 relative overflow-hidden">
-        
-        {/* Subtle Ambient Radial Shimmer */}
-        <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-gold-500/5 rounded-full blur-3xl pointer-events-none"></div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="flex flex-col lg:flex-row-reverse items-center gap-12 lg:gap-16">
-            
-            {/* Large Luxury Image (Left Side in RTL) */}
-            <div className="w-full lg:w-1/2 flex justify-center">
-              <div className="relative w-full aspect-[4/3] sm:aspect-[16/11] max-h-[500px] rounded-3xl overflow-hidden shadow-2xl border-2 border-gold-500/30 group bg-zaad-950/80">
-                <Image
-                  src="/images/zaad-story-hero-banner.jpg"
-                  alt="انتقاء ملكي لمحاصيل عسل زاد"
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-zaad-950/60 via-transparent to-transparent pointer-events-none"></div>
-              </div>
-            </div>
-
-            {/* Content (Right Side in RTL) */}
-            <div className="w-full lg:w-1/2 space-y-6 text-right">
-              <div className="inline-flex items-center gap-2 text-xs font-bold text-gold-400 bg-zaad-900/90 px-3.5 py-1 rounded-full border border-gold-500/30">
-                <Crown className="w-3.5 h-3.5 text-gold-400" />
-                <span>المحصول الملكي • معايير صارمة</span>
-              </div>
-
-              <h3 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-ivory-50 leading-tight">
-                انتقاء ملكي لأفضل المحاصيل
-              </h3>
-
-              <p className="text-base sm:text-lg text-ivory-300/90 leading-relaxed font-light">
-                ليست كل المحاصيل تحمل اسم زاد. نختار بعناية ما ينسجم مع معاييرنا في النقاء والجودة والطعم والقيمة الغذائية لنقدم مجموعة منتقاة لمن يبحث عن الأفضل.
-              </p>
-
-              {/* Highlighted Quote Box */}
-              <div className="bg-zaad-900/90 border-r-4 border-gold-400 p-5 rounded-2xl shadow-inner">
-                <div className="flex items-start gap-3">
-                  <Quote className="w-5 h-5 text-gold-400 shrink-0 mt-0.5" />
-                  <p className="font-serif text-base sm:text-lg font-bold text-gold-200 leading-relaxed">
-                    &ldquo;الفخامة الحقيقية تبدأ من حسن الاختيار.&rdquo;
-                  </p>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          SECTION 6: Luxury Statement Divider Banner
+          FINAL LUXURY STATEMENT DIVIDER
       ========================================================================= */}
       <section className="py-24 bg-zaad-950 text-ivory-100 border-b-2 border-gold-500/40 relative overflow-hidden">
-        
-        {/* Subtle Ambient Glow */}
         <div className="absolute inset-0 opacity-5 pointer-events-none bg-[radial-gradient(#C59B27_1px,transparent_1px)] [background-size:24px_24px]"></div>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-gold-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 space-y-6">
-          
-          {/* Gold Ornamental Header */}
           <div className="inline-flex items-center gap-3 justify-center">
             <span className="w-12 h-px bg-gradient-to-r from-transparent to-gold-400"></span>
             <Sparkles className="w-5 h-5 text-gold-400" />
@@ -381,7 +292,6 @@ export default function BrandStoryScroll() {
               <ArrowLeft className="w-4 h-4 text-zaad-950" />
             </Link>
           </div>
-
         </div>
       </section>
 

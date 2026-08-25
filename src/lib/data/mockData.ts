@@ -7,7 +7,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     nameEn: 'Rare Sidr Honeys',
     slug: 'rare-sidr',
     descriptionAr: 'أنقى أنواع عسل السدر المقطوف من أودية دوعن وجبال عسير العذراء وفق أعلى معايير النقاء الملكي.',
-    imageUrl: 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=800&q=80',
+    imageUrl: '/images/zaad-nature-honey-clover.jpg',
     sortOrder: 1,
     itemCount: 4,
   },
@@ -81,7 +81,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     ],
     storageInstructionsAr: 'يحفظ في مكان مظلم وبارد بدرجة حرارة الغرفة (18-24 مئوية). تجنب استخدام ملاعق معدنية ويفضل استخدام ملعقة خشب الزيتون المرفقة.',
     images: [
-      'https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=1000&q=85',
+      '/images/zaad-nature-honey-clover.jpg',
       'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?auto=format&fit=crop&w=1000&q=85',
       'https://images.unsplash.com/photo-1471943311424-646960669fbc?auto=format&fit=crop&w=1000&q=85'
     ],
@@ -150,7 +150,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     storageInstructionsAr: 'يحفظ بعيداً عن الرطوبة وأشعة الشمس المباشرة.',
     images: [
       'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?auto=format&fit=crop&w=1000&q=85',
-      'https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=1000&q=85'
+      '/images/zaad-nature-honey-clover.jpg'
     ],
     isFeatured: true,
     isAvailable: true,
@@ -216,7 +216,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     storageInstructionsAr: 'يحفظ في بيئة معتدلة (15-20 مئوية) للحفاظ على بنيته الكريمية.',
     images: [
       'https://images.unsplash.com/photo-1517456793572-1d8efd6dc135?auto=format&fit=crop&w=1000&q=85',
-      'https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=1000&q=85'
+      '/images/zaad-nature-honey-clover.jpg'
     ],
     isFeatured: true,
     isAvailable: true,
@@ -280,7 +280,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     storageInstructionsAr: 'يحفظ الصندوق في مكان جاف ومعتدل.',
     images: [
       'https://images.unsplash.com/photo-1517456793572-1d8efd6dc135?auto=format&fit=crop&w=1000&q=85',
-      'https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=1000&q=85'
+      '/images/zaad-nature-honey-clover.jpg'
     ],
     isFeatured: true,
     isAvailable: true,
@@ -407,7 +407,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     ],
     storageInstructionsAr: 'يحفظ مجمدًا أو مبردًا في الثلاجة (تحت 4 درجات مئوية).',
     images: [
-      'https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=1000&q=85',
+      '/images/zaad-nature-honey-clover.jpg',
       'https://images.unsplash.com/photo-1517456793572-1d8efd6dc135?auto=format&fit=crop&w=1000&q=85'
     ],
     isFeatured: false,
@@ -473,7 +473,7 @@ export const INITIAL_ORDERS: Order[] = [
         productId: 'prod-1',
         productNameAr: 'عسل سدر دوعني ملكي فاخر',
         productSlug: 'royal-sidr-doan',
-        productImage: 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=400&q=80',
+        productImage: '/images/zaad-nature-honey-clover.jpg',
         price: 490,
         quantity: 1,
         total: 490,
@@ -534,7 +534,7 @@ export const INITIAL_ORDERS: Order[] = [
         productId: 'prod-1',
         productNameAr: 'عسل سدر دوعني ملكي فاخر',
         productSlug: 'royal-sidr-doan',
-        productImage: 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=400&q=80',
+        productImage: '/images/zaad-nature-honey-clover.jpg',
         price: 490,
         quantity: 2,
         total: 980,
@@ -544,7 +544,7 @@ export const INITIAL_ORDERS: Order[] = [
         productId: 'prod-6',
         productNameAr: 'غذاء ملكات النحل الجبلي النقي 100%',
         productSlug: 'pure-royal-jelly-extract',
-        productImage: 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=400&q=80',
+        productImage: '/images/zaad-nature-honey-clover.jpg',
         price: 450,
         quantity: 1,
         total: 450,
@@ -723,7 +723,7 @@ export const INITIAL_CMS: CmsSection[] = [
     bodyAr: 'نحن لا نبيع العسل كمنتج تجاري، بل نوثق إرثاً أصيلاً من النقاء الشامل، المقطوف يدوياً من أعالي الأودية العذراء بأعلى معايير الحرفة والتوثيق المخبري المعتمد عالمياً.',
     ctaTextAr: 'اكتشف المجموعة الملكية',
     ctaLink: '/shop',
-    imageUrl: 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=1800&q=90',
+    imageUrl: '/images/zaad-nature-honey-clover.jpg',
     isActive: true,
     updatedAt: '2026-08-22T10:00:00Z'
   },

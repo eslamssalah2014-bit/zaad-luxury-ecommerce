@@ -1,0 +1,471 @@
+import { supabase } from '@/lib/supabase/client';
+import { supabaseAdmin } from '@/lib/supabase/admin';
+import { CmsSettingsDocument } from '@/types/cms';
+
+export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
+  version: 1,
+  updatedAt: '2026-08-25T12:00:00.000Z',
+  publishedAt: '2026-08-25T12:00:00.000Z',
+
+  // 1. Hero Configuration
+  hero: {
+    headlineAr: 'زاد...',
+    headlineHighlightAr: 'حيث يلتقي النقاء بالفخامة.',
+    subtitleAr: 'المحصول الملكي الحصري • إصدار شتاء 2026',
+    descriptionAr: 'منتجات طبيعية مختارة بعناية، بمعايير جودة صارمة وتجربة استثنائية تليق بمن يقدّر الأفضل.',
+    backgroundImageUrl: '/images/zaad-nature-honey-clover.jpg',
+    badgeTextAr: 'المحصول الملكي الحصري • إصدار شتاء 2026',
+    primaryCtaTextAr: 'استكشاف المحصول الملكي',
+    primaryCtaLink: '/shop',
+    secondaryCtaTextAr: 'قصة وإرث دار زاد',
+    secondaryCtaLink: '/story',
+    trustPillars: [
+      { id: 'p1', value: '+40', labelAr: 'عاماً من الخبرة', sublabelAr: 'منذ ثمانينيات القرن الماضي' },
+      { id: 'p2', value: '100%', labelAr: 'منتجات طبيعية', sublabelAr: 'عسل نقي بدون إضافات' },
+      { id: 'p3', value: '0%', labelAr: 'إضافات أو خلط', sublabelAr: 'كما خلقته الطبيعة' },
+      { id: 'p4', value: 'إرث', labelAr: 'متوارث عبر الأجيال', sublabelAr: 'شغف لا ينتهي' }
+    ]
+  },
+
+  // 2. Homepage Sections
+  homepageSections: [
+    {
+      id: 'sec-1',
+      type: 'image_text',
+      titleAr: 'إرث من الشغف لا من التجارة',
+      subtitleAr: 'الفلسفة الأولى • البدايات والشغف',
+      headlineAr: 'إرث من الشغف لا من التجارة',
+      bodyAr: 'لم تبدأ زاد كخطة تجارية أو مشروع استثماري، بل بدأت من شغف حقيقي بتربية النحل والمحافظة على جودة العسل كما خلقته الطبيعة. امتد هذا الشغف عبر الأجيال ليصبح إرثًا نحمله اليوم بكل فخر.',
+      quoteAr: 'بعض العلامات التجارية تُبنى بالأفكار... أما زاد فبُنيت بالشغف.',
+      imageUrl: '/images/zaad-heritage-beekeepers.jpg',
+      imageAltAr: 'إرث تربية النحل - زاد',
+      imagePosition: 'right',
+      ctaTextAr: 'اكتشف قصة زاد التراثية الكاملة',
+      ctaLink: '/story',
+      backgroundColor: '#ffffff',
+      textColor: '#0f2918',
+      isVisible: true,
+      order: 1
+    },
+    {
+      id: 'sec-2',
+      type: 'image_text',
+      titleAr: 'من الخلية إلى المائدة كما خلقته الطبيعة',
+      subtitleAr: 'النقاء المطلق • ميثاق الطبيعة',
+      headlineAr: 'من الخلية إلى المائدة كما خلقته الطبيعة',
+      bodyAr: 'نؤمن أن الطبيعة قدمت لنا الكمال بالفعل، لذلك نحافظ على العسل في صورته الأصيلة دون إضافات أو معالجات تفقده هويته وقيمته الطبيعية.',
+      quoteAr: 'العسل يأتي من النحلة إليك... كما أرادته الطبيعة.',
+      imageUrl: '/images/zaad-nature-honey-clover.jpg',
+      imageAltAr: 'عسل نوارة زاد التراثي - من الخلية إلى المائدة كما خلقته الطبيعة',
+      imagePosition: 'left',
+      backgroundColor: '#07160c',
+      textColor: '#fbf8f1',
+      features: [
+        'لا نضيف شيئاً...',
+        'ولا ننزع شيئاً...',
+        'نحافظ فقط على ما منحته الطبيعة.'
+      ],
+      isVisible: true,
+      order: 2
+    },
+    {
+      id: 'sec-3',
+      type: 'heritage_story',
+      titleAr: 'أكثر من أربعة عقود من الخبرة المتوارثة',
+      subtitleAr: 'أصالة التراث • أربعة عقود',
+      headlineAr: 'أكثر من أربعة عقود من الخبرة المتوارثة',
+      bodyAr: 'منذ ثمانينيات القرن الماضي تراكمت المعرفة والخبرة جيلاً بعد جيل، ليس فقط في إنتاج العسل، بل في فهم مواسمه واختيار أفضل المحاصيل والمحافظة على أعلى مستويات الجودة.',
+      imageUrl: '/images/zaad-childhood-memories.jpg',
+      imageAltAr: 'أربعة عقود من الخبرة المتوارثة - زاد',
+      imagePosition: 'right',
+      stats: [
+        { id: 's1', value: '1980s', labelAr: 'بداية الرحلة', sublabelAr: 'هواية الجد وشغفه' },
+        { id: 's2', value: '40+', labelAr: 'عاماً من الخبرة', sublabelAr: 'توارث المعرفة الحرفية' },
+        { id: 's3', value: '100%', labelAr: 'مواسم مختارة', sublabelAr: 'نقاء تام بدون معالجة' }
+      ],
+      backgroundColor: '#f8f4ec',
+      textColor: '#0f2918',
+      isVisible: true,
+      order: 3
+    },
+    {
+      id: 'sec-4',
+      type: 'banner',
+      titleAr: 'انتقاء ملكي لأفضل المحاصيل',
+      subtitleAr: 'المحصول الملكي • معايير صارمة',
+      headlineAr: 'انتقاء ملكي لأفضل المحاصيل',
+      bodyAr: 'ليست كل المحاصيل تحمل اسم زاد. نختار بعناية ما ينسجم مع معاييرنا في النقاء والجودة والطعم والقيمة الغذائية لنقدم مجموعة منتقاة لمن يبحث عن الأفضل.',
+      quoteAr: 'الفخامة الحقيقية تبدأ من حسن الاختيار.',
+      imageUrl: '/images/zaad-story-hero-banner.jpg',
+      imageAltAr: 'انتقاء ملكي لمحاصيل عسل زاد',
+      imagePosition: 'left',
+      backgroundColor: '#07160c',
+      textColor: '#fbf8f1',
+      isVisible: true,
+      order: 4
+    }
+  ],
+
+  // 3. Story & Heritage Page Configuration
+  storyPage: {
+    metaBadgeAr: 'إرث الأصالة المتوارث',
+    mainTitleAr: 'قصة زاد',
+    mainSubtitleAr: 'لم تبدأ زاد كشركة، ولا كمشروع تجاري.. بل بدأت كحكاية شغف وإخلاص امتدت لأكثر من أربعين عاماً.',
+    heroBannerImageUrl: '/images/zaad-story-hero-banner.jpg',
+    heroBannerTitleAr: 'إرثٌ عائلي من النقاء الخالص',
+    heroBannerSubtitleAr: 'من ثمانينيات القرن الماضي وحتى اليوم',
+    chapters: [
+      {
+        id: 'ch-1',
+        periodTagAr: 'البدايات الأولى في ثمانينيات القرن الماضي',
+        titleAr: 'هواية أحبها الجد وأخلص لها',
+        descriptionParagraphs: [
+          'بدأت الحكاية في ثمانينيات القرن الماضي، حين كان جدي يمارس تربية النحل كهواية أحبها وأخلص لها. كان يقضي ساعات طويلة بين المناحل، يتابع النحل بعناية ويحرص على أن يبقى العسل كما خلقته الطبيعة؛ نقيًا، خالصًا، دون أي إضافات أو تدخلات.',
+          'لم يكن يبيع العسل في ذلك الوقت، بل كان يقدمه للأقارب والأصدقاء والمعارف. ومع مرور السنوات، أصبح الجميع ينتظر موسم العسل بشغف، لما عرفوه فيه من نقاء وجودة وطعم مختلف يصعب العثور عليه في الأسواق.'
+        ],
+        imageUrl: '/images/zaad-heritage-beekeepers.jpg',
+        imageCaptionAr: 'صورة حقيقية لجدي رحمه الله عليه',
+        order: 1,
+        isVisible: true
+      },
+      {
+        id: 'ch-2',
+        periodTagAr: 'ذكريات الطفولة والمائدة العائلية',
+        titleAr: 'عسلٌ كبرنا معه وعرفنا قيمته',
+        descriptionParagraphs: [
+          'بالنسبة لنا، لم يكن العسل مجرد غذاء، بل جزءًا أساسيًا من تفاصيل يومنا منذ الطفولة. كبرنا ونحن نرى كيف يُجمع العسل بحرص، وكيف يُحفظ بأمانة، وكيف تكون قطرة العسل الطبيعية الحقيقية مختلفة في قوامها، رائحتها، ومذاقها.',
+          'تلك الذكريات غرست فينا معرفة عميقة بقيمة العسل الأصيل، وجعلتنا ندرك الفارق الحقيقي بين ما تنتجه الطبيعة بحرية وما تصنعه العمليات التجارية السريعة.'
+        ],
+        imageUrl: '/images/zaad-childhood-memories.jpg',
+        imageCaptionAr: 'ذكريات الطفولة مع مواسم العسل الأولى',
+        order: 2,
+        isVisible: true
+      },
+      {
+        id: 'ch-3',
+        periodTagAr: 'ولادة زاد واستمرار العهد',
+        titleAr: 'من إرث عائلي إلى دار زاد',
+        descriptionParagraphs: [
+          'مع مرور السنوات، ومن واقع ذلك الشغف المتوارث وتلك المعرفة المتراكمة، وُلدت «زاد».',
+          'ولم يكن الهدف إنشاء علامة تجارية جديدة، بل الحفاظ على إرث عائلي امتد لعقود، والاستمرار على النهج نفسه الذي بدأ به جدي منذ أكثر من أربعين عامًا: عسل طبيعي خالص، يُنتج بعناية، ويصل إليك كما خرج من الخلية.'
+        ],
+        imageUrl: '/images/zaad-nature-honey-clover.jpg',
+        imageCaptionAr: 'عسل زاد الطبيعي النقي - استمرار الإرث',
+        order: 3,
+        isVisible: true
+      }
+    ],
+    valuesTitleAr: 'مبادئنا في دار زاد',
+    valuesSubtitleAr: 'قيم متوارثة نلتزم بها في كل قطرة نقدمها',
+    values: [
+      { id: 'v1', titleAr: 'الأصالة المتوارثة', descAr: 'خبرة عملية ممتدة لأكثر من أربعة عقود توارثناها جيلاً بعد جيل.' },
+      { id: 'v2', titleAr: 'النقاء الخالص 100%', descAr: 'عسل كما خلقته الطبيعة دون أي بسترة، تسخين، أو إضافات صناعية.' },
+      { id: 'v3', titleAr: 'أمانة الاختيار', descAr: 'لا نعتمد إلا المحاصيل التي تجتاز أعلى معايير الجودة والمطابقة المخبرية.' }
+    ]
+  },
+
+  // 4. Announcement Bar Configuration
+  announcementBar: {
+    isEnabled: true,
+    messageTextAr: 'نقاء موثق مخبرياً بنسبة 100% مع كل برطمان | شحن ملكي مبرد وفاخر',
+    secondaryTextAr: 'ميثاق النقاء الملكي',
+    linkUrl: '/story',
+    iconName: 'sparkles',
+    backgroundColor: '#07160c',
+    textColor: '#f3e8cb',
+    accentColor: '#d4af37'
+  },
+
+  // 5. Navigation Menu Configuration
+  navigation: {
+    brandNameAr: 'زاد',
+    brandTaglineAr: 'دَارُ النَّقَاءِ',
+    logoUrl: '/images/zaad-logo.png',
+    items: [
+      { id: 'nav-1', nameAr: 'الرئيسية', href: '/', order: 1, isVisible: true },
+      { id: 'nav-2', nameAr: 'المجموعة الملكية', href: '/shop', order: 2, isVisible: true, badgeAr: 'حصري' },
+      { id: 'nav-3', nameAr: 'إرث وقصة زاد', href: '/story', order: 3, isVisible: true },
+      { id: 'nav-4', nameAr: 'فحص شهادة النقاء', href: '/shop', order: 4, isVisible: false }
+    ]
+  },
+
+  // 6. Design & Theme Tokens
+  design: {
+    primaryGreen: '#0f2918',
+    darkGreen: '#07160c',
+    accentGold: '#d4af37',
+    lightGold: '#f3e8cb',
+    backgroundColor: '#faf7f0',
+    surfaceColor: '#ffffff',
+    fontFamily: 'Amiri',
+    baseFontSizePx: 16,
+    buttonRadius: 'pill',
+    enableGlowEffects: true
+  },
+
+  // 7. SEO Configuration
+  seo: {
+    defaultMetaTitle: 'زاد | دار النقاء الطبيعي للأعسال الفاخرة',
+    defaultMetaDescription: 'زاد (ZAAD) تقدم أفخر أنواع العسل الطبيعي النقي 100% من أودية دوعن وجبال عسير العذراء وفق أعلى معايير النقاء والفحص المخبري.',
+    defaultOgImage: '/images/zaad-story-hero-banner.jpg',
+    pages: [
+      {
+        pagePath: '/',
+        pageNameAr: 'الرئيسية',
+        metaTitle: 'زاد | دار النقاء الطبيعي للأعسال النادرة',
+        metaDescription: 'اكتشف أنقى أنواع العسل الطبيعي الملكي الموثق مخبرياً من دار زاد.',
+        ogImageUrl: '/images/zaad-story-hero-banner.jpg',
+        keywords: ['عسل زاد', 'عسل سدر ملكي', 'عسل طبيعي نقي', 'عسل دوعني', 'أعسال فاخرة']
+      },
+      {
+        pagePath: '/shop',
+        pageNameAr: 'المجموعة الملكية (المتجر)',
+        metaTitle: 'المجموعة الملكية | تسوق أفخر أعسال دار زاد',
+        metaDescription: 'تسوق عسل السدر الدوعني الملكي وعسل السمر البري المعتق ومجموعات الهدايا الفاخرة.',
+        ogImageUrl: '/images/zaad-nature-honey-clover.jpg',
+        keywords: ['شراء عسل سدر', 'عسل سمر', 'هدايا عسل ملكي', 'عسل نوارة']
+      },
+      {
+        pagePath: '/story',
+        pageNameAr: 'إرث وقصة زاد',
+        metaTitle: 'قصة زاد | أكثر من أربعة عقود من الخبرة المتوارثة',
+        metaDescription: 'تعرف على قصة بدايات دار زاد في ثمانينيات القرن الماضي وشغف الجد برعاية النحل.',
+        ogImageUrl: '/images/zaad-heritage-beekeepers.jpg',
+        keywords: ['تراث زاد', 'تاريخ عسل زاد', 'قصة دار زاد', 'تربية النحل']
+      }
+    ]
+  },
+
+  // 8. Footer Configuration
+  footer: {
+    brandSloganAr: 'زَاد | دَارُ النَّقَاءِ الطَّبِيعِي',
+    aboutTextAr: 'زاد ليست مجرد متجر للمنتجات الطبيعية؛ زاد هي عهد أصيل بحفظ التراث الطبيعي للأعسال النادرة، وتوثيق أعلى مستويات النقاء المخبري بعيداً عن المعالجات التجارية، لتصلكم خيرات الأرض كما أرادتها الطبيعة.',
+    badges: [
+      { id: 'b1', titleAr: 'نقاء دوعني موثق 100%', subtitleAr: 'فحص مخبري أوروبي لكل تشغيلة', icon: 'award' },
+      { id: 'b2', titleAr: 'إنزيمات حية كاملة', subtitleAr: 'بدون أي بسترة أو تسخين حراري', icon: 'shield' },
+      { id: 'b3', titleAr: 'شحن مبرد فاخر', subtitleAr: 'سيارات مكيفة للحفاظ على الخواص', icon: 'truck' },
+      { id: 'b4', titleAr: 'مطابقة مالية فورية', subtitleAr: 'تحقق آمن وفوري لإيصالات التحويل', icon: 'lock' }
+    ],
+    columns: [
+      {
+        id: 'col-1',
+        titleAr: 'المحصول الملكي',
+        links: [
+          { id: 'l1', labelAr: 'عسل سدر دوعني ملكي', href: '/shop' },
+          { id: 'l2', labelAr: 'عسل سمر بري جبلي', href: '/shop' },
+          { id: 'l3', labelAr: 'عسل المروج البيضاء الكريمي', href: '/shop' },
+          { id: 'l4', labelAr: 'صندوق الاحتياط الملكي', href: '/shop' }
+        ]
+      },
+      {
+        id: 'col-2',
+        titleAr: 'عالم دار زاد',
+        links: [
+          { id: 'l5', labelAr: 'إرث وقصة دار زاد', href: '/story' },
+          { id: 'l6', labelAr: 'ميثاق النقاء والتوثيق المخبري', href: '/story' },
+          { id: 'l7', labelAr: 'المساعد الحسي لاختيار العسل', href: '/#quiz' }
+        ]
+      },
+      {
+        id: 'col-3',
+        titleAr: 'خدمة كبار الشخصيات',
+        links: [
+          { id: 'l8', labelAr: 'تتبع الشحنات والطلبات', href: '/cart' },
+          { id: 'l9', labelAr: 'الضمان الذهبي للاسترجاع', href: '/story' },
+          { id: 'l10', labelAr: 'التواصل المباشر مع الدار', href: 'https://wa.me/966500000000' }
+        ]
+      }
+    ],
+    contact: {
+      whatsappNumber: '+966500000000',
+      whatsappPrefilledMessageAr: 'مرحباً دار زاد، أرغب بالاستفسار عن المحصول الملكي المتاح.',
+      customerSupportEmail: 'concierge@zaad.sa',
+      supportPhone: '+966 800 123 9223',
+      workingHoursAr: 'يومياً من 9:00 ص حتى 11:00 م (توقيت مكة المكرمة)',
+      addressAr: 'المملكة العربية السعودية • الرياض • حي حطين'
+    },
+    social: {
+      instagram: 'https://instagram.com/zaad_honey',
+      twitter: 'https://twitter.com/zaad_honey',
+      whatsapp: 'https://wa.me/966500000000',
+      tiktok: 'https://tiktok.com/@zaad_honey'
+    },
+    copyrightTextAr: '© 2026 دار زاد للنقاء الطبيعي (House of ZAAD). جميع الحقوق محفوظة.',
+    vatOrCrNumberAr: 'سجل تجاري: 1010894210 • الرقم الضريبي: 31098421000003'
+  }
+};
+
+/**
+ * Cache for live and draft CMS settings
+ */
+let cachedLiveSettings: CmsSettingsDocument | null = null;
+let cachedDraftSettings: CmsSettingsDocument | null = null;
+let lastFetchTime = 0;
+const CACHE_TTL_MS = 10000; // 10 seconds
+
+/**
+ * Loads published or draft CMS configuration from Supabase with instant fallback
+ */
+export async function getCmsSettings(isDraft = false): Promise<CmsSettingsDocument> {
+  const now = Date.now();
+  if (isDraft && cachedDraftSettings && now - lastFetchTime < CACHE_TTL_MS) {
+    return cachedDraftSettings;
+  }
+  if (!isDraft && cachedLiveSettings && now - lastFetchTime < CACHE_TTL_MS) {
+    return cachedLiveSettings;
+  }
+
+  try {
+    const client = typeof window === 'undefined' ? supabaseAdmin : supabase;
+    const { data, error } = await client
+      .from('cms_settings')
+      .select('*')
+      .eq('key', 'master_cms')
+      .maybeSingle();
+
+    if (error) {
+      console.warn('⚠️ cms_settings query notice (falling back to defaults):', error.message);
+      return DEFAULT_CMS_SETTINGS;
+    }
+
+    if (data) {
+      const liveData = data.data as CmsSettingsDocument;
+      const draftData = (data.draft_data || data.data) as CmsSettingsDocument;
+
+      if (liveData) cachedLiveSettings = mergeWithDefaults(liveData);
+      if (draftData) cachedDraftSettings = mergeWithDefaults(draftData);
+
+      lastFetchTime = now;
+      return isDraft
+        ? (cachedDraftSettings || DEFAULT_CMS_SETTINGS)
+        : (cachedLiveSettings || DEFAULT_CMS_SETTINGS);
+    }
+
+    // If record doesn't exist in Supabase yet, attempt to auto-seed it seamlessly
+    if (typeof window === 'undefined') {
+      try {
+        await supabaseAdmin.from('cms_settings').upsert({
+          key: 'master_cms',
+          data: DEFAULT_CMS_SETTINGS,
+          draft_data: DEFAULT_CMS_SETTINGS,
+          is_published: true,
+          updated_at: new Date().toISOString()
+        });
+      } catch (seedErr) {
+        console.warn('Could not auto-seed cms_settings (non-fatal):', seedErr);
+      }
+    }
+
+    return DEFAULT_CMS_SETTINGS;
+  } catch (err) {
+    console.error('Error in getCmsSettings, using default luxury fallback:', err);
+    return DEFAULT_CMS_SETTINGS;
+  }
+}
+
+/**
+ * Saves draft configuration in Supabase
+ */
+export async function saveCmsDraft(draftDoc: CmsSettingsDocument): Promise<{ success: boolean; error?: string }> {
+  try {
+    const updatedDraft: CmsSettingsDocument = {
+      ...draftDoc,
+      updatedAt: new Date().toISOString()
+    };
+
+    const { error } = await supabaseAdmin
+      .from('cms_settings')
+      .upsert({
+        key: 'master_cms',
+        draft_data: updatedDraft,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'key' });
+
+    if (error) {
+      throw error;
+    }
+
+    cachedDraftSettings = updatedDraft;
+    return { success: true };
+  } catch (err: any) {
+    console.error('Error saving CMS draft:', err);
+    return { success: false, error: err.message || 'فشل في حفظ المسودة' };
+  }
+}
+
+/**
+ * Publishes draft configuration to live storefront in Supabase
+ */
+export async function publishCmsSettings(docToPublish: CmsSettingsDocument): Promise<{ success: boolean; error?: string }> {
+  try {
+    const publishedDoc: CmsSettingsDocument = {
+      ...docToPublish,
+      publishedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    const { error } = await supabaseAdmin
+      .from('cms_settings')
+      .upsert({
+        key: 'master_cms',
+        data: publishedDoc,
+        draft_data: publishedDoc,
+        is_published: true,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'key' });
+
+    if (error) {
+      throw error;
+    }
+
+    cachedLiveSettings = publishedDoc;
+    cachedDraftSettings = publishedDoc;
+    return { success: true };
+  } catch (err: any) {
+    console.error('Error publishing CMS settings:', err);
+    return { success: false, error: err.message || 'فشل في نشر التعديلات' };
+  }
+}
+
+/**
+ * Deep merge helper to guarantee no missing fields when schema evolves
+ */
+function mergeWithDefaults(incoming: Partial<CmsSettingsDocument>): CmsSettingsDocument {
+  return {
+    ...DEFAULT_CMS_SETTINGS,
+    ...incoming,
+    hero: { ...DEFAULT_CMS_SETTINGS.hero, ...(incoming.hero || {}) },
+    homepageSections: incoming.homepageSections && incoming.homepageSections.length > 0
+      ? incoming.homepageSections
+      : DEFAULT_CMS_SETTINGS.homepageSections,
+    storyPage: {
+      ...DEFAULT_CMS_SETTINGS.storyPage,
+      ...(incoming.storyPage || {}),
+      chapters: incoming.storyPage?.chapters?.length
+        ? incoming.storyPage.chapters
+        : DEFAULT_CMS_SETTINGS.storyPage.chapters
+    },
+    announcementBar: { ...DEFAULT_CMS_SETTINGS.announcementBar, ...(incoming.announcementBar || {}) },
+    navigation: {
+      ...DEFAULT_CMS_SETTINGS.navigation,
+      ...(incoming.navigation || {}),
+      items: incoming.navigation?.items?.length
+        ? incoming.navigation.items
+        : DEFAULT_CMS_SETTINGS.navigation.items
+    },
+    design: { ...DEFAULT_CMS_SETTINGS.design, ...(incoming.design || {}) },
+    seo: {
+      ...DEFAULT_CMS_SETTINGS.seo,
+      ...(incoming.seo || {}),
+      pages: incoming.seo?.pages?.length ? incoming.seo.pages : DEFAULT_CMS_SETTINGS.seo.pages
+    },
+    footer: {
+      ...DEFAULT_CMS_SETTINGS.footer,
+      ...(incoming.footer || {}),
+      badges: incoming.footer?.badges?.length ? incoming.footer.badges : DEFAULT_CMS_SETTINGS.footer.badges,
+      columns: incoming.footer?.columns?.length ? incoming.footer.columns : DEFAULT_CMS_SETTINGS.footer.columns,
+      contact: { ...DEFAULT_CMS_SETTINGS.footer.contact, ...(incoming.footer?.contact || {}) },
+      social: { ...DEFAULT_CMS_SETTINGS.footer.social, ...(incoming.footer?.social || {}) }
+    }
+  };
+}

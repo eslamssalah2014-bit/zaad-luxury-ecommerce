@@ -192,7 +192,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       groupTitle: 'العملاء وإدارة المحتوى',
       items: [
         { name: 'سجل العملاء والنخبة (CRM)', href: '/admin/customers', icon: Users },
-        { name: 'محرر المحتوى (CMS)', href: '/admin/cms', icon: FileEdit },
+        { name: 'إدارة محتوى الموقع (CMS)', href: '/admin/cms', icon: FileEdit },
         { name: 'نظام رسائل Resend', href: '/admin/emails', icon: Mail },
         { name: 'سجل التدقيق الأمني', href: '/admin/audit-logs', icon: ShieldAlert },
       ]
