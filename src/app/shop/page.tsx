@@ -21,8 +21,6 @@ export default function ShopPage() {
 
   // Filter states
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [selectedOrigin, setSelectedOrigin] = useState<string>('all');
-  const [selectedTexture, setSelectedTexture] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<string>('featured');
 
@@ -55,14 +53,6 @@ export default function ShopPage() {
       if (selectedCategory !== 'all' && product.categoryId !== selectedCategory) {
         return false;
       }
-      // Origin filter
-      if (selectedOrigin !== 'all' && !product.originRegionAr?.includes(selectedOrigin)) {
-        return false;
-      }
-      // Texture filter
-      if (selectedTexture !== 'all' && !product.sensoryProfile?.crystallization?.includes(selectedTexture)) {
-        return false;
-      }
       // Search query
       if (searchQuery.trim()) {
         const query = searchQuery.toLowerCase().trim();
@@ -78,12 +68,10 @@ export default function ShopPage() {
       if (sortBy === 'rating') return b.rating - a.rating;
       return 0; // featured default
     });
-  }, [products, selectedCategory, selectedOrigin, selectedTexture, searchQuery, sortBy]);
+  }, [products, selectedCategory, searchQuery, sortBy]);
 
   const resetFilters = () => {
     setSelectedCategory('all');
-    setSelectedOrigin('all');
-    setSelectedTexture('all');
     setSearchQuery('');
     setSortBy('featured');
   };
@@ -107,9 +95,9 @@ export default function ShopPage() {
           </p>
         </div>
 
-        {/* Filter & Search Bar */}
+        {/* Filter & Search Bar - Rebalanced 3-Column Grid */}
         <div className="bg-white rounded-2xl p-6 border border-ivory-300 shadow-sm mb-10 space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             
             {/* Search Input */}
             <div className="relative">
@@ -129,23 +117,10 @@ export default function ShopPage() {
               onChange={(e) => setSelectedCategory(e.target.value)}
               className="text-xs bg-ivory-50 border border-ivory-300 rounded-lg px-3 py-2.5 focus:border-gold-500 focus:outline-none text-zaad-900 font-medium"
             >
-              <option value="all">كافة الفئات الملكية</option>
+              <option value="all">كافة المنتجات الطبيعية</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>{c.nameAr}</option>
               ))}
-            </select>
-
-            {/* Origin Region Filter */}
-            <select
-              value={selectedOrigin}
-              onChange={(e) => setSelectedOrigin(e.target.value)}
-              className="text-xs bg-ivory-50 border border-ivory-300 rounded-lg px-3 py-2.5 focus:border-gold-500 focus:outline-none text-zaad-900 font-medium"
-            >
-              <option value="all">كافة مناطق ومناشئ القطاف</option>
-              <option value="دوعن">وادي دوعن (حضرموت)</option>
-              <option value="عسير">جبال عسير والجنوب</option>
-              <option value="تيان">جبال تيان شان (آسيا الوسطى)</option>
-              <option value="مصر">صعيد مصر العضوي</option>
             </select>
 
             {/* Sort Filter */}
@@ -165,10 +140,10 @@ export default function ShopPage() {
           {/* Active Filter Chips & Reset */}
           <div className="flex items-center justify-between pt-2 border-t border-ivory-200 text-xs">
             <span className="text-charcoal-700 font-medium">
-              النتائج المتاحة: <strong className="text-zaad-900">{filteredProducts.length}</strong> منتج ملكي
+              النتائج المتاحة: <strong className="text-zaad-900">{filteredProducts.length}</strong> منتج طبيعي فاخر
             </span>
 
-            {(selectedCategory !== 'all' || selectedOrigin !== 'all' || selectedTexture !== 'all' || searchQuery) && (
+            {(selectedCategory !== 'all' || searchQuery || sortBy !== 'featured') && (
               <button
                 onClick={resetFilters}
                 className="text-gold-700 hover:text-gold-900 flex items-center gap-1 font-semibold transition-colors"
