@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ShieldCheck, Award, Sparkles, Truck, Lock, ArrowUpRight, MessageCircle, Mail, Phone, Clock, MapPin } from 'lucide-react';
+import { ShieldCheck, Award, Sparkles, Truck, Lock, MessageCircle, Mail } from 'lucide-react';
 import { DEFAULT_CMS_SETTINGS } from '@/lib/services/cmsService';
 import { FooterConfig } from '@/types/cms';
 
@@ -25,6 +25,11 @@ export default function Footer({ initialFooter }: FooterProps) {
     lock: Lock,
     sparkles: Sparkles
   };
+
+  // Filter out "المحصول الملكي" (Royal Harvest) column as requested
+  const activeColumns = (footer.columns || []).filter(
+    (col) => col.id !== 'col-1' && col.titleAr !== 'المحصول الملكي'
+  );
 
   return (
     <footer className="bg-zaad-950 text-ivory-200 pt-16 pb-12 border-t-2 border-gold-600/40 relative overflow-hidden font-arabic">
@@ -52,13 +57,13 @@ export default function Footer({ initialFooter }: FooterProps) {
           })}
         </div>
 
-        {/* Main Footer Links */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-10 py-12 border-b border-zaad-800/80">
+        {/* Main Footer Links - Rebalanced 12-Column Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 lg:gap-16 py-12 border-b border-zaad-800/80">
           
-          {/* Brand Column */}
-          <div className="md:col-span-2 space-y-4">
+          {/* Brand Column (6 of 12 columns on Desktop / Tablet) */}
+          <div className="md:col-span-6 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="relative w-10 h-10 rounded-full overflow-hidden border border-gold-400/50 bg-white p-0.5">
+              <div className="relative w-11 h-11 rounded-full overflow-hidden border border-gold-400/50 bg-white p-0.5 shadow-md">
                 <Image
                   src="/images/zaad-logo.png"
                   alt="زاد | دار النقاء"
@@ -70,21 +75,21 @@ export default function Footer({ initialFooter }: FooterProps) {
                 <span className="font-serif text-2xl font-bold tracking-widest text-ivory-50">
                   Z<span className="text-gold-400 font-normal">AA</span>D
                 </span>
-                <p className="text-[10px] text-gold-400 tracking-wider">{footer.brandSloganAr}</p>
+                <p className="text-[10px] text-gold-400 tracking-wider font-light">{footer.brandSloganAr}</p>
               </div>
             </div>
-            <p className="text-xs text-ivory-300/80 leading-relaxed max-w-md">
+            <p className="text-xs text-ivory-300/85 leading-relaxed max-w-md">
               {footer.aboutTextAr}
             </p>
             
             {/* Direct Contact Links */}
-            <div className="pt-2 flex flex-wrap items-center gap-4 text-xs text-gold-400">
+            <div className="pt-2 flex flex-wrap items-center gap-5 text-xs text-gold-400">
               {footer.contact?.whatsappNumber && (
                 <a
                   href={`https://wa.me/${footer.contact.whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(footer.contact.whatsappPrefilledMessageAr || 'مرحباً دار زاد')}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="hover:text-gold-300 flex items-center gap-1.5 font-bold transition-colors"
+                  className="hover:text-gold-300 flex items-center gap-1.5 font-bold transition-colors bg-zaad-900/60 border border-gold-500/20 px-3.5 py-1.5 rounded-full"
                 >
                   <MessageCircle className="w-4 h-4 text-green-400" />
                   <span>محادثة واتساب مباشرة</span>
@@ -95,21 +100,21 @@ export default function Footer({ initialFooter }: FooterProps) {
                   href={`mailto:${footer.contact.customerSupportEmail}`}
                   className="hover:text-gold-300 flex items-center gap-1.5 font-medium transition-colors text-ivory-300"
                 >
-                  <Mail className="w-3.5 h-3.5" />
+                  <Mail className="w-3.5 h-3.5 text-gold-500" />
                   <span>{footer.contact.customerSupportEmail}</span>
                 </a>
               )}
             </div>
           </div>
 
-          {/* Quick Links Dynamic Columns */}
-          {footer.columns.map((col) => (
-            <div key={col.id}>
-              <h4 className="text-sm font-bold text-gold-300 mb-4 border-r-2 border-gold-500 pr-2">{col.titleAr}</h4>
-              <ul className="space-y-2.5 text-xs text-ivory-300">
+          {/* Quick Links Dynamic Columns (3 of 12 columns each on Desktop / Tablet) */}
+          {activeColumns.map((col) => (
+            <div key={col.id} className="md:col-span-3">
+              <h4 className="text-sm font-bold text-gold-300 mb-4 border-r-2 border-gold-500 pr-2.5">{col.titleAr}</h4>
+              <ul className="space-y-3 text-xs text-ivory-300/90">
                 {col.links.map((link) => (
                   <li key={link.id}>
-                    <Link href={link.href} className="hover:text-gold-300 transition-colors">
+                    <Link href={link.href} className="hover:text-gold-300 hover:translate-x-[-2px] inline-block transition-all">
                       {link.labelAr}
                     </Link>
                   </li>

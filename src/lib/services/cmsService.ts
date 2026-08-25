@@ -298,16 +298,6 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
     ],
     columns: [
       {
-        id: 'col-1',
-        titleAr: 'المحصول الملكي',
-        links: [
-          { id: 'l1', labelAr: 'عسل سدر دوعني ملكي', href: '/shop' },
-          { id: 'l2', labelAr: 'عسل سمر بري جبلي', href: '/shop' },
-          { id: 'l3', labelAr: 'عسل المروج البيضاء الكريمي', href: '/shop' },
-          { id: 'l4', labelAr: 'صندوق الاحتياط الملكي', href: '/shop' }
-        ]
-      },
-      {
         id: 'col-2',
         titleAr: 'عالم دار زاد',
         links: [
