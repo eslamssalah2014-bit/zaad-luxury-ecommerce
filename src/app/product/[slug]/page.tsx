@@ -160,7 +160,7 @@ export default function ProductDetailPage() {
   return (
     <div className="min-h-screen bg-ivory-100 py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Breadcrumb Navigation */}
         <nav className="flex items-center gap-2 text-xs text-charcoal-700/70 mb-8">
           <Link href="/" className="hover:text-zaad-900 transition-colors">الرئيسية</Link>
@@ -172,7 +172,7 @@ export default function ProductDetailPage() {
 
         {/* Product Top Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 bg-white rounded-3xl p-6 sm:p-10 border border-ivory-300 shadow-sm mb-16">
-          
+
           {/* Gallery Column (5 cols) */}
           <div className="lg:col-span-6 space-y-4">
             {/* Main HD Image */}
@@ -200,11 +200,10 @@ export default function ProductDetailPage() {
                 <button
                   onClick={() => toggleWishlist(product)}
                   aria-label="حفظ في المفضلة"
-                  className={`w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md transition-all ${
-                    isWish
-                      ? 'bg-red-50 text-red-600 border border-red-200'
-                      : 'bg-white/90 text-charcoal-700 hover:text-red-600 border border-white'
-                  }`}
+                  className={`w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md transition-all ${isWish
+                    ? 'bg-red-50 text-red-600 border border-red-200'
+                    : 'bg-white/90 text-charcoal-700 hover:text-red-600 border border-white'
+                    }`}
                 >
                   <Heart className={`w-5 h-5 ${isWish ? 'fill-red-600' : ''}`} />
                 </button>
@@ -233,11 +232,10 @@ export default function ProductDetailPage() {
                   <button
                     key={idx}
                     onClick={() => setSelectedImageIndex(idx)}
-                    className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all shrink-0 ${
-                      selectedImageIndex === idx
-                        ? 'border-gold-500 ring-2 ring-gold-400/30'
-                        : 'border-ivory-300 hover:border-gold-300 opacity-70 hover:opacity-100'
-                    }`}
+                    className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all shrink-0 ${selectedImageIndex === idx
+                      ? 'border-gold-500 ring-2 ring-gold-400/30'
+                      : 'border-ivory-300 hover:border-gold-300 opacity-70 hover:opacity-100'
+                      }`}
                   >
                     <Image src={img} alt={`صورة ${idx + 1}`} fill unoptimized className="object-cover" />
                   </button>
@@ -248,20 +246,18 @@ export default function ProductDetailPage() {
 
           {/* Details & Purchase Column (7 cols) */}
           <div className="lg:col-span-6 flex flex-col justify-between space-y-6">
-            
+
             <div className="space-y-4">
-              
+
               {/* Origin & Batch Strip */}
               <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
                 <span className="text-gold-700 font-semibold flex items-center gap-1.5 bg-gold-50 px-3 py-1 rounded-full border border-gold-200">
                   <ShieldCheck className="w-4 h-4 text-gold-600" />
-                  <span>المصدر: {product.originRegionAr}</span>
-                </span>
-                {product.latestLabBatch?.batchNumber && (
-                  <span className="font-mono text-zaad-800 bg-ivory-200 px-3 py-1 rounded-full text-[11px] font-bold">
-                    تشغيلة معتمدة: {product.latestLabBatch.batchNumber}
-                  </span>
-                )}
+                  {product.latestLabBatch?.batchNumber && (
+                    <span className="font-mono text-zaad-800 bg-ivory-200 px-3 py-1 rounded-full text-[11px] font-bold">
+                      تشغيلة معتمدة: {product.latestLabBatch.batchNumber}
+                    </span>
+                  )}
               </div>
 
               {/* Title */}
@@ -313,7 +309,7 @@ export default function ProductDetailPage() {
                     <Sparkles className="w-3.5 h-3.5 text-gold-600" />
                     <span>البصمة الحسية ومؤشرات التذوق:</span>
                   </h3>
-                  
+
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs pt-1">
                     <div>
                       <span className="text-charcoal-700/70 block text-[11px]">درجة الحلاوة:</span>
@@ -356,7 +352,7 @@ export default function ProductDetailPage() {
 
             {/* Purchase Action Bar */}
             <div className="space-y-4 pt-4 border-t border-ivory-200">
-              
+
               <div className="flex items-center gap-4">
                 {/* Quantity Stepper */}
                 <div className="flex items-center border border-ivory-300 rounded-xl bg-ivory-50 px-2 py-1">
@@ -406,16 +402,15 @@ export default function ProductDetailPage() {
 
         {/* Detailed Tabs Section */}
         <div className="bg-white rounded-3xl p-6 sm:p-10 border border-ivory-300 shadow-sm mb-16">
-          
+
           {/* Tab Navigation */}
           <div className="flex items-center gap-4 border-b border-ivory-200 pb-4 overflow-x-auto">
             <button
               onClick={() => setActiveTab('story')}
-              className={`text-sm font-bold pb-2 border-b-2 transition-all whitespace-nowrap ${
-                activeTab === 'story'
-                  ? 'border-gold-500 text-zaad-900'
-                  : 'border-transparent text-charcoal-700/70 hover:text-zaad-900'
-              }`}
+              className={`text-sm font-bold pb-2 border-b-2 transition-all whitespace-nowrap ${activeTab === 'story'
+                ? 'border-gold-500 text-zaad-900'
+                : 'border-transparent text-charcoal-700/70 hover:text-zaad-900'
+                }`}
             >
               قصة المحصول والمصدر
             </button>
@@ -423,11 +418,10 @@ export default function ProductDetailPage() {
             {product.latestLabBatch && (
               <button
                 onClick={() => setActiveTab('lab')}
-                className={`text-sm font-bold pb-2 border-b-2 transition-all whitespace-nowrap flex items-center gap-1.5 ${
-                  activeTab === 'lab'
-                    ? 'border-gold-500 text-zaad-900'
-                    : 'border-transparent text-charcoal-700/70 hover:text-zaad-900'
-                }`}
+                className={`text-sm font-bold pb-2 border-b-2 transition-all whitespace-nowrap flex items-center gap-1.5 ${activeTab === 'lab'
+                  ? 'border-gold-500 text-zaad-900'
+                  : 'border-transparent text-charcoal-700/70 hover:text-zaad-900'
+                  }`}
               >
                 <Award className="w-4 h-4 text-gold-500" />
                 <span>نتائج الفحص المخبري المستقل</span>
@@ -436,22 +430,20 @@ export default function ProductDetailPage() {
 
             <button
               onClick={() => setActiveTab('benefits')}
-              className={`text-sm font-bold pb-2 border-b-2 transition-all whitespace-nowrap ${
-                activeTab === 'benefits'
-                  ? 'border-gold-500 text-zaad-900'
-                  : 'border-transparent text-charcoal-700/70 hover:text-zaad-900'
-              }`}
+              className={`text-sm font-bold pb-2 border-b-2 transition-all whitespace-nowrap ${activeTab === 'benefits'
+                ? 'border-gold-500 text-zaad-900'
+                : 'border-transparent text-charcoal-700/70 hover:text-zaad-900'
+                }`}
             >
               الفوائد الصحية وطرق الاستخدام
             </button>
 
             <button
               onClick={() => setActiveTab('reviews')}
-              className={`text-sm font-bold pb-2 border-b-2 transition-all whitespace-nowrap ${
-                activeTab === 'reviews'
-                  ? 'border-gold-500 text-zaad-900'
-                  : 'border-transparent text-charcoal-700/70 hover:text-zaad-900'
-              }`}
+              className={`text-sm font-bold pb-2 border-b-2 transition-all whitespace-nowrap ${activeTab === 'reviews'
+                ? 'border-gold-500 text-zaad-900'
+                : 'border-transparent text-charcoal-700/70 hover:text-zaad-900'
+                }`}
             >
               آراء المقتنين ({reviews.length})
             </button>
@@ -565,7 +557,7 @@ export default function ProductDetailPage() {
           {/* Tab Content 4: Reviews */}
           {activeTab === 'reviews' && (
             <div className="pt-8 space-y-8 animate-fade-in">
-              
+
               {/* Existing Reviews List */}
               <div className="space-y-4 divide-y divide-ivory-200">
                 {reviews.map((rev) => (
