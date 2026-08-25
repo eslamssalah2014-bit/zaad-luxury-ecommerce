@@ -97,41 +97,6 @@ export default function HeroSection() {
           )}
         </div>
 
-        {/* Trust Credentials Strip */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-10 border-t border-zaad-800/80 max-w-3xl mx-auto text-right sm:text-center">
-          
-          <div className="flex items-center sm:flex-col justify-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gold-500/10 flex items-center justify-center text-gold-400 shrink-0">
-              <Award className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="text-sm font-bold text-ivory-100">98.6%+ نقاء أحادي الزهرة</div>
-              <div className="text-xs text-ivory-400 mt-0.5">موثق بالفحص المجهري لحبوب اللقاح</div>
-            </div>
-          </div>
-
-          <div className="flex items-center sm:flex-col justify-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gold-500/10 flex items-center justify-center text-gold-400 shrink-0">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="text-sm font-bold text-ivory-100">0% تسخين أو معالجة حرارية</div>
-              <div className="text-xs text-ivory-400 mt-0.5">خام بالكامل بكامل خواصه العلاجية</div>
-            </div>
-          </div>
-
-          <div className="flex items-center sm:flex-col justify-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gold-500/10 flex items-center justify-center text-gold-400 shrink-0">
-              <Compass className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="text-sm font-bold text-ivory-100">أصل جغرافي معتمد (GIS)</div>
-              <div className="text-xs text-ivory-400 mt-0.5">من أودية دوعن وجبال عسير الشاهقة</div>
-            </div>
-          </div>
-
-        </div>
-
       </div>
     </section>
   );
