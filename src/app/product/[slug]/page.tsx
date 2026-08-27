@@ -173,7 +173,7 @@ export default function ProductDetailPage() {
         {/* Product Top Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 bg-white rounded-3xl p-6 sm:p-10 border border-ivory-300 shadow-sm mb-16">
 
-          {/* Gallery Column (5 cols) */}
+          {/* Gallery Column (6 cols) */}
           <div className="lg:col-span-6 space-y-4">
             {/* Main HD Image */}
             <div className="relative h-[420px] sm:h-[500px] rounded-2xl overflow-hidden bg-ivory-200 border border-ivory-300">
@@ -244,22 +244,10 @@ export default function ProductDetailPage() {
             )}
           </div>
 
-          {/* Details & Purchase Column (7 cols) */}
+          {/* Details & Purchase Column (6 cols) */}
           <div className="lg:col-span-6 flex flex-col justify-between space-y-6">
 
             <div className="space-y-4">
-
-              {/* Origin & Batch Strip */}
-              <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-                <span className="text-gold-700 font-semibold flex items-center gap-1.5 bg-gold-50 px-3 py-1 rounded-full border border-gold-200">
-                  <ShieldCheck className="w-4 h-4 text-gold-600" />
-                  {product.latestLabBatch?.batchNumber && (
-                    <span className="font-mono text-zaad-800 bg-ivory-200 px-3 py-1 rounded-full text-[11px] font-bold">
-                      تشغيلة معتمدة: {product.latestLabBatch.batchNumber}
-                    </span>
-                  )}
-              </div>
-
               {/* Title */}
               <h1 className="font-serif text-2xl sm:text-4xl font-bold text-zaad-900 leading-tight">
                 {product.nameAr}
@@ -398,6 +386,7 @@ export default function ProductDetailPage() {
             </div>
 
           </div>
+
         </div>
 
         {/* Detailed Tabs Section */}
