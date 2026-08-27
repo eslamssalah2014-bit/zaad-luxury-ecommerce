@@ -26,9 +26,9 @@ export default function WhyZaadComparison() {
       zaad: 'شبه منعدم (أقل من 2.5 ملغ/كغ) مما يثبت طزاجة المحصول الفائقة ونقاءه الطبيعي',
     },
     {
-      criterionAr: 'التوثيق المخبري للعميل',
-      commercial: 'لا تتوفر أي شهادات فحص مستقلة يمكن للعميل الاطلاع عليها',
-      zaad: 'شهادة فحص مخبري أوروبي معتمدة برقم تشغيلة باركود لكل برطمان مباشرة',
+      criterionAr: 'توثيق الجودة للعميل',
+      commercial: 'لا تتوفر أي وثائق جودة يمكن للعميل الاطلاع عليها',
+      zaad: 'شهادة جودة ونقاء معتمدة برقم تسلسلي لكل برطمان مباشرة',
     },
     {
       criterionAr: 'وعاء الحفظ والتغليف',
@@ -67,7 +67,7 @@ export default function WhyZaadComparison() {
           <div className="grid grid-cols-1 md:grid-cols-12 border-b border-zaad-800 bg-zaad-950/60 p-6 text-sm font-bold text-ivory-200">
             <div className="md:col-span-4 text-gold-400 flex items-center gap-2">
               <Sparkles className="w-4 h-4" />
-              <span>المعيار المخبري والنوعي</span>
+              <span>معيار الجودة والنقاء</span>
             </div>
             <div className="md:col-span-4 text-charcoal-400 flex items-center gap-2 mt-2 md:mt-0 text-red-400/80">
               <ShieldAlert className="w-4 h-4" />
@@ -75,7 +75,7 @@ export default function WhyZaadComparison() {
             </div>
             <div className="md:col-span-4 text-gold-400 flex items-center gap-2 mt-2 md:mt-0 font-serif text-base">
               <Award className="w-4 h-4 text-gold-400" />
-              <span>محصول دار زاد الملكي (ZAAD)</span>
+              <span>منتجات دار زاد الطبيعية (ZAAD)</span>
             </div>
           </div>
 

@@ -71,11 +71,11 @@ export default function CartDrawer() {
           <div className="bg-gold-50/70 border-b border-gold-200/60 px-6 py-3">
             <div className="flex justify-between text-xs text-zaad-900 font-medium mb-1.5">
               {freeShippingLeft > 0 ? (
-                <span>تبقى <strong className="text-gold-700 font-bold">{formatPrice(freeShippingLeft)}</strong> للحصول على الشحن المبرد المجاني</span>
+                <span>تبقى <strong className="text-gold-700 font-bold">{formatPrice(freeShippingLeft)}</strong> للحصول على الشحن المجاني</span>
               ) : (
                 <span className="text-zaad-700 font-bold flex items-center gap-1">
                   <ShieldCheck className="w-3.5 h-3.5 text-gold-600" />
-                  مؤهل للشحن الملكي المبرد المجاني!
+                  مؤهل للشحن المجاني!
                 </span>
               )}
               <span className="font-mono text-gold-700">{freeShippingProgress}%</span>
@@ -106,7 +106,7 @@ export default function CartDrawer() {
                   onClick={closeDrawer}
                   className="inline-block bg-zaad-800 hover:bg-zaad-700 text-white text-xs font-semibold px-6 py-2.5 rounded-full shadow-sm transition-all"
                 >
-                  استكشاف المحصول الملكي
+                  استكشاف المنتجات الطبيعية
                 </Link>
               </div>
             ) : (
@@ -250,7 +250,7 @@ export default function CartDrawer() {
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <span>الشحن المبرد المخصص:</span>
+                  <span>الشحن والتوصيل:</span>
                   <span>{shippingFee === 0 ? <span className="text-gold-600 font-bold">مجاني</span> : formatPrice(shippingFee)}</span>
                 </div>
                 <div className="flex justify-between text-sm font-bold text-zaad-900 pt-2 border-t border-ivory-300">

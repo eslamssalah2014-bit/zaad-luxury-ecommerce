@@ -198,7 +198,7 @@ export async function POST(request: NextRequest) {
       await supabaseAdmin.from('product_batches').insert({
         product_id: newProd.id,
         batch_number: latestLabBatch.batchNumber || `ZD-${new Date().getFullYear()}-${generatedSku}`,
-        harvest_season: latestLabBatch.harvestSeason || `المحصول الملكي ${new Date().getFullYear()}`,
+        harvest_season: latestLabBatch.harvestSeason || `المنتجات الطبيعية ${new Date().getFullYear()}`,
         harvest_date: latestLabBatch.harvestDate || '2026-01-15',
         tested_date: latestLabBatch.testedDate || new Date().toISOString().split('T')[0],
         lab_name: latestLabBatch.labName || 'مختبر الجودة الأوروبية المعتمد',
@@ -334,7 +334,7 @@ export async function PUT(request: NextRequest) {
       await supabaseAdmin.from('product_batches').upsert({
         product_id: id,
         batch_number: latestLabBatch.batchNumber,
-        harvest_season: latestLabBatch.harvestSeason || 'المحصول الملكي 2026',
+        harvest_season: latestLabBatch.harvestSeason || 'المنتجات الطبيعية 2026',
         harvest_date: latestLabBatch.harvestDate || '2026-01-15',
         tested_date: latestLabBatch.testedDate || new Date().toISOString().split('T')[0],
         lab_name: latestLabBatch.labName || 'مختبر الجودة الأوروبية المعتمد',
@@ -462,7 +462,7 @@ export function formatProductRow(data: any): Product {
       labSealImageUrl: data.batches[0].lab_seal_image_url
     } : {
       batchNumber: 'ZD-2026-LIVE',
-      harvestSeason: 'المحصول الملكي 2026',
+      harvestSeason: 'المنتجات الطبيعية 2026',
       harvestDate: '2026-01-15',
       testedDate: '2026-02-01',
       labName: 'مختبر الجودة الأوروبية المعتمد',

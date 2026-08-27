@@ -56,7 +56,7 @@ export default function CartPage() {
             href="/shop"
             className="inline-block w-full bg-zaad-800 hover:bg-zaad-700 text-white text-xs sm:text-sm font-bold py-3.5 rounded-xl shadow-md hover:shadow-gold-glow transition-all gold-shimmer-btn"
           >
-            استكشاف المحصول الملكي
+            استكشاف المنتجات الطبيعية
           </Link>
         </div>
       </div>
@@ -82,11 +82,11 @@ export default function CartPage() {
         <div className="bg-white rounded-2xl p-4 border border-gold-300/60 shadow-sm mb-8 max-w-4xl mx-auto">
           <div className="flex justify-between text-xs text-zaad-900 font-medium mb-1.5">
             {freeShippingLeft > 0 ? (
-              <span>تبقى <strong className="text-gold-700 font-bold">{formatPrice(freeShippingLeft)}</strong> للحصول على الشحن المبرد المجاني</span>
+              <span>تبقى <strong className="text-gold-700 font-bold">{formatPrice(freeShippingLeft)}</strong> للحصول على الشحن المجاني</span>
             ) : (
               <span className="text-green-800 font-bold flex items-center gap-1">
                 <ShieldCheck className="w-4 h-4 text-green-700" />
-                طلبكم مؤهل للشحن الملكي المبرد المجاني
+                طلبكم مؤهل للشحن المجاني
               </span>
             )}
             <span className="font-mono text-gold-700 font-bold">{freeShippingProgress}%</span>
@@ -228,7 +228,7 @@ export default function CartPage() {
                 )}
 
                 <div className="flex justify-between">
-                  <span>الشحن المبرد المخصص:</span>
+                  <span>الشحن والتوصيل:</span>
                   <span>
                     {shippingFee === 0 ? (
                       <span className="text-gold-600 font-bold">مجاني</span>

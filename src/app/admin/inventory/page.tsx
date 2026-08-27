@@ -134,7 +134,7 @@ export default function AdminInventoryPage() {
         <div>
           <div className="inline-flex items-center gap-1.5 text-xs text-gold-700 font-bold bg-gold-50 px-3 py-0.5 rounded-full border border-gold-300 mb-1">
             <Layers className="w-3.5 h-3.5" />
-            <span>إدارة المستودعات المبردة وحركة الجرد الآلية</span>
+            <span>إدارة المستودعات وحركة الجرد الآلية</span>
           </div>
           <h1 className="font-serif text-2xl sm:text-3xl font-bold text-zaad-900">
             المخزون والتنبيهات وسجل الحركات

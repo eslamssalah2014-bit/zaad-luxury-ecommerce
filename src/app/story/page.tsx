@@ -140,7 +140,7 @@ export default async function StoryPage() {
                   href="/shop"
                   className="inline-flex items-center gap-2 bg-gold-500 hover:bg-gold-400 text-zaad-950 text-sm font-bold px-10 py-4 rounded-full shadow-lg hover:shadow-gold-glow-lg transition-all gold-shimmer-btn"
                 >
-                  <span>استكشاف المحصول الملكي المتاح الآن</span>
+                  <span>استكشاف المنتجات الطبيعية المتاحة الآن</span>
                   <ArrowLeft className="w-4 h-4 text-zaad-950" />
                 </Link>
               </div>

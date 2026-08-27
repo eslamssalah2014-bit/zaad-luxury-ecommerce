@@ -75,7 +75,7 @@ export default function HoneyFinderQuiz({ products }: HoneyFinderQuizProps) {
               <span>مستشار التذوق والنقاء الذكي</span>
             </div>
             <h2 className="font-serif text-2xl sm:text-4xl font-bold text-ivory-50">
-              اكتشف المحصول الملكي الأنسب لاحتياجك
+              اكتشف المنتجات الطبيعية الأنسب لاحتياجك
             </h2>
             <p className="text-xs sm:text-sm text-ivory-300 mt-2 font-light">
               أجب عن ٣ أسئلة بسيطة ليرشدك خبراؤنا إلى النكهة والخصائص العلاجية الملائمة لذوقك.
@@ -253,7 +253,7 @@ export default function HoneyFinderQuiz({ products }: HoneyFinderQuizProps) {
                     href={`/product/${recommendation.slug}`}
                     className="flex-1 sm:flex-none text-xs text-ivory-200 hover:text-white border border-gold-500/40 px-4 py-2.5 rounded-lg text-center font-medium"
                   >
-                    معاينة شهادة الفحص
+                    تفاصيل المنتج الطبيعي
                   </Link>
                   <button
                     onClick={() => addItem(recommendation, 1)}

@@ -84,7 +84,7 @@ export default function AdminProductsPage() {
 
   // Lab Batch Fields
   const [batchNumber, setBatchNumber] = useState('');
-  const [harvestSeason, setHarvestSeason] = useState('المحصول الملكي 2026');
+  const [harvestSeason, setHarvestSeason] = useState('المنتجات الطبيعية 2026');
   const [labName, setLabName] = useState('مختبر الجودة الأوروبية المعتمد');
   const [moisturePercentage, setMoisturePercentage] = useState<number>(14.2);
   const [hmfLevel, setHmfLevel] = useState<number>(2.1);
@@ -152,7 +152,7 @@ export default function AdminProductsPage() {
 
       // Lab Batch
       setBatchNumber(prod.latestLabBatch?.batchNumber || `ZD-2026-${prod.sku}`);
-      setHarvestSeason(prod.latestLabBatch?.harvestSeason || 'المحصول الملكي 2026');
+      setHarvestSeason(prod.latestLabBatch?.harvestSeason || 'المنتجات الطبيعية 2026');
       setLabName(prod.latestLabBatch?.labName || 'مختبر الجودة الأوروبية المعتمد');
       setMoisturePercentage(prod.latestLabBatch?.moisturePercentage || 14.2);
       setHmfLevel(prod.latestLabBatch?.hmfLevel || 2.1);
@@ -184,7 +184,7 @@ export default function AdminProductsPage() {
 
       // Lab Batch
       setBatchNumber(`ZD-2026-${Math.floor(100 + Math.random() * 900)}`);
-      setHarvestSeason('المحصول الملكي 2026');
+      setHarvestSeason('المنتجات الطبيعية 2026');
       setLabName('مختبر الجودة الأوروبية المعتمد');
       setMoisturePercentage(14.2);
       setHmfLevel(2.1);
@@ -407,10 +407,10 @@ export default function AdminProductsPage() {
         <div>
           <div className="inline-flex items-center gap-1.5 text-xs text-gold-700 font-bold bg-gold-50 px-3 py-0.5 rounded-full border border-gold-300 mb-1">
             <Package className="w-3.5 h-3.5" />
-            <span>نظام إدارة المنتجات والمحاصيل والتسعير المتقدم (CMS)</span>
+            <span>نظام إدارة المنتجات والتسعير المتقدم (CMS)</span>
           </div>
           <h1 className="font-serif text-2xl sm:text-3xl font-bold text-zaad-900">
-            كتالوج المنتجات والمحاصيل الملكية
+            كتالوج المنتجات الطبيعية
           </h1>
         </div>
 
@@ -419,7 +419,7 @@ export default function AdminProductsPage() {
           className="bg-zaad-900 hover:bg-zaad-800 text-gold-400 border border-gold-500/40 px-5 py-3 rounded-2xl text-xs font-bold shadow-lg flex items-center justify-center gap-2 transition-all"
         >
           <Plus className="w-4 h-4" />
-          <span>إضافة محصول ملكي جديد</span>
+          <span>إضافة منتج طبيعي جديد</span>
         </button>
       </div>
 
@@ -651,9 +651,9 @@ export default function AdminProductsPage() {
             {/* Modal Header */}
             <div className="bg-zaad-950 text-ivory-50 p-6 flex items-center justify-between border-b border-zaad-800">
               <div>
-                <span className="text-xs text-gold-400 font-bold block">محرر بيانات المنتجات والكتالوج الملكي</span>
+                <span className="text-xs text-gold-400 font-bold block">محرر بيانات المنتجات والكتالوج الطبيعي</span>
                 <h3 className="font-serif text-xl font-bold">
-                  {editingProduct ? `تعديل المحصول: ${editingProduct.nameAr}` : 'إضافة محصول ملكي جديد'}
+                  {editingProduct ? `تعديل المنتج: ${editingProduct.nameAr}` : 'إضافة منتج طبيعي جديد'}
                 </h3>
               </div>
               <button
@@ -1198,12 +1198,12 @@ export default function AdminProductsPage() {
                     </div>
 
                     <div>
-                      <label className="block font-bold text-zaad-900 mb-1">موسم الحصاد الملكي</label>
+                      <label className="block font-bold text-zaad-900 mb-1">موسم الإنتاج</label>
                       <input
                         type="text"
                         value={harvestSeason}
                         onChange={(e) => setHarvestSeason(e.target.value)}
-                        placeholder="المحصول الملكي 2026"
+                        placeholder="المنتجات الطبيعية 2026"
                         className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 focus:border-gold-500 focus:outline-none"
                       />
                     </div>

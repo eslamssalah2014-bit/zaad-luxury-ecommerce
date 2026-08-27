@@ -124,7 +124,7 @@ export default function ShopClient({
             <div className="relative">
               <input
                 type="text"
-                placeholder={shopConfig.searchPlaceholderAr || 'بحث باسم الصنف أو رقم التشغيلة...'}
+                placeholder={shopConfig.searchPlaceholderAr || 'بحث باسم الصنف...'}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full text-xs bg-ivory-50 border border-ivory-300 rounded-lg pr-9 pl-4 py-2.5 focus:border-gold-500 focus:outline-none"
@@ -184,7 +184,7 @@ export default function ShopClient({
             </div>
             <h3 className="text-base font-bold text-zaad-900">{shopConfig.emptyStateTitleAr || 'لم يتم العثور على مقتنيات مطابقة'}</h3>
             <p className="text-xs text-charcoal-700/70 max-w-sm mx-auto">
-              {shopConfig.emptyStateDescAr || 'جرب تغيير معايير البحث أو اختيار فئة أخرى لاستعراض محاصيل زاد.'}
+              {shopConfig.emptyStateDescAr || 'جرب تغيير معايير البحث أو اختيار فئة أخرى لاستعراض منتجات زاد.'}
             </p>
             <button
               onClick={resetFilters}
@@ -214,18 +214,13 @@ export default function ShopClient({
                     />
 
                     {/* Badges */}
-                    <div className="absolute top-4 right-4 flex flex-col gap-1.5 z-10">
-                      {product.badge && (
+                    {product.badge && (
+                      <div className="absolute top-4 right-4 flex flex-col gap-1.5 z-10">
                         <span className="bg-zaad-900/90 backdrop-blur-md text-gold-300 text-[11px] font-bold px-3 py-1 rounded-full border border-gold-400/40">
                           {product.badge}
                         </span>
-                      )}
-                      {shopConfig.showLabBatchTag !== false && product.latestLabBatch?.batchNumber && (
-                        <span className="bg-white/90 backdrop-blur-md text-zaad-800 text-[10px] font-mono px-2.5 py-0.5 rounded-full border border-ivory-300">
-                          تشغيلة: {product.latestLabBatch.batchNumber}
-                        </span>
-                      )}
-                    </div>
+                      </div>
+                    )}
 
                     {/* Wishlist Button */}
                     <button
@@ -247,7 +242,7 @@ export default function ShopClient({
                         className="bg-white text-zaad-900 px-4 py-2 rounded-full text-xs font-bold shadow-lg hover:bg-gold-50 transition-colors flex items-center gap-1.5"
                       >
                         <Eye className="w-4 h-4 text-gold-600" />
-                        <span>{shopConfig.quickViewButtonTextAr || 'تفاصيل المحصول والفحص'}</span>
+                        <span>{shopConfig.quickViewButtonTextAr || 'تفاصيل المنتج الطبيعي'}</span>
                       </Link>
                     </div>
                   </div>

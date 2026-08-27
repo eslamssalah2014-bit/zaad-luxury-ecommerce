@@ -20,7 +20,7 @@ export default function FeaturedCollection({ products }: FeaturedCollectionProps
   const [activeCategory, setActiveCategory] = useState<string>('all');
 
   const categories = [
-    { id: 'all', nameAr: 'المحصول بالكامل' },
+    { id: 'all', nameAr: 'كافة المنتجات الطبيعية' },
     { id: 'cat-1', nameAr: 'أعسال السدر النادرة' },
     { id: 'cat-2', nameAr: 'أعسال الجبال والبراري' },
     { id: 'cat-3', nameAr: 'الصناديق الملكية' },
@@ -42,7 +42,7 @@ export default function FeaturedCollection({ products }: FeaturedCollectionProps
               الإصدارات الاستثنائية
             </span>
             <h2 className="font-serif text-3xl sm:text-4xl font-bold text-zaad-900">
-              المحصول الملكي المنتقى
+              المنتجات الطبيعية المنتقاة
             </h2>
           </div>
           <Link
@@ -93,16 +93,13 @@ export default function FeaturedCollection({ products }: FeaturedCollectionProps
                   />
 
                   {/* Badges */}
-                  <div className="absolute top-4 right-4 flex flex-col gap-1.5 z-10">
-                    {product.badge && (
+                  {product.badge && (
+                    <div className="absolute top-4 right-4 flex flex-col gap-1.5 z-10">
                       <span className="bg-zaad-900/90 backdrop-blur-md text-gold-300 text-[11px] font-bold px-3 py-1 rounded-full border border-gold-400/40">
                         {product.badge}
                       </span>
-                    )}
-                    <span className="bg-white/90 backdrop-blur-md text-zaad-800 text-[10px] font-mono px-2.5 py-0.5 rounded-full border border-ivory-300">
-                      تشغيلة: {product.latestLabBatch.batchNumber}
-                    </span>
-                  </div>
+                    </div>
+                  )}
 
                   {/* Wishlist Button */}
                   <button

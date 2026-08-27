@@ -1289,7 +1289,7 @@ export default function AdminCmsPage() {
                     }
                   })}
                   className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
-                  placeholder="تفاصيل المحصول والفحص"
+                  placeholder="تفاصيل المنتج الطبيعي"
                 />
               </div>
             </div>
@@ -1471,7 +1471,7 @@ export default function AdminCmsPage() {
                     }
                   })}
                   className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 font-serif font-bold text-sm"
-                  placeholder="الضمان الذهبي والشحن المبرد الفاخر"
+                  placeholder="الضمان الذهبي والشحن لجميع المحافظات"
                 />
               </div>
 
@@ -1491,7 +1491,7 @@ export default function AdminCmsPage() {
                     }
                   })}
                   className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 leading-relaxed"
-                  placeholder="نضمن لك استرداداً كاملاً إذا لم تطابق نتائج أي فحص مخبري..."
+                  placeholder="نضمن لك استرداداً كاملاً لنقاء وجودة منتجاتنا الطبيعية..."
                 />
               </div>
 
@@ -2498,7 +2498,7 @@ export default function AdminCmsPage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-ivory-200 pb-4">
               <div>
                 <h2 className="font-serif text-xl font-bold text-zaad-900">5. شريط أوسمة الجودة والضمان (Quality Badges Tier)</h2>
-                <p className="text-xs text-charcoal-700/80 mt-1">إدارة الأوسمة الأربعة أعلى الفوتر (فحص مخبري، شحن مبرد، إنزيمات حية)</p>
+                <p className="text-xs text-charcoal-700/80 mt-1">إدارة الأوسمة الأربعة أعلى الفوتر (جودة معتمدة، شحن سريع، إنزيمات حية)</p>
               </div>
               <button
                 type="button"
@@ -2633,7 +2633,7 @@ export default function AdminCmsPage() {
                     >
                       <option value="award">أيقونة الوسام والشهادة (Award / Lab)</option>
                       <option value="shield">أيقونة درع الحماية (Shield / Enzyme)</option>
-                      <option value="truck">أيقونة الشحن المبرد (Truck / Express)</option>
+                      <option value="truck">أيقونة الشحن والتوصيل (Truck / Express)</option>
                       <option value="lock">أيقونة الأمان المالي (Lock / Security)</option>
                       <option value="sparkles">أيقونة البريق الملكي (Sparkles / Luxury)</option>
                     </select>

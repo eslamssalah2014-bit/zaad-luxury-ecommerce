@@ -12,11 +12,11 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
   hero: {
     headlineAr: 'زاد...',
     headlineHighlightAr: 'حيث يلتقي النقاء بالفخامة.',
-    subtitleAr: 'المحصول الملكي الحصري • إصدار شتاء 2026',
+    subtitleAr: 'المنتجات الطبيعية الحصرية • إصدار شتاء 2026',
     descriptionAr: 'منتجات طبيعية مختارة بعناية، بمعايير جودة صارمة وتجربة استثنائية تليق بمن يقدّر الأفضل.',
     backgroundImageUrl: '/images/zaad-nature-honey-clover.jpg',
-    badgeTextAr: 'المحصول الملكي الحصري • إصدار شتاء 2026',
-    primaryCtaTextAr: 'استكشاف المحصول الملكي',
+    badgeTextAr: 'المنتجات الطبيعية الحصرية • إصدار شتاء 2026',
+    primaryCtaTextAr: 'استكشاف المنتجات الطبيعية',
     primaryCtaLink: '/shop',
     secondaryCtaTextAr: 'قصة وإرث دار زاد',
     secondaryCtaLink: '/story',
@@ -93,7 +93,7 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
       id: 'sec-4',
       type: 'banner',
       titleAr: 'انتقاء ملكي لأفضل المحاصيل',
-      subtitleAr: 'المحصول الملكي • معايير صارمة',
+      subtitleAr: 'المنتجات الطبيعية • معايير صارمة',
       headlineAr: 'انتقاء ملكي لأفضل المحاصيل',
       bodyAr: 'ليست كل المحاصيل تحمل اسم زاد. نختار بعناية ما ينسجم مع معاييرنا في النقاء والجودة والطعم والقيمة الغذائية لنقدم مجموعة منتقاة لمن يبحث عن الأفضل.',
       quoteAr: 'الفخامة الحقيقية تبدأ من حسن الاختيار.',
@@ -161,7 +161,7 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
     values: [
       { id: 'v1', titleAr: 'الأصالة المتوارثة', descAr: 'خبرة عملية ممتدة لأكثر من أربعة عقود توارثناها جيلاً بعد جيل.' },
       { id: 'v2', titleAr: 'النقاء الخالص 100%', descAr: 'عسل كما خلقته الطبيعة دون أي بسترة، تسخين، أو إضافات صناعية.' },
-      { id: 'v3', titleAr: 'أمانة الاختيار', descAr: 'لا نعتمد إلا المحاصيل التي تجتاز أعلى معايير الجودة والمطابقة المخبرية.' }
+      { id: 'v3', titleAr: 'أمانة الاختيار', descAr: 'لا نعتمد إلا المنتجات التي تجتاز أعلى معايير الجودة الطبيعية.' }
     ]
   },
 
@@ -169,9 +169,9 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
   shopPage: {
     heroBadgeAr: 'المجموعة الملكية المباشرة',
     mainTitleAr: 'مقتنيات زاد من أندر خيرات الطبيعة',
-    subtitleAr: 'استكشف خيارات الأعسال الملكية المحصودة يدوياً والموثقة بشهادات فحص مخبرية دولية مستقلة.',
+    subtitleAr: 'استكشف خيارات الأعسال الطبيعية المحصودة يدوياً والمختارة بعناية.',
     bannerImageUrl: '',
-    searchPlaceholderAr: 'بحث باسم الصنف أو رقم التشغيلة...',
+    searchPlaceholderAr: 'بحث باسم الصنف...',
     allCategoriesLabelAr: 'كافة المنتجات الطبيعية',
     sortFeaturedLabelAr: 'ترتيب: الإصدارات المميزة',
     sortPriceHighLabelAr: 'السعر: من الأعلى للأقل',
@@ -181,19 +181,19 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
     resetFiltersLabelAr: 'إعادة تعيين المرشحات',
     gridColumns: 3,
     addToCartButtonTextAr: 'اقتناء',
-    quickViewButtonTextAr: 'تفاصيل المحصول والفحص',
-    showLabBatchTag: true,
+    quickViewButtonTextAr: 'تفاصيل المنتج الطبيعي',
+    showLabBatchTag: false,
     showOriginRegionTag: true,
     showRatingStars: true,
     emptyStateTitleAr: 'لم يتم العثور على مقتنيات مطابقة',
-    emptyStateDescAr: 'جرب تغيير معايير البحث أو اختيار فئة أخرى لاستعراض محاصيل زاد.',
+    emptyStateDescAr: 'جرب تغيير معايير البحث أو اختيار فئة أخرى لاستعراض منتجات زاد.',
     emptyStateButtonTextAr: 'استعراض كافة المنتجات',
     promoBanner: {
       isEnabled: true,
       badgeAr: 'ميثاق الجودة الملكية',
-      titleAr: 'الضمان الذهبي والشحن المبرد الفاخر',
-      descriptionAr: 'نضمن لك استرداداً كاملاً إذا لم تطابق نتائج أي فحص مخبري مستقل أعلى معايير النقاء الطبيعي.',
-      buttonTextAr: 'استشر الخبير الحسي',
+      titleAr: 'الضمان الذهبي والشحن لجميع محافظات مصر',
+      descriptionAr: 'نضمن لك استرداداً كاملاً إذا لم تطابق منتجاتنا أعلى معايير النقاء الطبيعي.',
+      buttonTextAr: 'استشر الخبير',
       buttonLink: '/#quiz',
       backgroundColor: '#07160c',
       textColor: '#fbf8f1'
@@ -203,8 +203,8 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
   // 5. Announcement Bar Configuration
   announcementBar: {
     isEnabled: true,
-    messageTextAr: 'نقاء موثق مخبرياً بنسبة 100% مع كل برطمان | شحن ملكي مبرد وفاخر',
-    secondaryTextAr: 'ميثاق النقاء الملكي',
+    messageTextAr: 'نقاء طبيعي بنسبة 100% مع كل برطمان | شحن لجميع محافظات مصر',
+    secondaryTextAr: 'ميثاق النقاء الطبيعي',
     linkUrl: '/story',
     iconName: 'sparkles',
     backgroundColor: '#07160c',
@@ -219,9 +219,9 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
     logoUrl: '/images/zaad-logo.png',
     items: [
       { id: 'nav-1', nameAr: 'الرئيسية', href: '/', order: 1, isVisible: true },
-      { id: 'nav-2', nameAr: 'المجموعة الملكية', href: '/shop', order: 2, isVisible: true, badgeAr: 'حصري' },
+      { id: 'nav-2', nameAr: 'المنتجات الطبيعية', href: '/shop', order: 2, isVisible: true, badgeAr: 'حصري' },
       { id: 'nav-3', nameAr: 'إرث وقصة زاد', href: '/story', order: 3, isVisible: true },
-      { id: 'nav-4', nameAr: 'فحص شهادة النقاء', href: '/shop', order: 4, isVisible: false }
+      { id: 'nav-4', nameAr: 'المنتجات الطبيعية', href: '/shop', order: 4, isVisible: false }
     ]
   },
 
@@ -241,7 +241,7 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
         customerName: 'د. خالد بن سلطان آل سعود',
         customerTitleAr: 'مقتني معتمد لكبار الشخصيات',
         headingAr: 'نقاء دوعني استثنائي لا يقارن',
-        contentAr: 'أقتني الأعسال النادرة منذ أكثر من عقدين، ولكن عسل السدر الدوعني الملكي من دار زاد فاق كل التوقعات بقوامه المخملي ورائحته الزكية وتوثيقه المخبري الصارم.',
+        contentAr: 'أقتني الأعسال النادرة منذ أكثر من عقدين، ولكن عسل السدر الدوعني من دار زاد فاق كل التوقعات بقوامه المخملي ورائحته الزكية ونقائه الصارم.',
         rating: 5,
         customerImageUrl: '',
         isVisible: true,
@@ -253,7 +253,7 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
         customerName: 'سعادة المهندس فيصل الشمري',
         customerTitleAr: 'مهتم بالصحة الحيوية والطب الطبيعي',
         headingAr: 'خام 100% بكامل خواصه العلاجية والإنزيمات الحية',
-        contentAr: 'أهم ما يميز زاد هو شفافية الفحص المخبري وخلو العسل تماماً من أي تسخين حراري. الإنزيمات الحية واضحة في المذاق والطاقة الحيوية التي يمنحها للجسم.',
+        contentAr: 'أهم ما يميز زاد هو النقاء الطبيعي وخلو العسل تماماً من أي تسخين حراري. الإنزيمات الحية واضحة في المذاق والطاقة الحيوية التي يمنحها للجسم.',
         rating: 5,
         customerImageUrl: '',
         isVisible: true,
@@ -265,7 +265,7 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
         customerName: 'الأستاذة نورة المنصور',
         customerTitleAr: 'سفيرة الفخامة والإهداء الراقي',
         headingAr: 'صندوق إهداء ملكي يبهر أصحاب الذوق الرفيع',
-        contentAr: 'اخترت صندوق الإهداء الملكي لتقديمه في مناسبة رسمية، وكانت التجربة من التغليف المذهب والزجاج المعتم وحافظات البرودة في الشحن في قمة الاحترافية والرفعة.',
+        contentAr: 'اخترت صندوق الإهداء لتقديمه في مناسبة رسمية، وكانت التجربة من التغليف المذهب والزجاج المعتم وسرعة التوصيل في قمة الاحترافية والرفعة.',
         rating: 5,
         customerImageUrl: '',
         isVisible: true,
@@ -292,24 +292,24 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
   // 8. SEO Configuration
   seo: {
     defaultMetaTitle: 'زاد | دار النقاء الطبيعي للأعسال الفاخرة',
-    defaultMetaDescription: 'زاد (ZAAD) تقدم أفخر أنواع العسل الطبيعي النقي 100% من أودية دوعن وجبال عسير العذراء وفق أعلى معايير النقاء والفحص المخبري.',
+    defaultMetaDescription: 'زاد (ZAAD) تقدم أفخر أنواع العسل الطبيعي النقي 100% من أودية دوعن وجبال عسير العذراء وفق أعلى معايير النقاء والجودة.',
     defaultOgImage: '/images/zaad-story-hero-banner.jpg',
     pages: [
       {
         pagePath: '/',
         pageNameAr: 'الرئيسية',
         metaTitle: 'زاد | دار النقاء الطبيعي للأعسال النادرة',
-        metaDescription: 'اكتشف أنقى أنواع العسل الطبيعي الملكي الموثق مخبرياً من دار زاد.',
+        metaDescription: 'اكتشف أنقى أنواع العسل الطبيعي من دار زاد.',
         ogImageUrl: '/images/zaad-story-hero-banner.jpg',
         keywords: ['عسل زاد', 'عسل سدر ملكي', 'عسل طبيعي نقي', 'عسل دوعني', 'أعسال فاخرة']
       },
       {
         pagePath: '/shop',
-        pageNameAr: 'المجموعة الملكية (المتجر)',
-        metaTitle: 'المجموعة الملكية | تسوق أفخر أعسال دار زاد',
-        metaDescription: 'تسوق عسل السدر الدوعني الملكي وعسل السمر البري المعتق ومجموعات الهدايا الفاخرة.',
+        pageNameAr: 'المنتجات الطبيعية (المتجر)',
+        metaTitle: 'المنتجات الطبيعية | تسوق أفخر أعسال دار زاد',
+        metaDescription: 'تسوق عسل السدر الدوعني وعسل السمر البري ومجموعات الهدايا الفاخرة.',
         ogImageUrl: '/images/zaad-nature-honey-clover.jpg',
-        keywords: ['شراء عسل سدر', 'عسل سمر', 'هدايا عسل ملكي', 'عسل نوارة']
+        keywords: ['شراء عسل سدر', 'عسل سمر', 'هدايا عسل', 'عسل نوارة']
       },
       {
         pagePath: '/story',
@@ -327,14 +327,14 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
     logoUrl: '/images/zaad-logo.png',
     brandNameAr: 'زاد | ZAAD',
     brandSloganAr: 'زَاد | دَارُ النَّقَاءِ الطَّبِيعِي',
-    aboutTextAr: 'زاد ليست مجرد متجر للمنتجات الطبيعية؛ زاد هي عهد أصيل بحفظ التراث الطبيعي للأعسال النادرة، وتوثيق أعلى مستويات النقاء المخبري بعيداً عن المعالجات التجارية، لتصلكم خيرات الأرض كما أرادتها الطبيعة.',
+    aboutTextAr: 'زاد ليست مجرد متجر للمنتجات الطبيعية؛ زاد هي عهد أصيل بحفظ التراث الطبيعي للأعسال النادرة، وتوثيق أعلى مستويات النقاء بعيداً عن المعالجات التجارية، لتصلكم خيرات الأرض كما أرادتها الطبيعة.',
     backgroundColor: '#07160c',
     textColor: '#fbf8f1',
     accentColor: '#c59b27',
     badges: [
-      { id: 'b1', titleAr: 'نقاء دوعني موثق 100%', subtitleAr: 'فحص مخبري أوروبي لكل تشغيلة', icon: 'award', isVisible: true, order: 1 },
+      { id: 'b1', titleAr: 'نقاء دوعني موثق 100%', subtitleAr: 'جودة استثنائية لكل صنف', icon: 'award', isVisible: true, order: 1 },
       { id: 'b2', titleAr: 'إنزيمات حية كاملة', subtitleAr: 'بدون أي بسترة أو تسخين حراري', icon: 'shield', isVisible: true, order: 2 },
-      { id: 'b3', titleAr: 'شحن مبرد فاخر', subtitleAr: 'سيارات مكيفة للحفاظ على الخواص', icon: 'truck', isVisible: true, order: 3 },
+      { id: 'b3', titleAr: 'شحن لجميع المحافظات', subtitleAr: 'توصيل سريع لجميع محافظات مصر', icon: 'truck', isVisible: true, order: 3 },
       { id: 'b4', titleAr: 'مطابقة مالية فورية', subtitleAr: 'تحقق آمن وفوري لإيصالات التحويل', icon: 'lock', isVisible: true, order: 4 }
     ],
     columns: [
@@ -345,13 +345,13 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
         order: 1,
         links: [
           { id: 'l5', labelAr: 'إرث وقصة دار زاد', href: '/story', openInNewTab: false, isVisible: true, order: 1 },
-          { id: 'l6', labelAr: 'ميثاق النقاء والتوثيق المخبري', href: '/story', openInNewTab: false, isVisible: true, order: 2 },
-          { id: 'l7', labelAr: 'المساعد الحسي لاختيار العسل', href: '/#quiz', openInNewTab: false, isVisible: true, order: 3 }
+          { id: 'l6', labelAr: 'ميثاق النقاء الطبيعي', href: '/story', openInNewTab: false, isVisible: true, order: 2 },
+          { id: 'l7', labelAr: 'مساعد اختيار العسل', href: '/#quiz', openInNewTab: false, isVisible: true, order: 3 }
         ]
       },
       {
         id: 'col-3',
-        titleAr: 'خدمة كبار الشخصيات',
+        titleAr: 'خدمة العملاء',
         isVisible: true,
         order: 2,
         links: [
@@ -363,7 +363,7 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
     ],
     contact: {
       whatsappNumber: '+966500000000',
-      whatsappPrefilledMessageAr: 'مرحباً دار زاد، أرغب بالاستفسار عن المحصول الملكي المتاح.',
+      whatsappPrefilledMessageAr: 'مرحباً دار زاد، أرغب بالاستفسار عن المنتجات الطبيعية المتاحة.',
       customerSupportEmail: 'concierge@zaad.sa',
       supportPhone: '+966 800 123 9223',
       workingHoursAr: 'يومياً من 9:00 ص حتى 11:00 م (توقيت مكة المكرمة)',

@@ -8,16 +8,10 @@ import {
   ShoppingBag,
   Heart,
   ShieldCheck,
-  Award,
   Sparkles,
   Check,
   Star,
-  FileText,
-  Truck,
-  RotateCcw,
-  ArrowRight,
-  Share2,
-  Lock
+  Share2
 } from 'lucide-react';
 import { getLiveProductBySlug, getLiveProducts } from '@/lib/services/productService';
 import { supabase } from '@/lib/supabase/client';
@@ -35,7 +29,7 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [activeTab, setActiveTab] = useState<'story' | 'lab' | 'benefits' | 'reviews'>('story');
+  const [activeTab, setActiveTab] = useState<'story' | 'benefits' | 'reviews'>('story');
   const [copiedLink, setCopiedLink] = useState(false);
 
   // Review form state
@@ -100,7 +94,7 @@ export default function ProductDetailPage() {
   if (loading) {
     return (
       <div className="min-h-[70vh] bg-ivory-100 flex items-center justify-center">
-        <div className="text-center font-serif text-zaad-900 text-lg">جاري تحميل بيانات المحصول الملكي...</div>
+        <div className="text-center font-serif text-zaad-900 text-lg">جاري تحميل بيانات المنتجات الطبيعية...</div>
       </div>
     );
   }
@@ -165,7 +159,7 @@ export default function ProductDetailPage() {
         <nav className="flex items-center gap-2 text-xs text-charcoal-700/70 mb-8">
           <Link href="/" className="hover:text-zaad-900 transition-colors">الرئيسية</Link>
           <span>/</span>
-          <Link href="/shop" className="hover:text-zaad-900 transition-colors">المحصول الملكي</Link>
+          <Link href="/shop" className="hover:text-zaad-900 transition-colors">المنتجات الطبيعية</Link>
           <span>/</span>
           <span className="text-zaad-900 font-bold">{product.nameAr}</span>
         </nav>
@@ -281,7 +275,7 @@ export default function ProductDetailPage() {
                 </div>
                 <div className="text-left text-xs text-charcoal-700/70">
                   <span className="text-zaad-700 font-semibold block">شامل ضريبة القيمة المضافة</span>
-                  <span className="text-[11px] text-gold-700">شحن مبرد مجاني للطلبات الكبرى</span>
+                  <span className="text-[11px] text-gold-700">شحن لجميع محافظات مصر</span>
                 </div>
               </div>
 
@@ -289,52 +283,6 @@ export default function ProductDetailPage() {
               <p className="text-sm text-charcoal-800 leading-relaxed font-light">
                 {product.taglineAr || product.shortDescAr}
               </p>
-
-              {/* Sensory Profile Radar Matrix */}
-              {product.sensoryProfile && (
-                <div className="bg-white p-4 rounded-xl border border-gold-200/80 space-y-2.5">
-                  <h3 className="text-xs font-bold text-zaad-900 flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-gold-600" />
-                    <span>البصمة الحسية ومؤشرات التذوق:</span>
-                  </h3>
-
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs pt-1">
-                    <div>
-                      <span className="text-charcoal-700/70 block text-[11px]">درجة الحلاوة:</span>
-                      <div className="flex gap-1 mt-1">
-                        {[...Array(5)].map((_, i) => (
-                          <div key={i} className={`h-1.5 flex-1 rounded-full ${i < (product.sensoryProfile?.sweetness || 4) ? 'bg-gold-500' : 'bg-ivory-300'}`} />
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <span className="text-charcoal-700/70 block text-[11px]">العبير الزهري:</span>
-                      <div className="flex gap-1 mt-1">
-                        {[...Array(5)].map((_, i) => (
-                          <div key={i} className={`h-1.5 flex-1 rounded-full ${i < (product.sensoryProfile?.floralAroma || 4) ? 'bg-gold-500' : 'bg-ivory-300'}`} />
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <span className="text-charcoal-700/70 block text-[11px]">الكثافة واللزوجة:</span>
-                      <div className="flex gap-1 mt-1">
-                        {[...Array(5)].map((_, i) => (
-                          <div key={i} className={`h-1.5 flex-1 rounded-full ${i < (product.sensoryProfile?.density || 4) ? 'bg-zaad-700' : 'bg-ivory-300'}`} />
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <span className="text-charcoal-700/70 block text-[11px]">طبيعة التبلور:</span>
-                      <span className="text-zaad-900 font-bold mt-0.5 block text-xs">
-                        {product.sensoryProfile?.crystallization || 'نادر'}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              )}
 
             </div>
 
@@ -367,11 +315,11 @@ export default function ProductDetailPage() {
                   className="flex-1 bg-zaad-800 hover:bg-zaad-700 text-white py-3.5 px-6 rounded-xl text-sm font-bold shadow-lg hover:shadow-gold-glow transition-all flex items-center justify-center gap-2 gold-shimmer-btn"
                 >
                   <ShoppingBag className="w-4 h-4 text-gold-300" />
-                  <span>اقتناء هذا المحصول ({formatPrice(product.price * quantity)})</span>
+                  <span>اقتناء هذا المنتج ({formatPrice(product.price * quantity)})</span>
                 </button>
               </div>
 
-              {/* Quality & Cold Warehouse Status */}
+              {/* Quality & Warehouse Status */}
               <div className="flex items-center justify-between text-xs text-charcoal-700/80 pt-1">
                 <span className="text-gold-700 font-semibold flex items-center gap-1">
                   <ShieldCheck className="w-3.5 h-3.5" />
@@ -379,7 +327,7 @@ export default function ProductDetailPage() {
                 </span>
                 <span className="text-green-700 font-semibold flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                  متوفر بالمستودع المبرد
+                  متوفر بالمستودع
                 </span>
               </div>
 
@@ -401,21 +349,8 @@ export default function ProductDetailPage() {
                 : 'border-transparent text-charcoal-700/70 hover:text-zaad-900'
                 }`}
             >
-              قصة المحصول والمصدر
+              تفاصيل المنتج الطبيعي
             </button>
-
-            {product.latestLabBatch && (
-              <button
-                onClick={() => setActiveTab('lab')}
-                className={`text-sm font-bold pb-2 border-b-2 transition-all whitespace-nowrap flex items-center gap-1.5 ${activeTab === 'lab'
-                  ? 'border-gold-500 text-zaad-900'
-                  : 'border-transparent text-charcoal-700/70 hover:text-zaad-900'
-                  }`}
-              >
-                <Award className="w-4 h-4 text-gold-500" />
-                <span>نتائج الفحص المخبري المستقل</span>
-              </button>
-            )}
 
             <button
               onClick={() => setActiveTab('benefits')}
@@ -438,7 +373,7 @@ export default function ProductDetailPage() {
             </button>
           </div>
 
-          {/* Tab Content 1: Story */}
+          {/* Tab Content 1: Details & Story */}
           {activeTab === 'story' && (
             <div className="pt-8 space-y-6 max-w-4xl text-charcoal-800 leading-relaxed text-sm sm:text-base font-light animate-fade-in">
               <div className="whitespace-pre-line">
@@ -451,64 +386,14 @@ export default function ProductDetailPage() {
                   <p className="text-xs text-charcoal-700">{product.floralSourceAr}</p>
                 </div>
                 <div className="bg-ivory-50 p-4 rounded-xl border border-ivory-300">
-                  <h4 className="text-xs font-bold text-zaad-900 mb-1">إرشادات الحفظ الملكي:</h4>
+                  <h4 className="text-xs font-bold text-zaad-900 mb-1">إرشادات الحفظ:</h4>
                   <p className="text-xs text-charcoal-700">{product.storageInstructionsAr || 'يحفظ في مكان بارد وجاف'}</p>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Tab Content 2: Lab Analysis */}
-          {activeTab === 'lab' && product.latestLabBatch && (
-            <div className="pt-8 space-y-6 animate-fade-in">
-              <div className="bg-zaad-900 text-ivory-100 p-6 rounded-2xl border border-gold-500/30">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-zaad-800">
-                  <div>
-                    <span className="text-xs text-gold-400 font-semibold block">المختبر المعتمد المصدر للشهادة:</span>
-                    <h3 className="text-base font-bold text-ivory-50 mt-1">{product.latestLabBatch.labName}</h3>
-                  </div>
-                  <div className="text-right sm:text-left font-mono text-xs text-ivory-300">
-                    <div>تاريخ الفحص: {product.latestLabBatch.testedDate}</div>
-                    <div className="text-gold-400 font-bold">رقم التشغيلة: {product.latestLabBatch.batchNumber}</div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 pt-6 text-center">
-                  <div className="bg-zaad-950/60 p-4 rounded-xl border border-zaad-800">
-                    <div className="text-2xl font-bold text-gold-400 font-mono">{product.latestLabBatch.moisturePercentage}%</div>
-                    <div className="text-xs text-ivory-300 mt-1">نسبة الرطوبة</div>
-                    <div className="text-[10px] text-green-400 mt-0.5">(المعيار القياسي &lt; 20%)</div>
-                  </div>
-
-                  <div className="bg-zaad-950/60 p-4 rounded-xl border border-zaad-800">
-                    <div className="text-2xl font-bold text-gold-400 font-mono">{product.latestLabBatch.hmfLevel}</div>
-                    <div className="text-xs text-ivory-300 mt-1">مستوى HMF (ملغ/كغ)</div>
-                    <div className="text-[10px] text-green-400 mt-0.5">(طازج فائق &lt; 5)</div>
-                  </div>
-
-                  <div className="bg-zaad-950/60 p-4 rounded-xl border border-zaad-800">
-                    <div className="text-2xl font-bold text-gold-400 font-mono">{product.latestLabBatch.diastaseActivity}</div>
-                    <div className="text-xs text-ivory-300 mt-1">نشاط إنزيم الدياستيز</div>
-                    <div className="text-[10px] text-green-400 mt-0.5">(إنزيمات حية نشطة &gt; 8)</div>
-                  </div>
-
-                  <div className="bg-zaad-950/60 p-4 rounded-xl border border-zaad-800">
-                    <div className="text-2xl font-bold text-gold-400 font-mono">{product.latestLabBatch.sucrosePercentage}%</div>
-                    <div className="text-xs text-ivory-300 mt-1">نسبة السكروز الحر</div>
-                    <div className="text-[10px] text-green-400 mt-0.5">(خالٍ من التغذية &lt; 5%)</div>
-                  </div>
-
-                  <div className="bg-zaad-950/60 p-4 rounded-xl border border-zaad-800">
-                    <div className="text-2xl font-bold text-gold-400 font-mono">{product.latestLabBatch.pollenPurityPercentage}%</div>
-                    <div className="text-xs text-ivory-300 mt-1">نقاء طيف اللقاح</div>
-                    <div className="text-[10px] text-green-400 mt-0.5">(أحادي الزهرة موثق)</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Tab Content 3: Benefits & Pairings */}
+          {/* Tab Content 2: Benefits & Pairings */}
           {activeTab === 'benefits' && (
             <div className="pt-8 grid grid-cols-1 md:grid-cols-2 gap-8 animate-fade-in">
               <div className="space-y-4">
@@ -543,7 +428,7 @@ export default function ProductDetailPage() {
             </div>
           )}
 
-          {/* Tab Content 4: Reviews */}
+          {/* Tab Content 3: Reviews */}
           {activeTab === 'reviews' && (
             <div className="pt-8 space-y-8 animate-fade-in">
 
@@ -572,7 +457,7 @@ export default function ProductDetailPage() {
 
               {/* Review Submission Form */}
               <div className="bg-ivory-50 p-6 rounded-2xl border border-ivory-300 max-w-xl">
-                <h4 className="text-sm font-bold text-zaad-900 mb-1">شاركنا انطباعك عن تجربة هذا المحصول</h4>
+                <h4 className="text-sm font-bold text-zaad-900 mb-1">شاركنا انطباعك عن تجربة هذا المنتج</h4>
                 <p className="text-xs text-charcoal-700/70 mb-4">تقييمك يسهم في إثراء سجل دار زاد للنقاء.</p>
 
                 {reviewSubmitted ? (
@@ -642,11 +527,11 @@ export default function ProductDetailPage() {
 
         </div>
 
-        {/* Related Royal Collection */}
+        {/* Related Products */}
         {relatedProducts.length > 0 && (
           <div className="space-y-6">
             <h2 className="font-serif text-2xl font-bold text-zaad-900">
-              مقتنيات ملكية متناغمة قد تنال إعجابكم
+              منتجات طبيعية متناغمة قد تنال إعجابكم
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               {relatedProducts.map((rel) => (

@@ -95,7 +95,7 @@ export function formatSupabaseProduct(d: any): Product {
       labSealImageUrl: latestBatch.lab_seal_image_url
     } : {
       batchNumber: 'ZD-2026-LIVE',
-      harvestSeason: 'المحصول الملكي 2026',
+      harvestSeason: 'المنتجات الطبيعية 2026',
       harvestDate: '2026-01-15',
       testedDate: '2026-02-01',
       labName: 'مختبر الجودة الأوروبية المعتمد',

@@ -20,7 +20,7 @@ export function generateLuxuryEmailHtml(
   let headline = '';
   let subheadline = '';
   let messageBody = '';
-  let callToAction = { text: 'استكشاف المحصول الملكي', url: 'https://www.zaadstore.com/shop' };
+  let callToAction = { text: 'استكشاف المنتجات الطبيعية', url: 'https://www.zaadstore.com/shop' };
 
   switch (type) {
     case 'order_confirmation':
@@ -55,7 +55,7 @@ export function generateLuxuryEmailHtml(
       messageBody = `
         <p>صاحب الذوق الرفيع <strong>${data.recipientName}</strong>،</p>
         <p>يسرنا إبلاغكم بأنه تم اعتماد إيصال الدفع بنجاح. انتقل طلبكم الآن إلى مرحلة <strong>التجهيز والتغليف الملكي</strong> بإشراف خبير الجودة لدينا.</p>
-        <p>برطماناتكم ستصلكم مع شهادات الفحص المخبري المعتمدة ومحفورة برقم التشغيلة الفريد.</p>
+        <p>برطماناتكم ستصلكم بأعلى معايير الجودة والنقاء الطبيعي الخالص.</p>
       `;
       callToAction = { text: 'متابعة مسار التجهيز المباشر', url: `https://zaad-luxury.com/order-confirmation/${data.orderNumber}` };
       break;
@@ -82,9 +82,9 @@ export function generateLuxuryEmailHtml(
       subheadline = `رقم التتبع: ${data.trackingNumber}`;
       messageBody = `
         <p>عميلنا الكريم <strong>${data.recipientName}</strong>،</p>
-        <p>خرجت مقتنياتكم الآن من دار زاد داخل سيارات الشحن المبرد لحماية الإنزيمات الحية والنقاء الطبيعي من درجات الحرارة.</p>
+        <p>خرجت مقتنياتكم الآن من دار زاد داخل سيارات الشحن والتوصيل لضمان وصولها بأعلى معايير الجودة.</p>
         <div style="background:#f4efe8; padding: 16px; border-radius: 6px; margin: 20px 0;">
-          <p style="margin:0; font-size:14px;"><strong>شركة الشحن:</strong> سمسا إكسبريس (النقل المبرد الفاخر)</p>
+          <p style="margin:0; font-size:14px;"><strong>شركة الشحن:</strong> سمسا إكسبريس (الشحن الفاخر)</p>
           <p style="margin:6px 0 0 0; font-size:14px;"><strong>رقم الشحنة:</strong> ${data.trackingNumber}</p>
         </div>
       `;
@@ -100,7 +100,7 @@ export function generateLuxuryEmailHtml(
         <p>تم تسليم طلبكم بنجاح. نرجو أن تكون تجربة التذوق بمستوى تطلعاتكم الرفيعة.</p>
         <p>يسعدنا دائماً خدمتكم واستقبال تقييمكم الكريم لتجربة مقتنيات زاد النادرة.</p>
       `;
-      callToAction = { text: 'استكشاف المحصول الملكي', url: 'https://www.zaadstore.com/shop' };
+      callToAction = { text: 'استكشاف المنتجات الطبيعية', url: 'https://www.zaadstore.com/shop' };
       break;
 
     case 'welcome':
@@ -110,21 +110,21 @@ export function generateLuxuryEmailHtml(
       messageBody = `
         <p>أهلاً بكم <strong>${data.recipientName}</strong>،</p>
         <p>بانضمامكم إلى دار زاد، تصبحون جزءاً من دائرة حصرية تقدّر النقاء المطلق والحرفة اليدوية المتوارثة في جني أندر أعسال الجزيرة العربية والعالم.</p>
-        <p>حسابكم يمنحكم أولوية الحجز في مواسم القطاف النادرة والحصول على شهادات النقاء الرقمية الموثقة لكل قطرة.</p>
+        <p>حسابكم يمنحكم أولوية الحجز في مواسم القطاف النادرة والوصول المباشر لكافة المنتجات.</p>
       `;
-      callToAction = { text: 'استكشاف المحصول الحصري', url: 'https://zaad-luxury.com/shop' };
+      callToAction = { text: 'استكشاف المنتجات الطبيعية', url: 'https://zaad-luxury.com/shop' };
       break;
 
     case 'vip_invitation':
-      subject = 'زاد | دعوة حصرية لنخبة الأعضاء: حصاد السدر الدوعني الملكي 2026';
+      subject = 'زاد | دعوة حصرية لنخبة الأعضاء: حصاد السدر الدوعني 2026';
       headline = 'دعوة خاصة لنخبة مقتني زاد';
       subheadline = 'إصدار محدود مرقم (200 برطمان فقط)';
       messageBody = `
         <p>سعادة <strong>${data.recipientName}</strong>،</p>
-        <p>يسر دار زاد أن تفتح باب الحجز المبكر لمحصول الشتاء الملكي من أعماق وادي دوعن، بنسبة نقاء لقاح غير مسبوقة (99.1%) ورطوبة فائقة الانخفاض (13.8%).</p>
-        <p>نظراً لمحدودية المحصول، تمت إتاحة الحجز المسبق لأعضاء الدائرة الخاصة فقط قبل طرحه العام.</p>
+        <p>يسر دار زاد أن تفتح باب الحجز المبكر للمنتجات الطبيعية الحصرية من أعماق وادي دوعن، بنقاء تام ورطوبة فائقة الانخفاض.</p>
+        <p>نظراً لمحدودية الكمية، تمت إتاحة الحجز المسبق لأعضاء الدائرة الخاصة فقط قبل طرحه العام.</p>
       `;
-      callToAction = { text: 'حجز حصتكم من المحصول الملكي', url: 'https://zaad-luxury.com/shop' };
+      callToAction = { text: 'حجز حصتكم من المنتجات الطبيعية', url: 'https://zaad-luxury.com/shop' };
       break;
   }
 

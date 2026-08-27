@@ -67,7 +67,7 @@ export default function CheckoutPage() {
           <h2 className="font-serif text-xl font-bold text-zaad-900">حقيبة المقتنيات فارغة</h2>
           <p className="text-xs text-charcoal-700/70">يرجى إضافة منتجات قبل التوجه لإتمام الطلب.</p>
           <Link href="/shop" className="inline-block bg-zaad-800 text-white text-xs font-bold px-6 py-2.5 rounded-xl">
-            استكشاف المحصول الملكي
+            استكشاف المنتجات الطبيعية
           </Link>
         </div>
       </div>
@@ -287,7 +287,7 @@ export default function CheckoutPage() {
                       <input
                         type="email"
                         required
-                        placeholder="لتلقي شهادات الفحص وإشعارات الدفع"
+                        placeholder="لتلقي إشعارات الطلب والدفع"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         className="w-full text-xs bg-ivory-50 border border-ivory-300 rounded-xl px-4 py-3 focus:border-gold-500 focus:outline-none"
@@ -333,7 +333,7 @@ export default function CheckoutPage() {
               <div className="space-y-5 animate-fade-in">
                 <h2 className="text-base font-bold text-zaad-900 border-b border-ivory-200 pb-3 flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-gold-500"></span>
-                  <span>الخطوة 2: وجهة الشحن الملكي المبرد</span>
+                  <span>الخطوة 2: وجهة الشحن والتوصيل</span>
                 </h2>
 
                 <div className="space-y-4">
@@ -401,7 +401,7 @@ export default function CheckoutPage() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-zaad-900 mb-1">ملاحظات خاصة للمندوب وسائق الشحن المبرد</label>
+                    <label className="block text-xs font-semibold text-zaad-900 mb-1">ملاحظات خاصة بالمندوب والتوصيل</label>
                     <input
                       type="text"
                       placeholder="مثال: يرجى الاتصال قبل الوصول بنصف ساعة والتسليم للاستقبال"
@@ -734,7 +734,7 @@ export default function CheckoutPage() {
                     <div>
                       <h4 className="text-xs font-bold">بروتوكول التحقق الفوري لدار زاد:</h4>
                       <p className="text-[11px] text-charcoal-700 mt-0.5 leading-relaxed">
-                        بمجرد الضغط على تأكيد الطلب، ستتغير حالة طلبكم إلى <strong>&ldquo;قيد المراجعة المالية&rdquo;</strong> وسيصل إشعار فوري لفريق العمليات لمطابقة الإيصال وتجهيز البرطمانات مع شهادات الفحص المخبري.
+                        بمجرد الضغط على تأكيد الطلب، ستتغير حالة طلبكم إلى <strong>&ldquo;قيد المراجعة المالية&rdquo;</strong> وسيصل إشعار فوري لفريق العمليات لمطابقة الإيصال وتجهيز المنتجات الطبيعية للشحن.
                       </p>
                     </div>
                   </div>
@@ -809,7 +809,7 @@ export default function CheckoutPage() {
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <span>الشحن المبرد:</span>
+                  <span>الشحن والتوصيل:</span>
                   <span>{shippingFee === 0 ? <span className="text-gold-600 font-bold">مجاني</span> : formatPrice(shippingFee)}</span>
                 </div>
                 <div className="flex justify-between font-bold text-zaad-900 text-sm pt-2 border-t border-ivory-200">

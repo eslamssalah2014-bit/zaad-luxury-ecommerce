@@ -25,10 +25,10 @@ export default function AdminEmailsPage() {
     { id: 'verification_pending', nameAr: '٢. الإيصال قيد التدقيق' },
     { id: 'payment_approved', nameAr: '٣. اعتماد الدفع وبدء التجهيز' },
     { id: 'payment_rejected', nameAr: '٤. تنبيه رفض / إعادة رفع الإيصال' },
-    { id: 'shipped', nameAr: '٥. إشعار الشحن المبرد والتتبع' },
+    { id: 'shipped', nameAr: '٥. إشعار الشحن والتتبع' },
     { id: 'delivered', nameAr: '٦. إشعار تمام التسليم' },
     { id: 'welcome', nameAr: '٧. الترحيب بالانضمام للدار' },
-    { id: 'vip_invitation', nameAr: '٨. دعوة خاصة للمحصول النادر' },
+    { id: 'vip_invitation', nameAr: '٨. دعوة خاصة للمنتجات الطبيعية' },
   ];
 
   const emailData = generateLuxuryEmailHtml(selectedTemplate, {

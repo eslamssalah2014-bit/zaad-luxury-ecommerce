@@ -85,7 +85,7 @@ export default function OrderConfirmationPage() {
     { key: 'placed', label: 'تم إنشاء الطلب', done: true, time: 'فوري' },
     { key: 'verification', label: 'مطابقة إيصال التحويل', done: isAwaiting || isPaid, current: isAwaiting, time: 'خلال دقائق' },
     { key: 'processing', label: 'التجهيز في الغرفة المعقمة', done: isPaid, time: 'بإشراف خبير الجودة' },
-    { key: 'shipped', label: 'الشحن المبرد الفاخر', done: order.status === 'shipped' || order.status === 'delivered', time: 'سمسا إكسبريس' },
+    { key: 'shipped', label: 'الشحن والتوصيل الفاخر', done: order.status === 'shipped' || order.status === 'delivered', time: 'سمسا إكسبريس' },
     { key: 'delivered', label: 'التسليم للمقتني', done: order.status === 'delivered', time: 'نقاءٌ يصافح ذوقكم' },
   ];
 
@@ -112,7 +112,7 @@ export default function OrderConfirmationPage() {
 
             <p className="text-xs sm:text-sm text-charcoal-700/80 max-w-lg mx-auto font-light leading-relaxed">
               رقم الطلب المرجعي: <strong className="font-mono text-zaad-900 text-sm">{order.orderNumber}</strong>. 
-              {isAwaiting && ' يقوم فريق العمليات المالية بمراجعة إشعار التحويل البنكي المرفق لجدولة الشحن المبرد فوراً.'}
+              {isAwaiting && ' يقوم فريق العمليات المالية بمراجعة إشعار التحويل البنكي المرفق لجدولة الشحن فوراً.'}
             </p>
           </div>
 
@@ -169,7 +169,7 @@ export default function OrderConfirmationPage() {
         {/* Order Details & Summary */}
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-ivory-300 shadow-sm space-y-6">
           <h2 className="font-serif text-lg font-bold text-zaad-900 flex items-center justify-between">
-            <span>تفاصيل المحصول والفاتورة الملكية</span>
+            <span>تفاصيل المنتجات والفاتورة الملكية</span>
             <button
               onClick={() => window.print()}
               className="text-xs font-sans text-gold-700 hover:text-gold-900 flex items-center gap-1 font-bold"
@@ -207,7 +207,7 @@ export default function OrderConfirmationPage() {
               <span className="font-mono font-bold">{formatPrice(order.subtotal)}</span>
             </div>
             <div className="flex justify-between text-charcoal-700/80">
-              <span>الشحن المبرد المخصص:</span>
+              <span>الشحن والتوصيل:</span>
               <span className="text-green-700 font-bold">مجاني (VIP Complimentary)</span>
             </div>
             <div className="flex justify-between text-sm font-bold text-zaad-900 pt-2 border-t border-ivory-200">
@@ -223,7 +223,7 @@ export default function OrderConfirmationPage() {
             href="/shop"
             className="inline-flex items-center gap-2 bg-zaad-800 hover:bg-zaad-700 text-white text-xs font-bold px-8 py-3.5 rounded-full shadow-lg transition-all"
           >
-            <span>استكشاف المزيد من محاصيل زاد</span>
+            <span>استكشاف المزيد من منتجات زاد</span>
             <ArrowRight className="w-4 h-4 rotate-180" />
           </Link>
         </div>

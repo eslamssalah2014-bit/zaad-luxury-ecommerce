@@ -145,7 +145,7 @@ export default function AdminOrdersPage() {
             <option value="awaiting_verification">بانتظار تدقيق الإيصال</option>
             <option value="paid">مدفوع ومعتمد</option>
             <option value="preparing">جاري التجهيز</option>
-            <option value="shipped">تم الشحن المبرد</option>
+            <option value="shipped">تم الشحن</option>
             <option value="delivered">تم التسليم</option>
           </select>
         </div>
