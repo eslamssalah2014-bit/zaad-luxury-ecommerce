@@ -61,6 +61,8 @@ type CmsTab =
   | 'testimonials'
   | 'story'
   | 'shop'
+  | 'product_detail'
+  | 'cart'
   | 'announcement'
   | 'navigation'
   | 'media'
@@ -74,6 +76,8 @@ const TABS: { id: CmsTab; labelAr: string; icon: any; descAr: string }[] = [
   { id: 'testimonials', labelAr: 'آراء وشهادات النخبة (Testimonials)', icon: Star, descAr: 'إدارة تجارب وآراء العملاء وكبار المقتنين وأصداء الثقة' },
   { id: 'story', labelAr: 'القصة والتراث (Story)', icon: BookOpen, descAr: 'إدارة فصول ومحطات قصة دار زاد التراثية' },
   { id: 'shop', labelAr: 'صفحة المنتجات (Products & Shop)', icon: ShoppingBag, descAr: 'إدارة نصوص، فلاتر، ترتيب، وتنسيق صفحة استعراض المنتجات' },
+  { id: 'product_detail', labelAr: 'تفاصيل المنتج (Product Details Page)', icon: FileEdit, descAr: 'إدارة نصوص الشحن، التبويبات، الخصائص الحيوية، وبلوكات المحتوى' },
+  { id: 'cart', labelAr: 'حقيبة التسوق (Cart Drawer)', icon: ShoppingBag, descAr: 'إدارة نصوص، شريط الشحن المجاني، كود الخصم، وتغليف الإهداء في سلة الشراء' },
   { id: 'announcement', labelAr: 'شريط الإعلانات (Top Bar)', icon: Megaphone, descAr: 'إدارة شريط الإعلانات العلوي والعروض' },
   { id: 'navigation', labelAr: 'القائمة العلوية (Navigation)', icon: MenuIcon, descAr: 'إدارة روابط القائمة الرئيسية والشعار' },
   { id: 'media', labelAr: 'مكتبة الوسائط (Media Library)', icon: ImageIcon, descAr: 'رفع وإدارة صور المتجر وملفات الوسائط' },
@@ -1613,7 +1617,1270 @@ export default function AdminCmsPage() {
       )}
 
       {/* =========================================================================
-          TAB 4: ANNOUNCEMENT BAR MANAGER
+          TAB: PRODUCT DETAILS PAGE CMS MANAGER
+      ========================================================================= */}
+      {activeTab === 'product_detail' && (
+        <div className="space-y-8 animate-fade-in">
+
+          {/* 1. Commercial & Trust Messaging */}
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-ivory-300 shadow-sm space-y-6">
+            <div className="border-b border-ivory-200 pb-4">
+              <h2 className="font-serif text-xl font-bold text-zaad-900">1. النصوص التجارية ورسائل الثقة (Commercial & Trust Messaging)</h2>
+              <p className="text-xs text-charcoal-700/80 mt-1">التحكم في رسائل الشحن والضريبة والضمان التي تظهر في بطاقة الشراء لصفحة المنتج</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">رسالة الشحن الافتراضية:</label>
+                <input
+                  type="text"
+                  value={settings.productDetailPage?.defaultShippingTextAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    productDetailPage: {
+                      ...settings.productDetailPage,
+                      defaultShippingTextAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="شحن لجميع محافظات مصر"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">رسالة ضريبة القيمة المضافة:</label>
+                <input
+                  type="text"
+                  value={settings.productDetailPage?.defaultVatTextAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    productDetailPage: {
+                      ...settings.productDetailPage,
+                      defaultVatTextAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="شامل ضريبة القيمة المضافة"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">نص وسام الثقة والنقاء:</label>
+                <input
+                  type="text"
+                  value={settings.productDetailPage?.defaultTrustBadgeTextAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    productDetailPage: {
+                      ...settings.productDetailPage,
+                      defaultTrustBadgeTextAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="نقاء موثق وخام 100%"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">نص حالة توفر المخزون:</label>
+                <input
+                  type="text"
+                  value={settings.productDetailPage?.defaultStockAvailableTextAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    productDetailPage: {
+                      ...settings.productDetailPage,
+                      defaultStockAvailableTextAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="متوفر بالمستودع"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">نص نفاد المخزون:</label>
+                <input
+                  type="text"
+                  value={settings.productDetailPage?.defaultStockOutTextAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    productDetailPage: {
+                      ...settings.productDetailPage,
+                      defaultStockOutTextAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="نفد من المخزون"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">عنوان قسم المنتجات المتناغمة:</label>
+                <input
+                  type="text"
+                  value={settings.productDetailPage?.relatedProductsTitleAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    productDetailPage: {
+                      ...settings.productDetailPage,
+                      relatedProductsTitleAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="منتجات طبيعية متناغمة قد تنال إعجابكم"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* 2. Global Visibility Switches */}
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-ivory-300 shadow-sm space-y-6">
+            <div className="border-b border-ivory-200 pb-4">
+              <h2 className="font-serif text-xl font-bold text-zaad-900">2. مفاتيح إظهار وإخفاء عناصر الصفحة (Section Visibility Controls)</h2>
+              <p className="text-xs text-charcoal-700/80 mt-1">التحكم في ظهور أو إخفاء أي جزء من صفحة تفاصيل المنتج</p>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 text-xs">
+              {[
+                { key: 'showBreadcrumbs', label: 'مسار التنقل (Breadcrumbs)' },
+                { key: 'showWishlistAndShare', label: 'المفضلة والمشاركة (Wishlist & Share)' },
+                { key: 'showRatingStars', label: 'النجوم والتقييمات (Rating & Reviews)' },
+                { key: 'showCompareAtPrice', label: 'السعر السابق والشطب (Old Price)' },
+                { key: 'showVatMessage', label: 'رسالة الضريبة (VAT Note)' },
+                { key: 'showShippingMessage', label: 'رسالة الشحن (Shipping Note)' },
+                { key: 'showTrustBadges', label: 'أوسمة الثقة والنقاء (Trust Badges)' },
+                { key: 'showStockStatus', label: 'حالة المستودع (Stock Status)' },
+                { key: 'showQuantityStepper', label: 'عداد الكمية (Quantity Stepper)' },
+                { key: 'showAttributesGrid', label: 'شبكة الخصائص (Attributes Grid)' },
+                { key: 'showTabsSection', label: 'قسم التبويبات والمحتوى (Tabs Section)' },
+                { key: 'showRelatedProducts', label: 'المنتجات المتناغمة (Related Products)' }
+              ].map((sw) => {
+                const isChecked = (settings.productDetailPage as any)?.[sw.key] ?? true;
+                return (
+                  <label key={sw.key} className="flex items-center gap-2.5 p-3 rounded-xl bg-ivory-50 border border-ivory-200 cursor-pointer hover:bg-ivory-100 transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        productDetailPage: {
+                          ...settings.productDetailPage,
+                          [sw.key]: e.target.checked
+                        }
+                      })}
+                      className="accent-gold-600 w-4 h-4 rounded"
+                    />
+                    <span className="font-semibold text-zaad-900 text-[11px] leading-tight">{sw.label}</span>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 3. Default Dynamic Attributes Manager */}
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-ivory-300 shadow-sm space-y-6">
+            <div className="flex items-center justify-between border-b border-ivory-200 pb-4">
+              <div>
+                <h2 className="font-serif text-xl font-bold text-zaad-900">3. الخصائص الحيوية للمنتج (Default Dynamic Attributes)</h2>
+                <p className="text-xs text-charcoal-700/80 mt-1">الخصائص التي تظهر في بطاقة المنتج العلوية (مثل اللون، الرائحة، القوام، المنشأ، الوزن)</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  const attrs = [...(settings.productDetailPage?.defaultAttributes || [])];
+                  attrs.push({
+                    id: `attr-${Date.now()}`,
+                    nameAr: 'خاصية جديدة',
+                    valueAr: 'قيمة الخاصية',
+                    icon: 'sparkles',
+                    isVisible: true,
+                    order: attrs.length + 1
+                  });
+                  setSettings({
+                    ...settings,
+                    productDetailPage: {
+                      ...settings.productDetailPage,
+                      defaultAttributes: attrs
+                    }
+                  });
+                }}
+                className="px-4 py-2 bg-zaad-800 text-white rounded-xl text-xs font-bold hover:bg-zaad-700 transition-all flex items-center gap-1.5"
+              >
+                <Plus className="w-3.5 h-3.5 text-gold-400" />
+                <span>إضافة خاصية</span>
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              {(settings.productDetailPage?.defaultAttributes || []).map((attr, idx) => (
+                <div key={attr.id || idx} className="p-4 rounded-2xl bg-ivory-50 border border-ivory-300 flex flex-wrap items-center gap-3 text-xs">
+                  <div className="w-8 h-8 rounded-lg bg-white border border-ivory-300 flex items-center justify-center font-mono font-bold text-charcoal-600 shrink-0">
+                    {idx + 1}
+                  </div>
+
+                  <div className="flex-1 min-w-[140px]">
+                    <label className="block text-[10px] font-bold text-charcoal-600 mb-0.5">اسم الخاصية:</label>
+                    <input
+                      type="text"
+                      value={attr.nameAr}
+                      onChange={(e) => {
+                        const updated = [...(settings.productDetailPage?.defaultAttributes || [])];
+                        updated[idx] = { ...updated[idx], nameAr: e.target.value };
+                        setSettings({
+                          ...settings,
+                          productDetailPage: { ...settings.productDetailPage, defaultAttributes: updated }
+                        });
+                      }}
+                      className="w-full bg-white border border-ivory-300 rounded-lg p-2 font-bold"
+                      placeholder="مثال: اللون"
+                    />
+                  </div>
+
+                  <div className="flex-1 min-w-[180px]">
+                    <label className="block text-[10px] font-bold text-charcoal-600 mb-0.5">القيمة الافتراضية:</label>
+                    <input
+                      type="text"
+                      value={attr.valueAr}
+                      onChange={(e) => {
+                        const updated = [...(settings.productDetailPage?.defaultAttributes || [])];
+                        updated[idx] = { ...updated[idx], valueAr: e.target.value };
+                        setSettings({
+                          ...settings,
+                          productDetailPage: { ...settings.productDetailPage, defaultAttributes: updated }
+                        });
+                      }}
+                      className="w-full bg-white border border-ivory-300 rounded-lg p-2"
+                      placeholder="مثال: عنبري ذهبي"
+                    />
+                  </div>
+
+                  <div className="w-32">
+                    <label className="block text-[10px] font-bold text-charcoal-600 mb-0.5">الأيقونة:</label>
+                    <select
+                      value={attr.icon || 'sparkles'}
+                      onChange={(e) => {
+                        const updated = [...(settings.productDetailPage?.defaultAttributes || [])];
+                        updated[idx] = { ...updated[idx], icon: e.target.value };
+                        setSettings({
+                          ...settings,
+                          productDetailPage: { ...settings.productDetailPage, defaultAttributes: updated }
+                        });
+                      }}
+                      className="w-full bg-white border border-ivory-300 rounded-lg p-2"
+                    >
+                      <option value="sparkles">✨ بريق (Sparkles)</option>
+                      <option value="droplet">💧 قطرة / لون (Droplet)</option>
+                      <option value="feather">🪶 قوام / حريري (Feather)</option>
+                      <option value="map-pin">📍 موطن / مصدر (MapPin)</option>
+                      <option value="shield">🛡️ نقاء / حماية (Shield)</option>
+                      <option value="award">🏅 جودة / وسام (Award)</option>
+                      <option value="package">📦 وزن / عبوة (Package)</option>
+                    </select>
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0 pt-3 sm:pt-0">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (idx === 0) return;
+                        const updated = [...(settings.productDetailPage?.defaultAttributes || [])];
+                        const temp = updated[idx - 1];
+                        updated[idx - 1] = updated[idx];
+                        updated[idx] = temp;
+                        setSettings({
+                          ...settings,
+                          productDetailPage: { ...settings.productDetailPage, defaultAttributes: updated }
+                        });
+                      }}
+                      disabled={idx === 0}
+                      className="p-2 rounded-lg bg-white border border-ivory-300 hover:bg-ivory-200 disabled:opacity-30"
+                      title="تحريك لأعلى"
+                    >
+                      <ArrowUp className="w-3.5 h-3.5 text-charcoal-700" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const updated = [...(settings.productDetailPage?.defaultAttributes || [])];
+                        if (idx === updated.length - 1) return;
+                        const temp = updated[idx + 1];
+                        updated[idx + 1] = updated[idx];
+                        updated[idx] = temp;
+                        setSettings({
+                          ...settings,
+                          productDetailPage: { ...settings.productDetailPage, defaultAttributes: updated }
+                        });
+                      }}
+                      disabled={idx === (settings.productDetailPage?.defaultAttributes?.length || 1) - 1}
+                      className="p-2 rounded-lg bg-white border border-ivory-300 hover:bg-ivory-200 disabled:opacity-30"
+                      title="تحريك لأسفل"
+                    >
+                      <ArrowDown className="w-3.5 h-3.5 text-charcoal-700" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const updated = (settings.productDetailPage?.defaultAttributes || []).filter((_, i) => i !== idx);
+                        setSettings({
+                          ...settings,
+                          productDetailPage: { ...settings.productDetailPage, defaultAttributes: updated }
+                        });
+                      }}
+                      className="p-2 rounded-lg bg-red-50 text-red-600 border border-red-200 hover:bg-red-100"
+                      title="حذف الخاصية"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 4. Default Dynamic Tabs & Content Blocks Builder */}
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-ivory-300 shadow-sm space-y-6">
+            <div className="flex items-center justify-between border-b border-ivory-200 pb-4">
+              <div>
+                <h2 className="font-serif text-xl font-bold text-zaad-900">4. إدارة التبويبات وبلوكات المحتوى الافتراضية (Tabs & Content Blocks)</h2>
+                <p className="text-xs text-charcoal-700/80 mt-1">تخصيص التبويبات المعروضة في صفحة المنتج وإضافة نصوص وصور وأسئلة شائعة وبلوكات مرنة</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  const tabs = [...(settings.productDetailPage?.defaultTabs || [])];
+                  tabs.push({
+                    id: `tab-${Date.now()}`,
+                    slug: `custom-tab-${tabs.length + 1}`,
+                    titleAr: 'تبويب مخصص جديد',
+                    isVisible: true,
+                    order: tabs.length + 1,
+                    blocks: [
+                      {
+                        id: `blk-${Date.now()}`,
+                        type: 'rich_text',
+                        titleAr: 'عنوان المحتوى',
+                        bodyAr: 'أدخل نص المحتوى هنا...',
+                        isVisible: true,
+                        order: 1
+                      }
+                    ]
+                  });
+                  setSettings({
+                    ...settings,
+                    productDetailPage: {
+                      ...settings.productDetailPage,
+                      defaultTabs: tabs
+                    }
+                  });
+                }}
+                className="px-4 py-2 bg-gold-500 text-zaad-950 rounded-xl text-xs font-bold hover:bg-gold-400 transition-all flex items-center gap-1.5 shadow-sm"
+              >
+                <Plus className="w-3.5 h-3.5 text-zaad-950" />
+                <span>إضافة تبويب جديد</span>
+              </button>
+            </div>
+
+            {/* Tabs List */}
+            <div className="space-y-6">
+              {(settings.productDetailPage?.defaultTabs || []).map((tab, tIdx) => (
+                <div key={tab.id || tIdx} className="p-6 rounded-3xl bg-ivory-50 border border-ivory-300 space-y-4">
+                  
+                  {/* Tab Header Controls */}
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-ivory-200 pb-3">
+                    <div className="flex items-center gap-3 flex-1 min-w-[200px]">
+                      <span className="w-7 h-7 rounded-lg bg-zaad-900 text-gold-300 text-xs font-bold flex items-center justify-center">
+                        {tIdx + 1}
+                      </span>
+                      <input
+                        type="text"
+                        value={tab.titleAr}
+                        onChange={(e) => {
+                          const updated = [...(settings.productDetailPage?.defaultTabs || [])];
+                          updated[tIdx] = { ...updated[tIdx], titleAr: e.target.value };
+                          setSettings({
+                            ...settings,
+                            productDetailPage: { ...settings.productDetailPage, defaultTabs: updated }
+                          });
+                        }}
+                        className="font-bold text-sm bg-white border border-ivory-300 rounded-xl px-3 py-1.5 focus:border-gold-500"
+                        placeholder="عنوان التبويب"
+                      />
+                      {tab.isSystemReviewsTab && (
+                        <span className="text-[10px] bg-gold-100 text-gold-800 font-bold px-2.5 py-1 rounded-full border border-gold-300">
+                          تبويب المراجعات والتقييمات التلقائي
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <label className="flex items-center gap-1.5 text-xs text-charcoal-700 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={tab.isVisible !== false}
+                          onChange={(e) => {
+                            const updated = [...(settings.productDetailPage?.defaultTabs || [])];
+                            updated[tIdx] = { ...updated[tIdx], isVisible: e.target.checked };
+                            setSettings({
+                              ...settings,
+                              productDetailPage: { ...settings.productDetailPage, defaultTabs: updated }
+                            });
+                          }}
+                          className="accent-gold-600 rounded"
+                        />
+                        <span>مفعّل</span>
+                      </label>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (tIdx === 0) return;
+                          const updated = [...(settings.productDetailPage?.defaultTabs || [])];
+                          const temp = updated[tIdx - 1];
+                          updated[tIdx - 1] = updated[tIdx];
+                          updated[tIdx] = temp;
+                          setSettings({
+                            ...settings,
+                            productDetailPage: { ...settings.productDetailPage, defaultTabs: updated }
+                          });
+                        }}
+                        disabled={tIdx === 0}
+                        className="p-1.5 rounded-lg bg-white border border-ivory-300 disabled:opacity-30"
+                        title="تحريك لأعلى"
+                      >
+                        <ArrowUp className="w-3.5 h-3.5" />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = [...(settings.productDetailPage?.defaultTabs || [])];
+                          if (tIdx === updated.length - 1) return;
+                          const temp = updated[tIdx + 1];
+                          updated[tIdx + 1] = updated[tIdx];
+                          updated[tIdx] = temp;
+                          setSettings({
+                            ...settings,
+                            productDetailPage: { ...settings.productDetailPage, defaultTabs: updated }
+                          });
+                        }}
+                        disabled={tIdx === (settings.productDetailPage?.defaultTabs?.length || 1) - 1}
+                        className="p-1.5 rounded-lg bg-white border border-ivory-300 disabled:opacity-30"
+                        title="تحريك لأسفل"
+                      >
+                        <ArrowDown className="w-3.5 h-3.5" />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = (settings.productDetailPage?.defaultTabs || []).filter((_, i) => i !== tIdx);
+                          setSettings({
+                            ...settings,
+                            productDetailPage: { ...settings.productDetailPage, defaultTabs: updated }
+                          });
+                        }}
+                        className="p-1.5 rounded-lg bg-red-50 text-red-600 border border-red-200 hover:bg-red-100"
+                        title="حذف التبويب"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Tab Blocks Builder (if not pure reviews tab) */}
+                  {!tab.isSystemReviewsTab && (
+                    <div className="space-y-4 pt-2">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-xs font-bold text-charcoal-800">بلوكات المحتوى داخل التبويب ({tab.blocks?.length || 0}):</h4>
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const updatedTabs = [...(settings.productDetailPage?.defaultTabs || [])];
+                              const blocks = [...(updatedTabs[tIdx].blocks || [])];
+                              blocks.push({
+                                id: `blk-${Date.now()}`,
+                                type: 'rich_text',
+                                titleAr: 'عنوان جديد',
+                                bodyAr: 'نص الفقرة...',
+                                isVisible: true,
+                                order: blocks.length + 1
+                              });
+                              updatedTabs[tIdx] = { ...updatedTabs[tIdx], blocks };
+                              setSettings({
+                                ...settings,
+                                productDetailPage: { ...settings.productDetailPage, defaultTabs: updatedTabs }
+                              });
+                            }}
+                            className="px-2.5 py-1 bg-white border border-ivory-300 rounded-lg text-[11px] font-bold hover:border-gold-500"
+                          >
+                            + نص منسق (Rich Text)
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const updatedTabs = [...(settings.productDetailPage?.defaultTabs || [])];
+                              const blocks = [...(updatedTabs[tIdx].blocks || [])];
+                              blocks.push({
+                                id: `blk-${Date.now()}`,
+                                type: 'faq',
+                                titleAr: 'الأسئلة المتكررة',
+                                isVisible: true,
+                                order: blocks.length + 1,
+                                faqItems: [
+                                  { id: `faq-1`, question: 'السؤال الأول؟', answer: 'الإجابة التوضيحية...' }
+                                ]
+                              });
+                              updatedTabs[tIdx] = { ...updatedTabs[tIdx], blocks };
+                              setSettings({
+                                ...settings,
+                                productDetailPage: { ...settings.productDetailPage, defaultTabs: updatedTabs }
+                              });
+                            }}
+                            className="px-2.5 py-1 bg-white border border-ivory-300 rounded-lg text-[11px] font-bold hover:border-gold-500"
+                          >
+                            + أسئلة شائعة (FAQ)
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const updatedTabs = [...(settings.productDetailPage?.defaultTabs || [])];
+                              const blocks = [...(updatedTabs[tIdx].blocks || [])];
+                              blocks.push({
+                                id: `blk-${Date.now()}`,
+                                type: 'icons_grid',
+                                titleAr: 'مميزات الجودة',
+                                isVisible: true,
+                                order: blocks.length + 1,
+                                iconsGridItems: [
+                                  { id: 'ig-1', titleAr: 'طبيعي 100%', descAr: 'نقاء خالص', icon: 'shield' }
+                                ]
+                              });
+                              updatedTabs[tIdx] = { ...updatedTabs[tIdx], blocks };
+                              setSettings({
+                                ...settings,
+                                productDetailPage: { ...settings.productDetailPage, defaultTabs: updatedTabs }
+                              });
+                            }}
+                            className="px-2.5 py-1 bg-white border border-ivory-300 rounded-lg text-[11px] font-bold hover:border-gold-500"
+                          >
+                            + شبكة أيقونات (Icons Grid)
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Blocks List */}
+                      <div className="space-y-3">
+                        {(tab.blocks || []).map((blk, bIdx) => (
+                          <div key={blk.id || bIdx} className="p-4 rounded-2xl bg-white border border-ivory-300 space-y-3 text-xs">
+                            <div className="flex items-center justify-between border-b border-ivory-200 pb-2">
+                              <span className="font-bold text-zaad-900 flex items-center gap-1.5">
+                                <Sparkles className="w-3.5 h-3.5 text-gold-600" />
+                                <span>بلوك #{bIdx + 1}: {blk.type}</span>
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const updatedTabs = [...(settings.productDetailPage?.defaultTabs || [])];
+                                  const blocks = (updatedTabs[tIdx].blocks || []).filter((_, i) => i !== bIdx);
+                                  updatedTabs[tIdx] = { ...updatedTabs[tIdx], blocks };
+                                  setSettings({
+                                    ...settings,
+                                    productDetailPage: { ...settings.productDetailPage, defaultTabs: updatedTabs }
+                                  });
+                                }}
+                                className="text-red-600 hover:text-red-700 p-1"
+                                title="حذف البلوك"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+
+                            {/* Block Title */}
+                            <div>
+                              <label className="block text-[10px] font-bold text-charcoal-700 mb-1">عنوان البلوك:</label>
+                              <input
+                                type="text"
+                                value={blk.titleAr || ''}
+                                onChange={(e) => {
+                                  const updatedTabs = [...(settings.productDetailPage?.defaultTabs || [])];
+                                  const blocks = [...(updatedTabs[tIdx].blocks || [])];
+                                  blocks[bIdx] = { ...blocks[bIdx], titleAr: e.target.value };
+                                  updatedTabs[tIdx] = { ...updatedTabs[tIdx], blocks };
+                                  setSettings({
+                                    ...settings,
+                                    productDetailPage: { ...settings.productDetailPage, defaultTabs: updatedTabs }
+                                  });
+                                }}
+                                className="w-full bg-ivory-50 border border-ivory-300 rounded-lg p-2 font-bold"
+                              />
+                            </div>
+
+                            {/* Rich Text Body */}
+                            {(blk.type === 'rich_text' || blk.type === 'image_text' || blk.type === 'quote') && (
+                              <div>
+                                <label className="block text-[10px] font-bold text-charcoal-700 mb-1">نص المحتوى:</label>
+                                <textarea
+                                  rows={3}
+                                  value={blk.bodyAr || ''}
+                                  onChange={(e) => {
+                                    const updatedTabs = [...(settings.productDetailPage?.defaultTabs || [])];
+                                    const blocks = [...(updatedTabs[tIdx].blocks || [])];
+                                    blocks[bIdx] = { ...blocks[bIdx], bodyAr: e.target.value };
+                                    updatedTabs[tIdx] = { ...updatedTabs[tIdx], blocks };
+                                    setSettings({
+                                      ...settings,
+                                      productDetailPage: { ...settings.productDetailPage, defaultTabs: updatedTabs }
+                                    });
+                                  }}
+                                  className="w-full bg-ivory-50 border border-ivory-300 rounded-lg p-2 font-light leading-relaxed"
+                                />
+                              </div>
+                            )}
+
+                            {/* FAQ Items */}
+                            {blk.type === 'faq' && (
+                              <div className="space-y-2 pt-1">
+                                <div className="flex items-center justify-between">
+                                  <label className="text-[10px] font-bold text-charcoal-700">الأسئلة والأجوبة ({blk.faqItems?.length || 0}):</label>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const updatedTabs = [...(settings.productDetailPage?.defaultTabs || [])];
+                                      const blocks = [...(updatedTabs[tIdx].blocks || [])];
+                                      const faqItems = [...(blocks[bIdx].faqItems || [])];
+                                      faqItems.push({ id: `faq-${Date.now()}`, question: 'سؤال جديد؟', answer: 'الإجابة...' });
+                                      blocks[bIdx] = { ...blocks[bIdx], faqItems };
+                                      updatedTabs[tIdx] = { ...updatedTabs[tIdx], blocks };
+                                      setSettings({
+                                        ...settings,
+                                        productDetailPage: { ...settings.productDetailPage, defaultTabs: updatedTabs }
+                                      });
+                                    }}
+                                    className="text-[10px] text-gold-700 hover:text-gold-800 font-bold"
+                                  >
+                                    + إضافة سؤال
+                                  </button>
+                                </div>
+                                {(blk.faqItems || []).map((faq, fIdx) => (
+                                  <div key={faq.id || fIdx} className="p-2.5 rounded-xl bg-ivory-50 border border-ivory-200 space-y-1.5">
+                                    <div className="flex items-center justify-between gap-2">
+                                      <input
+                                        type="text"
+                                        value={faq.question}
+                                        onChange={(e) => {
+                                          const updatedTabs = [...(settings.productDetailPage?.defaultTabs || [])];
+                                          const blocks = [...(updatedTabs[tIdx].blocks || [])];
+                                          const faqItems = [...(blocks[bIdx].faqItems || [])];
+                                          faqItems[fIdx] = { ...faqItems[fIdx], question: e.target.value };
+                                          blocks[bIdx] = { ...blocks[bIdx], faqItems };
+                                          updatedTabs[tIdx] = { ...updatedTabs[tIdx], blocks };
+                                          setSettings({
+                                            ...settings,
+                                            productDetailPage: { ...settings.productDetailPage, defaultTabs: updatedTabs }
+                                          });
+                                        }}
+                                        placeholder="نص السؤال..."
+                                        className="flex-1 bg-white border border-ivory-300 rounded px-2 py-1 font-bold text-xs"
+                                      />
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const updatedTabs = [...(settings.productDetailPage?.defaultTabs || [])];
+                                          const blocks = [...(updatedTabs[tIdx].blocks || [])];
+                                          const faqItems = (blocks[bIdx].faqItems || []).filter((_, i) => i !== fIdx);
+                                          blocks[bIdx] = { ...blocks[bIdx], faqItems };
+                                          updatedTabs[tIdx] = { ...updatedTabs[tIdx], blocks };
+                                          setSettings({
+                                            ...settings,
+                                            productDetailPage: { ...settings.productDetailPage, defaultTabs: updatedTabs }
+                                          });
+                                        }}
+                                        className="text-red-500 hover:text-red-700"
+                                      >
+                                        <Trash2 className="w-3 h-3" />
+                                      </button>
+                                    </div>
+                                    <textarea
+                                      rows={2}
+                                      value={faq.answer}
+                                      onChange={(e) => {
+                                        const updatedTabs = [...(settings.productDetailPage?.defaultTabs || [])];
+                                        const blocks = [...(updatedTabs[tIdx].blocks || [])];
+                                        const faqItems = [...(blocks[bIdx].faqItems || [])];
+                                        faqItems[fIdx] = { ...faqItems[fIdx], answer: e.target.value };
+                                        blocks[bIdx] = { ...blocks[bIdx], faqItems };
+                                        updatedTabs[tIdx] = { ...updatedTabs[tIdx], blocks };
+                                        setSettings({
+                                          ...settings,
+                                          productDetailPage: { ...settings.productDetailPage, defaultTabs: updatedTabs }
+                                        });
+                                      }}
+                                      placeholder="نص الإجابة..."
+                                      className="w-full bg-white border border-ivory-300 rounded px-2 py-1 text-xs"
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                </div>
+              ))}
+            </div>
+          </div>
+
+        </div>
+      )}
+
+      {/* =========================================================================
+          TAB: SHOPPING BAG / CART DRAWER CMS MANAGER
+      ========================================================================= */}
+      {activeTab === 'cart' && (
+        <div className="space-y-8 animate-fade-in">
+
+          {/* 1. Cart Header */}
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-ivory-300 shadow-sm space-y-6">
+            <div className="border-b border-ivory-200 pb-4">
+              <h2 className="font-serif text-xl font-bold text-zaad-900">1. ترويسة الحقيبة الجانبية (Cart Header)</h2>
+              <p className="text-xs text-charcoal-700/80 mt-1">تخصيص عنوان سلة المشتريات والشعار الفرعي في الشريط العلوي للحقيبة</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">عنوان الحقيبة الرئيسي (Drawer Title):</label>
+                <input
+                  type="text"
+                  value={settings.cartDrawer?.drawerTitleAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    cartDrawer: {
+                      ...settings.cartDrawer,
+                      drawerTitleAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 font-bold"
+                  placeholder="حقيبة المنتجات الطبيعية"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">الشعار الفرعي للترويسة (Header Badge):</label>
+                <input
+                  type="text"
+                  value={settings.cartDrawer?.headerBadgeAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    cartDrawer: {
+                      ...settings.cartDrawer,
+                      headerBadgeAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="نقاء وأصالة زاد"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* 2. Free Shipping Progress Bar */}
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-ivory-300 shadow-sm space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-ivory-200 pb-4">
+              <div>
+                <h2 className="font-serif text-xl font-bold text-zaad-900">2. شريط التقدم للشحن المجاني (Free Shipping Progress)</h2>
+                <p className="text-xs text-charcoal-700/80 mt-1">التحكم في ظهور ونصوص شريط الشحن المجاني التحفيزي للعميل</p>
+              </div>
+              <label className="flex items-center gap-2 cursor-pointer bg-ivory-50 px-4 py-2 rounded-xl border border-ivory-300">
+                <input
+                  type="checkbox"
+                  checked={settings.cartDrawer?.showFreeShippingBar ?? true}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    cartDrawer: {
+                      ...settings.cartDrawer,
+                      showFreeShippingBar: e.target.checked
+                    }
+                  })}
+                  className="accent-gold-600 w-4 h-4 rounded"
+                />
+                <span className="text-xs font-bold text-zaad-900">تفعيل شريط الشحن المجاني</span>
+              </label>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">الحد الأدنى للشحن المجاني (ج.م):</label>
+                <input
+                  type="number"
+                  value={settings.cartDrawer?.freeShippingThreshold || 600}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    cartDrawer: {
+                      ...settings.cartDrawer,
+                      freeShippingThreshold: Number(e.target.value)
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 font-mono font-bold"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">
+                  نص المبلغ المتبقي (استخدم <code className="text-gold-700 font-mono font-bold">{"{amount}"}</code>):
+                </label>
+                <input
+                  type="text"
+                  value={settings.cartDrawer?.freeShippingRemainingTextAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    cartDrawer: {
+                      ...settings.cartDrawer,
+                      freeShippingRemainingTextAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="تبقى {amount} للحصول على الشحن المجاني"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">نص التأهل للشحن المجاني:</label>
+                <input
+                  type="text"
+                  value={settings.cartDrawer?.freeShippingEligibleTextAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    cartDrawer: {
+                      ...settings.cartDrawer,
+                      freeShippingEligibleTextAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 font-bold text-green-800"
+                  placeholder="مبارك! أنت مؤهل للشحن المجاني لجميع المحافظات"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* 3. Gift Packaging Section */}
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-ivory-300 shadow-sm space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-ivory-200 pb-4">
+              <div>
+                <h2 className="font-serif text-xl font-bold text-zaad-900">3. قسم تغليف الإهداء الفاخر (Gift Packaging Section)</h2>
+                <p className="text-xs text-charcoal-700/80 mt-1">التحكم في خيار تقديم الطلب في صندوق إهداء فاخر مع بطاقة مخصصة</p>
+              </div>
+              <label className="flex items-center gap-2 cursor-pointer bg-ivory-50 px-4 py-2 rounded-xl border border-ivory-300">
+                <input
+                  type="checkbox"
+                  checked={settings.cartDrawer?.showGiftPackaging ?? true}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    cartDrawer: {
+                      ...settings.cartDrawer,
+                      showGiftPackaging: e.target.checked
+                    }
+                  })}
+                  className="accent-gold-600 w-4 h-4 rounded"
+                />
+                <span className="text-xs font-bold text-zaad-900">تفعيل قسم تغليف الإهداء</span>
+              </label>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">عنوان قسم الإهداء:</label>
+                <input
+                  type="text"
+                  value={settings.cartDrawer?.giftPackagingTitleAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    cartDrawer: {
+                      ...settings.cartDrawer,
+                      giftPackagingTitleAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 font-bold"
+                  placeholder="تغليف الإهداء الطبيعي الفاخر"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">الوصف الفرعي للإهداء:</label>
+                <input
+                  type="text"
+                  value={settings.cartDrawer?.giftPackagingSubtitleAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    cartDrawer: {
+                      ...settings.cartDrawer,
+                      giftPackagingSubtitleAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="مقدم مع ملعقة خشب زيتون طبيعية مجاناً"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">نص تلميح بطاقة الإهداء (Placeholder):</label>
+                <input
+                  type="text"
+                  value={settings.cartDrawer?.giftMessagePlaceholderAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    cartDrawer: {
+                      ...settings.cartDrawer,
+                      giftMessagePlaceholderAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="اكتب رسالة إهداء خاصة ترفق مع الطلب..."
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* 4. Coupon Section */}
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-ivory-300 shadow-sm space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-ivory-200 pb-4">
+              <div>
+                <h2 className="font-serif text-xl font-bold text-zaad-900">4. قسم قسائم الخصم (Coupon Section)</h2>
+                <p className="text-xs text-charcoal-700/80 mt-1">التحكم في ظهور ونصوص صندوق إدخال وتطبيق كوبونات الخصم</p>
+              </div>
+              <label className="flex items-center gap-2 cursor-pointer bg-ivory-50 px-4 py-2 rounded-xl border border-ivory-300">
+                <input
+                  type="checkbox"
+                  checked={settings.cartDrawer?.showCouponSection ?? true}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    cartDrawer: {
+                      ...settings.cartDrawer,
+                      showCouponSection: e.target.checked
+                    }
+                  })}
+                  className="accent-gold-600 w-4 h-4 rounded"
+                />
+                <span className="text-xs font-bold text-zaad-900">تفعيل صندوق الكوبون</span>
+              </label>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">نص تلميح خانة الكود (Placeholder):</label>
+                <input
+                  type="text"
+                  value={settings.cartDrawer?.couponPlaceholderAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    cartDrawer: {
+                      ...settings.cartDrawer,
+                      couponPlaceholderAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 font-mono"
+                  placeholder="رمز الخصم (جرب: ZAAD10)"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">نص زر تطبيق الكود (Button Text):</label>
+                <input
+                  type="text"
+                  value={settings.cartDrawer?.couponButtonTextAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    cartDrawer: {
+                      ...settings.cartDrawer,
+                      couponButtonTextAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 font-bold"
+                  placeholder="تطبيق"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">تسمية الكود النشط (Active Label):</label>
+                <input
+                  type="text"
+                  value={settings.cartDrawer?.couponActiveLabelAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    cartDrawer: {
+                      ...settings.cartDrawer,
+                      couponActiveLabelAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="الرمز النشط:"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* 5. Cart Summary Labels */}
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-ivory-300 shadow-sm space-y-6">
+            <div className="border-b border-ivory-200 pb-4">
+              <h2 className="font-serif text-xl font-bold text-zaad-900">5. تسميات ملخص الفاتورة (Cart Summary Labels)</h2>
+              <p className="text-xs text-charcoal-700/80 mt-1">تخصيص كافة التسميات النصية التي تظهر في بطاقة الحساب الإجمالي</p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-xs">
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">تسمية إجمالي المنتجات:</label>
+                <input
+                  type="text"
+                  value={settings.cartDrawer?.subtotalLabelAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    cartDrawer: {
+                      ...settings.cartDrawer,
+                      subtotalLabelAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 font-bold"
+                  placeholder="إجمالي المنتجات:"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">تسمية الخصم المطبق:</label>
+                <input
+                  type="text"
+                  value={settings.cartDrawer?.discountLabelAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    cartDrawer: {
+                      ...settings.cartDrawer,
+                      discountLabelAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="الخصم المطبق:"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">تسمية الشحن والتوصيل:</label>
+                <input
+                  type="text"
+                  value={settings.cartDrawer?.shippingLabelAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    cartDrawer: {
+                      ...settings.cartDrawer,
+                      shippingLabelAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="الشحن والتوصيل:"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">نص الشحن المجاني:</label>
+                <input
+                  type="text"
+                  value={settings.cartDrawer?.freeShippingLabelAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    cartDrawer: {
+                      ...settings.cartDrawer,
+                      freeShippingLabelAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 text-gold-700 font-bold"
+                  placeholder="مجاني"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">تسمية الإجمالي النهائي:</label>
+                <input
+                  type="text"
+                  value={settings.cartDrawer?.totalLabelAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    cartDrawer: {
+                      ...settings.cartDrawer,
+                      totalLabelAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 font-bold text-zaad-900"
+                  placeholder="الإجمالي النهائي:"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">ملاحظة ضريبة القيمة المضافة:</label>
+                <input
+                  type="text"
+                  value={settings.cartDrawer?.vatNoteAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    cartDrawer: {
+                      ...settings.cartDrawer,
+                      vatNoteAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="شامل ضريبة القيمة المضافة"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* 6. Checkout Actions & Navigation */}
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-ivory-300 shadow-sm space-y-6">
+            <div className="border-b border-ivory-200 pb-4">
+              <h2 className="font-serif text-xl font-bold text-zaad-900">6. أزرار الدفع والتنقل (Checkout Actions & Navigation)</h2>
+              <p className="text-xs text-charcoal-700/80 mt-1">تخصيص نص زر إتمام الطلب ورابط معاينة السلة الكاملة</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">نص زر إتمام الطلب الرئيسي:</label>
+                <input
+                  type="text"
+                  value={settings.cartDrawer?.checkoutButtonTextAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    cartDrawer: {
+                      ...settings.cartDrawer,
+                      checkoutButtonTextAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 font-bold"
+                  placeholder="متابعة إتمام الطلب"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">نص رابط معاينة الحقيبة الكاملة:</label>
+                <input
+                  type="text"
+                  value={settings.cartDrawer?.viewCartLinkTextAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    cartDrawer: {
+                      ...settings.cartDrawer,
+                      viewCartLinkTextAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="معاينة وتخصيص تفاصيل الحقيبة"
+                />
+              </div>
+
+              <div className="flex items-center pt-5">
+                <label className="flex items-center gap-2 cursor-pointer bg-ivory-50 px-4 py-3 rounded-xl border border-ivory-300 w-full">
+                  <input
+                    type="checkbox"
+                    checked={settings.cartDrawer?.showViewCartLink ?? true}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      cartDrawer: {
+                        ...settings.cartDrawer,
+                        showViewCartLink: e.target.checked
+                      }
+                    })}
+                    className="accent-gold-600 w-4 h-4 rounded"
+                  />
+                  <span className="text-xs font-bold text-zaad-900">إظهار رابط معاينة الحقيبة</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          {/* 7. Empty State */}
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-ivory-300 shadow-sm space-y-6">
+            <div className="border-b border-ivory-200 pb-4">
+              <h2 className="font-serif text-xl font-bold text-zaad-900">7. حالة الحقيبة الفارغة (Empty State)</h2>
+              <p className="text-xs text-charcoal-700/80 mt-1">الرسائل التوجيهية التي تظهر للعميل عند فتح الحقيبة قبل إضافة أي صنف</p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 text-xs">
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">عنوان الحقيبة الفارغة:</label>
+                <input
+                  type="text"
+                  value={settings.cartDrawer?.emptyStateTitleAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    cartDrawer: {
+                      ...settings.cartDrawer,
+                      emptyStateTitleAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 font-bold"
+                  placeholder="حقيبتك فارغة حالياً"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">الوصف الإرشادي للحقيبة الفارغة:</label>
+                <input
+                  type="text"
+                  value={settings.cartDrawer?.emptyStateDescAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    cartDrawer: {
+                      ...settings.cartDrawer,
+                      emptyStateDescAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3"
+                  placeholder="استكشف منتجات زاد الطبيعية من أندر الأعسال والمنتجات النقية."
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">نص زر الاستكشاف (Button Text):</label>
+                <input
+                  type="text"
+                  value={settings.cartDrawer?.emptyStateButtonTextAr || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    cartDrawer: {
+                      ...settings.cartDrawer,
+                      emptyStateButtonTextAr: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 font-bold"
+                  placeholder="استكشاف المنتجات الطبيعية"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-zaad-900 mb-1">رابط زر الاستكشاف (Button Link):</label>
+                <input
+                  type="text"
+                  value={settings.cartDrawer?.emptyStateButtonLink || ''}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    cartDrawer: {
+                      ...settings.cartDrawer,
+                      emptyStateButtonLink: e.target.value
+                    }
+                  })}
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 font-mono text-left"
+                  placeholder="/shop"
+                />
+              </div>
+            </div>
+          </div>
+
+        </div>
+      )}
+
+      {/* =========================================================================
+          TAB: ANNOUNCEMENT BAR MANAGER
       ========================================================================= */}
       {activeTab === 'announcement' && (
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-ivory-300 shadow-sm space-y-6 animate-fade-in max-w-3xl">

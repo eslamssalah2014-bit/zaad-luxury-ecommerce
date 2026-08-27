@@ -200,7 +200,166 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
     }
   },
 
-  // 5. Announcement Bar Configuration
+  // 4b. Product Details Page Configuration
+  productDetailPage: {
+    defaultShippingTextAr: 'شحن لجميع محافظات مصر',
+    defaultVatTextAr: 'شامل ضريبة القيمة المضافة',
+    defaultTrustBadgeTextAr: 'نقاء موثق وخام 100%',
+    defaultStockAvailableTextAr: 'متوفر بالمستودع',
+    defaultStockOutTextAr: 'نفد من المخزون',
+    relatedProductsTitleAr: 'منتجات طبيعية متناغمة قد تنال إعجابكم',
+    reviewsHeadingAr: 'آراء المقتنين',
+    addReviewHeadingAr: 'شاركنا انطباعك عن تجربة هذا المنتج',
+    addReviewSubheadingAr: 'تقييمك يسهم في إثراء سجل دار زاد للنقاء.',
+    addReviewButtonTextAr: 'إرسال التقييم',
+
+    showBreadcrumbs: true,
+    showWishlistAndShare: true,
+    showRatingStars: true,
+    showCompareAtPrice: true,
+    showVatMessage: true,
+    showShippingMessage: true,
+    showTrustBadges: true,
+    showStockStatus: true,
+    showQuantityStepper: true,
+    showAttributesGrid: true,
+    showTabsSection: true,
+    showRelatedProducts: true,
+    showLabBatch: false,
+    showSensoryProfile: false,
+
+    defaultAttributes: [
+      { id: 'attr-1', nameAr: 'اللون', valueAr: 'عنبري ذهبي نقي', icon: 'droplet', isVisible: true, order: 1 },
+      { id: 'attr-2', nameAr: 'الرائحة', valueAr: 'عطرية زهرية دافئة', icon: 'sparkles', isVisible: true, order: 2 },
+      { id: 'attr-3', nameAr: 'القوام', valueAr: 'حريري كثيف ومتماسك', icon: 'feather', isVisible: true, order: 3 },
+      { id: 'attr-4', nameAr: 'المصدر', valueAr: 'أودية ومحميات طبيعية عذراء', icon: 'map-pin', isVisible: true, order: 4 },
+      { id: 'attr-5', nameAr: 'بلد المنشأ', valueAr: 'جمهورية مصر العربية / وادي دوعن', icon: 'shield', isVisible: true, order: 5 },
+      { id: 'attr-6', nameAr: 'الوزن الصافي', valueAr: '500 جرام', icon: 'award', isVisible: true, order: 6 },
+    ],
+
+    defaultTabs: [
+      {
+        id: 'tab-natural-details',
+        slug: 'details',
+        titleAr: 'تفاصيل المنتج الطبيعي',
+        isVisible: true,
+        order: 1,
+        blocks: [
+          {
+            id: 'blk-1',
+            type: 'rich_text',
+            titleAr: 'قصة ونقاء المنتج',
+            bodyAr: 'منتج طبيعي خالص يُستخرج وفق أعلى معايير الجودة والنقاء التام، دون أي إضافات صناعية أو معالجة حرارية تفقده خواصه الحيوية الفريدة.',
+            isVisible: true,
+            order: 1
+          },
+          {
+            id: 'blk-2',
+            type: 'icons_grid',
+            titleAr: 'مواصفات الجودة والأصالة',
+            isVisible: true,
+            order: 2,
+            iconsGridItems: [
+              { id: 'ig-1', titleAr: 'خام 100%', descAr: 'مقطوف بعناية دون أي بسترة', icon: 'shield' },
+              { id: 'ig-2', titleAr: 'إنزيمات حية', descAr: 'محفوظ بكامل نشاطه الطبيعي', icon: 'sparkles' },
+              { id: 'ig-3', titleAr: 'نقاء مضمون', descAr: 'مطابق لأعلى مواصفات الجودة', icon: 'award' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'tab-benefits-usage',
+        slug: 'benefits-usage',
+        titleAr: 'الفوائد الصحية وطرق الاستخدام',
+        isVisible: true,
+        order: 2,
+        blocks: [
+          {
+            id: 'blk-3',
+            type: 'rich_text',
+            titleAr: 'الفوائد الصحية وطقوس التذوق',
+            bodyAr: 'يمتاز هذا المنتج بتركيزه العالي من مضادات الأكسدة والإنزيمات الحيوية التي تدعم مناعة الجسم وتعزز النشاط اليومي.',
+            isVisible: true,
+            order: 1
+          },
+          {
+            id: 'blk-4',
+            type: 'faq',
+            titleAr: 'طرق الاستخدام المثالية',
+            isVisible: true,
+            order: 2,
+            faqItems: [
+              { id: 'fq-1', question: 'ما هي الطريقة الفضلى للاستخدام الصباحي؟', answer: 'ملعقة صباحية على الريق أو مذابة في ماء فاتر لتحقيق أقصى استفادة حيوية.' },
+              { id: 'fq-2', question: 'كيف يُحفظ المنتج للمحافظة على جودته؟', answer: 'يحفظ في درجة حرارة الغرفة العادية بعيداً عن الرطوبة وأشعة الشمس المباشرة.' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'tab-faq',
+        slug: 'faq',
+        titleAr: 'الأسئلة الشائعة',
+        isVisible: true,
+        order: 3,
+        blocks: [
+          {
+            id: 'blk-5',
+            type: 'faq',
+            titleAr: 'الأسئلة الأكثر شيوعاً حول المنتجات',
+            isVisible: true,
+            order: 1,
+            faqItems: [
+              { id: 'faq-101', question: 'هل العسل نقي وخام 100%؟', answer: 'نعم، كافة منتجات زاد خامة ومقطوفة بعناية ولا تخضع لأي تسخين أو معالجات كيميائية.' },
+              { id: 'faq-102', question: 'ما هي مناطق التوصيل المتاحة؟', answer: 'نوفر الشحن والتوصيل لكافة محافظات جمهورية مصر العربية والدول العربية.' },
+              { id: 'faq-103', question: 'ما هي سياسة الضمان والاسترجاع؟', answer: 'نضمن لك استرداداً كاملاً إذا لم يطابق المنتج توقعاتك ومعايير النقاء المعلنة.' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'tab-reviews',
+        slug: 'reviews',
+        titleAr: 'آراء المقتنين',
+        isVisible: true,
+        order: 4,
+        isSystemReviewsTab: true,
+        blocks: []
+      }
+    ]
+  },
+
+  // 5. Shopping Bag / Cart Drawer Configuration
+  cartDrawer: {
+    drawerTitleAr: 'حقيبة المنتجات الطبيعية',
+    headerBadgeAr: 'نقاء وأصالة زاد',
+    showFreeShippingBar: true,
+    freeShippingThreshold: 600,
+    freeShippingRemainingTextAr: 'تبقى {amount} للحصول على الشحن المجاني',
+    freeShippingEligibleTextAr: 'مبارك! أنت مؤهل للشحن المجاني لجميع المحافظات',
+    showGiftPackaging: true,
+    giftPackagingTitleAr: 'تغليف الإهداء الطبيعي الفاخر',
+    giftPackagingSubtitleAr: 'مقدم مع ملعقة خشب زيتون طبيعية مجاناً',
+    giftMessagePlaceholderAr: 'اكتب رسالة إهداء خاصة ترفق مع الطلب...',
+    showCouponSection: true,
+    couponPlaceholderAr: 'رمز الخصم (جرب: ZAAD10)',
+    couponButtonTextAr: 'تطبيق',
+    couponActiveLabelAr: 'الرمز النشط:',
+    subtotalLabelAr: 'إجمالي المنتجات:',
+    discountLabelAr: 'الخصم المطبق:',
+    shippingLabelAr: 'الشحن والتوصيل:',
+    freeShippingLabelAr: 'مجاني',
+    totalLabelAr: 'الإجمالي النهائي:',
+    vatNoteAr: 'شامل ضريبة القيمة المضافة',
+    checkoutButtonTextAr: 'متابعة إتمام الطلب',
+    showViewCartLink: true,
+    viewCartLinkTextAr: 'معاينة وتخصيص تفاصيل الحقيبة',
+    emptyStateTitleAr: 'حقيبتك فارغة حالياً',
+    emptyStateDescAr: 'استكشف منتجات زاد الطبيعية من أندر الأعسال والمنتجات النقية.',
+    emptyStateButtonTextAr: 'استكشاف المنتجات الطبيعية',
+    emptyStateButtonLink: '/shop'
+  },
+
+  // 6. Announcement Bar Configuration
   announcementBar: {
     isEnabled: true,
     messageTextAr: 'نقاء طبيعي بنسبة 100% مع كل برطمان | شحن لجميع محافظات مصر',
@@ -570,6 +729,17 @@ function mergeWithDefaults(incoming: Partial<CmsSettingsDocument>): CmsSettingsD
         ...(incoming.shopPage?.promoBanner || {})
       }
     },
+    productDetailPage: {
+      ...DEFAULT_CMS_SETTINGS.productDetailPage,
+      ...(incoming.productDetailPage || {}),
+      defaultTabs: incoming.productDetailPage?.defaultTabs && incoming.productDetailPage.defaultTabs.length > 0
+        ? incoming.productDetailPage.defaultTabs
+        : DEFAULT_CMS_SETTINGS.productDetailPage.defaultTabs,
+      defaultAttributes: incoming.productDetailPage?.defaultAttributes && incoming.productDetailPage.defaultAttributes.length > 0
+        ? incoming.productDetailPage.defaultAttributes
+        : DEFAULT_CMS_SETTINGS.productDetailPage.defaultAttributes,
+    },
+    cartDrawer: { ...DEFAULT_CMS_SETTINGS.cartDrawer, ...(incoming.cartDrawer || {}) },
     announcementBar: { ...DEFAULT_CMS_SETTINGS.announcementBar, ...(incoming.announcementBar || {}) },
     navigation: {
       ...DEFAULT_CMS_SETTINGS.navigation,

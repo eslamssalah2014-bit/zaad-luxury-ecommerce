@@ -47,9 +47,9 @@ export default function CartPage() {
             <ShoppingBag className="w-10 h-10 opacity-50 text-gold-600" />
           </div>
           <div className="space-y-2">
-            <h1 className="font-serif text-2xl font-bold text-zaad-900">حقيبة المقتنيات فارغة</h1>
+            <h1 className="font-serif text-2xl font-bold text-zaad-900">حقيبة المنتجات الطبيعية فارغة</h1>
             <p className="text-xs sm:text-sm text-charcoal-700/70 font-light">
-              لم تقم بإضافة أي من محاصيل زاد النادرة إلى حقيبتك بعد.
+              لم تقم بإضافة أي من منتجات زاد الطبيعية إلى حقيبتك بعد.
             </p>
           </div>
           <Link
@@ -71,10 +71,10 @@ export default function CartPage() {
         <div className="text-center max-w-2xl mx-auto mb-12">
           <div className="inline-flex items-center gap-2 bg-zaad-900 border border-gold-500/30 px-3.5 py-1 rounded-full text-gold-300 text-xs font-semibold mb-3">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>مراجعة المقتنيات وتجهيز الإهداء</span>
+            <span>مراجعة المنتجات الطبيعية وتجهيز الإهداء</span>
           </div>
           <h1 className="font-serif text-3xl sm:text-4xl font-bold text-zaad-900">
-            حقيبة المقتنيات الملكية
+            حقيبة المنتجات الطبيعية
           </h1>
         </div>
 

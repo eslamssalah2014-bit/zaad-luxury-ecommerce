@@ -292,6 +292,132 @@ export interface ShopPageConfig {
   promoBanner: ShopPromoBanner;
 }
 
+// 1. Dynamic Attribute
+export interface ProductAttribute {
+  id: string;
+  nameAr: string;        // e.g., 'اللون', 'الرائحة', 'القوام', 'بلد المنشأ', 'المصدر'
+  valueAr: string;       // e.g., 'عنبري داكن', 'زهري دافئ', 'كثيف حريري'
+  icon?: string;         // e.g., 'droplet', 'sparkles', 'map-pin', 'feather', 'shield', 'award'
+  isVisible: boolean;
+  order: number;
+}
+
+// 2. Dynamic Content Block
+export type ProductBlockType =
+  | 'rich_text'
+  | 'image'
+  | 'image_text'
+  | 'icons_grid'
+  | 'faq'
+  | 'quote'
+  | 'divider'
+  | 'custom_html';
+
+export interface ProductContentBlock {
+  id: string;
+  type: ProductBlockType;
+  titleAr?: string;
+  bodyAr?: string;
+  imageUrl?: string;
+  imageAltAr?: string;
+  imagePosition?: 'left' | 'right';
+  quoteAuthorAr?: string;
+  faqItems?: { id: string; question: string; answer: string }[];
+  iconsGridItems?: { id: string; titleAr: string; descAr: string; icon?: string }[];
+  customHtml?: string;
+  isVisible: boolean;
+  order: number;
+}
+
+// 3. Dynamic Product Tab
+export interface ProductTab {
+  id: string;
+  slug: string;
+  titleAr: string;         // e.g., 'تفاصيل المنتج الطبيعي', 'الفوائد الصحية', 'طرق الاستخدام', 'الأسئلة الشائعة'
+  badgeAr?: string;
+  isVisible: boolean;
+  order: number;
+  isSystemReviewsTab?: boolean;
+  blocks: ProductContentBlock[];
+}
+
+// 4. Product Details Page Global CMS Configuration
+export interface ProductPageGlobalConfig {
+  defaultShippingTextAr: string;        // "شحن لجميع محافظات مصر"
+  defaultVatTextAr: string;             // "شامل ضريبة القيمة المضافة"
+  defaultTrustBadgeTextAr: string;      // "نقاء موثق وخام 100%"
+  defaultStockAvailableTextAr: string;  // "متوفر بالمستودع"
+  defaultStockOutTextAr: string;        // "نفد من المخزون"
+  relatedProductsTitleAr: string;       // "منتجات طبيعية متناغمة قد تنال إعجابكم"
+  reviewsHeadingAr: string;             // "آراء المقتنين"
+  addReviewHeadingAr: string;           // "شاركنا انطباعك عن تجربة هذا المنتج"
+  addReviewSubheadingAr: string;        // "تقييمك يسهم في إثراء سجل دار زاد للنقاء."
+  addReviewButtonTextAr: string;        // "إرسال التقييم"
+  
+  // Section Visibility Controls
+  showBreadcrumbs: boolean;
+  showWishlistAndShare: boolean;
+  showRatingStars: boolean;
+  showCompareAtPrice: boolean;
+  showVatMessage: boolean;
+  showShippingMessage: boolean;
+  showTrustBadges: boolean;
+  showStockStatus: boolean;
+  showQuantityStepper: boolean;
+  showAttributesGrid: boolean;
+  showTabsSection: boolean;
+  showRelatedProducts: boolean;
+  showLabBatch: boolean;                // Default: false
+  showSensoryProfile: boolean;          // Default: false
+  
+  // Global Default Tabs Template
+  defaultTabs: ProductTab[];
+  defaultAttributes: ProductAttribute[];
+}
+
+export interface CartDrawerConfig {
+  // A. Header
+  drawerTitleAr: string;
+  headerBadgeAr?: string;
+
+  // B. Free Shipping Progress Area
+  showFreeShippingBar: boolean;
+  freeShippingThreshold: number;
+  freeShippingRemainingTextAr: string;
+  freeShippingEligibleTextAr: string;
+
+  // C. Gift Packaging Section
+  showGiftPackaging: boolean;
+  giftPackagingTitleAr: string;
+  giftPackagingSubtitleAr: string;
+  giftMessagePlaceholderAr: string;
+
+  // D. Coupon Section
+  showCouponSection: boolean;
+  couponPlaceholderAr: string;
+  couponButtonTextAr: string;
+  couponActiveLabelAr: string;
+
+  // E. Summary Labels
+  subtotalLabelAr: string;
+  discountLabelAr: string;
+  shippingLabelAr: string;
+  freeShippingLabelAr: string;
+  totalLabelAr: string;
+  vatNoteAr?: string;
+
+  // F. Action Buttons & Navigation
+  checkoutButtonTextAr: string;
+  showViewCartLink: boolean;
+  viewCartLinkTextAr: string;
+
+  // G. Empty State
+  emptyStateTitleAr: string;
+  emptyStateDescAr: string;
+  emptyStateButtonTextAr: string;
+  emptyStateButtonLink: string;
+}
+
 export interface CmsSettingsDocument {
   version: number;
   updatedAt: string;
@@ -300,6 +426,8 @@ export interface CmsSettingsDocument {
   homepageSections: HomepageSection[];
   storyPage: StoryPageConfig;
   shopPage: ShopPageConfig;
+  productDetailPage: ProductPageGlobalConfig;
+  cartDrawer: CartDrawerConfig;
   announcementBar: AnnouncementBarConfig;
   navigation: NavigationMenuConfig;
   testimonials: TestimonialsSectionConfig;

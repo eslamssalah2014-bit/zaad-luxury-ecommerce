@@ -29,10 +29,19 @@ import {
   ArrowLeft,
   Loader2,
   MoveRight,
-  MoveLeft
+  MoveLeft,
+  FileEdit,
+  Droplet,
+  Feather,
+  MapPin,
+  HelpCircle,
+  Quote,
+  ArrowUp,
+  ArrowDown
 } from 'lucide-react';
 import { useCurrency } from '@/context/CurrencyContext';
 import { Product, Category, Subcategory, ProductVisibility } from '@/types';
+import { ProductAttribute, ProductTab, ProductContentBlock } from '@/types/cms';
 import { adminFetch } from '@/lib/auth/adminFetch';
 
 export default function AdminProductsPage() {
@@ -48,7 +57,7 @@ export default function AdminProductsPage() {
 
   // Modal State
   const [productModalOpen, setProductModalOpen] = useState(false);
-  const [modalTab, setModalTab] = useState<'basic' | 'pricing' | 'inventory' | 'media' | 'lab' | 'visibility'>('basic');
+  const [modalTab, setModalTab] = useState<'basic' | 'pricing' | 'attributes' | 'cms_tabs' | 'inventory' | 'media' | 'lab'>('basic');
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
   // Upload State
@@ -76,11 +85,20 @@ export default function AdminProductsPage() {
   const [floralSourceEn, setFloralSourceEn] = useState('Wild Mountain Sidr Blossom');
   const [shortDescAr, setShortDescAr] = useState('');
   const [fullStoryAr, setFullStoryAr] = useState('');
+  const [usageInstructionsAr, setUsageInstructionsAr] = useState('');
+  const [storageInstructionsAr, setStorageInstructionsAr] = useState('يحفظ في مكان بارد وجاف بعيداً عن أشعة الشمس المباشرة');
   const [images, setImages] = useState<string[]>(['/images/zaad-logo.png']);
   const [newImageUrl, setNewImageUrl] = useState('');
   const [isFeatured, setIsFeatured] = useState(false);
   const [visibilityStatus, setVisibilityStatus] = useState<ProductVisibility>('published');
   const [badge, setBadge] = useState('');
+
+  // Dynamic CMS Fields
+  const [productAttributes, setProductAttributes] = useState<ProductAttribute[]>([]);
+  const [productTabs, setProductTabs] = useState<ProductTab[]>([]);
+  const [customShippingMessage, setCustomShippingMessage] = useState('');
+  const [customVatMessage, setCustomVatMessage] = useState('');
+  const [customTrustBadgeText, setCustomTrustBadgeText] = useState('');
 
   // Lab Batch Fields
   const [batchNumber, setBatchNumber] = useState('');
@@ -145,10 +163,26 @@ export default function AdminProductsPage() {
       setFloralSourceEn(prod.floralSourceEn || '');
       setShortDescAr(prod.shortDescAr);
       setFullStoryAr(prod.fullStoryAr);
+      setUsageInstructionsAr(prod.usageInstructionsAr || '');
+      setStorageInstructionsAr(prod.storageInstructionsAr || 'يحفظ في مكان بارد وجاف بعيداً عن أشعة الشمس المباشرة');
       setImages(prod.images?.length > 0 ? prod.images : ['/images/zaad-logo.png']);
       setIsFeatured(prod.isFeatured);
       setVisibilityStatus(prod.visibilityStatus || 'published');
       setBadge(prod.badge || '');
+
+      // Dynamic CMS Attributes & Tabs
+      setProductAttributes(prod.attributes && prod.attributes.length > 0 ? prod.attributes : [
+        { id: 'attr-1', nameAr: 'اللون', valueAr: 'عنبري ذهبي نقي', icon: 'droplet', isVisible: true, order: 1 },
+        { id: 'attr-2', nameAr: 'الرائحة', valueAr: 'عطرية زهرية دافئة', icon: 'sparkles', isVisible: true, order: 2 },
+        { id: 'attr-3', nameAr: 'القوام', valueAr: 'حريري كثيف ومتماسك', icon: 'feather', isVisible: true, order: 3 },
+        { id: 'attr-4', nameAr: 'المصدر', valueAr: prod.floralSourceAr || 'أشجار ومروج برية', icon: 'map-pin', isVisible: true, order: 4 },
+        { id: 'attr-5', nameAr: 'بلد المنشأ', valueAr: prod.originRegionAr || 'جمهورية مصر العربية', icon: 'shield', isVisible: true, order: 5 },
+        { id: 'attr-6', nameAr: 'الوزن الصافي', valueAr: `${prod.weightGrams || 500} جرام`, icon: 'package', isVisible: true, order: 6 },
+      ]);
+      setProductTabs(prod.tabs || []);
+      setCustomShippingMessage(prod.customShippingMessage || '');
+      setCustomVatMessage(prod.customVatMessage || '');
+      setCustomTrustBadgeText(prod.customTrustBadgeText || '');
 
       // Lab Batch
       setBatchNumber(prod.latestLabBatch?.batchNumber || `ZD-2026-${prod.sku}`);
@@ -173,14 +207,32 @@ export default function AdminProductsPage() {
       setStockQuantity(25);
       setLowStockThreshold(5);
       setWeightGrams(500);
+      setOriginRegionAr('حضرموت - وادي دوعن');
       setOriginRegionEn('Hadramout - Doan Valley');
+      setFloralSourceAr('أزهار أشجار السدر البرية الجبلية');
       setFloralSourceEn('Wild Mountain Sidr Blossom');
       setShortDescAr('');
       setFullStoryAr('');
+      setUsageInstructionsAr('');
+      setStorageInstructionsAr('يحفظ في مكان بارد وجاف بعيداً عن أشعة الشمس المباشرة');
       setImages(['/images/zaad-logo.png']);
       setIsFeatured(false);
       setVisibilityStatus('published');
       setBadge('');
+
+      // Dynamic CMS Attributes & Tabs
+      setProductAttributes([
+        { id: 'attr-1', nameAr: 'اللون', valueAr: 'عنبري ذهبي نقي', icon: 'droplet', isVisible: true, order: 1 },
+        { id: 'attr-2', nameAr: 'الرائحة', valueAr: 'عطرية زهرية دافئة', icon: 'sparkles', isVisible: true, order: 2 },
+        { id: 'attr-3', nameAr: 'القوام', valueAr: 'حريري كثيف ومتماسك', icon: 'feather', isVisible: true, order: 3 },
+        { id: 'attr-4', nameAr: 'المصدر', valueAr: 'أشجار ومروج برية', icon: 'map-pin', isVisible: true, order: 4 },
+        { id: 'attr-5', nameAr: 'بلد المنشأ', valueAr: 'جمهورية مصر العربية', icon: 'shield', isVisible: true, order: 5 },
+        { id: 'attr-6', nameAr: 'الوزن الصافي', valueAr: '500 جرام', icon: 'package', isVisible: true, order: 6 },
+      ]);
+      setProductTabs([]);
+      setCustomShippingMessage('');
+      setCustomVatMessage('');
+      setCustomTrustBadgeText('');
 
       // Lab Batch
       setBatchNumber(`ZD-2026-${Math.floor(100 + Math.random() * 900)}`);
@@ -302,11 +354,18 @@ export default function AdminProductsPage() {
         floralSourceEn,
         shortDescAr,
         fullStoryAr,
+        usageInstructionsAr: usageInstructionsAr || null,
+        storageInstructionsAr: storageInstructionsAr || null,
         images,
         isFeatured,
         isAvailable: visibilityStatus === 'published' || visibilityStatus === 'out_of_stock',
         visibilityStatus,
         badge: badge || null,
+        attributes: productAttributes,
+        tabs: productTabs,
+        customShippingMessage: customShippingMessage || null,
+        customVatMessage: customVatMessage || null,
+        customTrustBadgeText: customTrustBadgeText || null,
         latestLabBatch: {
           batchNumber,
           harvestSeason,
@@ -329,7 +388,7 @@ export default function AdminProductsPage() {
 
       const json = await res.json();
       if (json.success) {
-        showNotification('success', editingProduct ? 'تم تحديث بيانات المحصول بنجاح في Supabase' : 'تم إضافة المحصول الجديد بنجاح في Supabase');
+        showNotification('success', editingProduct ? 'تم تحديث بيانات المنتج بنجاح في Supabase' : 'تم إضافة المنتج الجديد بنجاح في Supabase');
         setProductModalOpen(false);
         await loadData();
       } else {
@@ -669,42 +728,58 @@ export default function AdminProductsPage() {
               <button
                 type="button"
                 onClick={() => setModalTab('basic')}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${modalTab === 'basic' ? 'bg-zaad-900 text-gold-400 shadow-sm' : 'text-charcoal-700 hover:text-zaad-900'
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${modalTab === 'basic' ? 'bg-zaad-900 text-gold-400 shadow-sm' : 'text-charcoal-700 hover:text-zaad-900'
                   }`}
               >
-                البيانات الأساسية والتصنيف
+                البيانات الأساسية
               </button>
               <button
                 type="button"
                 onClick={() => setModalTab('pricing')}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${modalTab === 'pricing' ? 'bg-zaad-900 text-gold-400 shadow-sm' : 'text-charcoal-700 hover:text-zaad-900'
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${modalTab === 'pricing' ? 'bg-zaad-900 text-gold-400 shadow-sm' : 'text-charcoal-700 hover:text-zaad-900'
                   }`}
               >
-                التسعير والتكلفة وهامش الربح
+                التسعير والرسائل
+              </button>
+              <button
+                type="button"
+                onClick={() => setModalTab('attributes')}
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${modalTab === 'attributes' ? 'bg-zaad-900 text-gold-400 shadow-sm' : 'text-charcoal-700 hover:text-zaad-900'
+                  }`}
+              >
+                الخصائص الحيوية ({productAttributes.length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setModalTab('cms_tabs')}
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${modalTab === 'cms_tabs' ? 'bg-zaad-900 text-gold-400 shadow-sm' : 'text-charcoal-700 hover:text-zaad-900'
+                  }`}
+              >
+                التبويبات والمحتوى ({productTabs.length})
               </button>
               <button
                 type="button"
                 onClick={() => setModalTab('inventory')}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${modalTab === 'inventory' ? 'bg-zaad-900 text-gold-400 shadow-sm' : 'text-charcoal-700 hover:text-zaad-900'
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${modalTab === 'inventory' ? 'bg-zaad-900 text-gold-400 shadow-sm' : 'text-charcoal-700 hover:text-zaad-900'
                   }`}
               >
-                المخزون وحالة الظهور
+                المخزون والظهور
               </button>
               <button
                 type="button"
                 onClick={() => setModalTab('media')}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${modalTab === 'media' ? 'bg-zaad-900 text-gold-400 shadow-sm' : 'text-charcoal-700 hover:text-zaad-900'
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${modalTab === 'media' ? 'bg-zaad-900 text-gold-400 shadow-sm' : 'text-charcoal-700 hover:text-zaad-900'
                   }`}
               >
-                معرض الصور والوسائط ({images.length})
+                معرض الصور ({images.length})
               </button>
               <button
                 type="button"
                 onClick={() => setModalTab('lab')}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${modalTab === 'lab' ? 'bg-zaad-900 text-gold-400 shadow-sm' : 'text-charcoal-700 hover:text-zaad-900'
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${modalTab === 'lab' ? 'bg-zaad-900 text-gold-400 shadow-sm' : 'text-charcoal-700 hover:text-zaad-900'
                   }`}
               >
-                شهادة فحص النقاء والمختبر
+                شهادة فحص النقاء
               </button>
             </div>
 
@@ -830,19 +905,42 @@ export default function AdminProductsPage() {
                   </div>
 
                   <div>
-                    <label className="block font-bold text-zaad-900 mb-1">قصة المحصول وتفاصيله الكاملة</label>
+                    <label className="block font-bold text-zaad-900 mb-1">قصة المنتج وتفاصيله الكاملة</label>
                     <textarea
-                      rows={4}
+                      rows={3}
                       value={fullStoryAr}
                       onChange={(e) => setFullStoryAr(e.target.value)}
-                      placeholder="تفاصيل الحصاد، المناحل الجبلية، الخصائص العلاجية..."
+                      placeholder="تفاصيل الحصاد، البيئة الطبيعية، الخصائص العلاجية..."
                       className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 focus:border-gold-500 focus:outline-none"
                     />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block font-bold text-zaad-900 mb-1">إرشادات الاستخدام والتناول (Usage Instructions)</label>
+                      <textarea
+                        rows={2}
+                        value={usageInstructionsAr}
+                        onChange={(e) => setUsageInstructionsAr(e.target.value)}
+                        placeholder="مثال: يؤخذ ملعقة صباحاً على الريق مع ماء فاتر..."
+                        className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 focus:border-gold-500 focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-bold text-zaad-900 mb-1">إرشادات حفظ النقاء (Storage Instructions)</label>
+                      <textarea
+                        rows={2}
+                        value={storageInstructionsAr}
+                        onChange={(e) => setStorageInstructionsAr(e.target.value)}
+                        placeholder="يحفظ في مكان بارد وجاف بعيداً عن أشعة الشمس المباشرة"
+                        className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 focus:border-gold-500 focus:outline-none"
+                      />
+                    </div>
                   </div>
                 </div>
               )}
 
-              {/* TAB 2: PRICING & COST TRACKING */}
+              {/* TAB 2: PRICING & COMMERCIAL MESSAGES */}
               {modalTab === 'pricing' && (
                 <div className="space-y-6 animate-fade-in">
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -913,10 +1011,339 @@ export default function AdminProductsPage() {
                       </span>
                     </div>
                   </div>
+
+                  {/* Custom Commercial Message Overrides */}
+                  <div className="border-t border-ivory-300 pt-4 space-y-4">
+                    <h4 className="font-bold text-zaad-900 text-xs">تخصيص الرسائل التجارية الخاصة بهذا المنتج (اختياري لتجاوز الإعداد العام):</h4>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-[11px] font-bold text-charcoal-700 mb-1">رسالة الشحن المخصصة:</label>
+                        <input
+                          type="text"
+                          value={customShippingMessage}
+                          onChange={(e) => setCustomShippingMessage(e.target.value)}
+                          placeholder="افتراضي CMS العام"
+                          className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-2.5 text-xs"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-bold text-charcoal-700 mb-1">رسالة الضريبة المخصصة:</label>
+                        <input
+                          type="text"
+                          value={customVatMessage}
+                          onChange={(e) => setCustomVatMessage(e.target.value)}
+                          placeholder="افتراضي CMS العام"
+                          className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-2.5 text-xs"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-bold text-charcoal-700 mb-1">وسام الثقة المخصص:</label>
+                        <input
+                          type="text"
+                          value={customTrustBadgeText}
+                          onChange={(e) => setCustomTrustBadgeText(e.target.value)}
+                          placeholder="افتراضي CMS العام"
+                          className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-2.5 text-xs"
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
 
-              {/* TAB 3: INVENTORY & VISIBILITY */}
+              {/* TAB 3: DYNAMIC ATTRIBUTES BUILDER */}
+              {modalTab === 'attributes' && (
+                <div className="space-y-4 animate-fade-in">
+                  <div className="flex items-center justify-between border-b border-ivory-200 pb-3">
+                    <div>
+                      <h4 className="font-bold text-zaad-900 text-sm">الخصائص الحيوية للمنتج (Dynamic Attributes)</h4>
+                      <p className="text-[11px] text-charcoal-700/70">أضف خصائص غير محدودة مثل اللون، الرائحة، القوام، المصدر، بلد المنشأ</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setProductAttributes([
+                          ...productAttributes,
+                          {
+                            id: `attr-${Date.now()}`,
+                            nameAr: 'خاصية جديدة',
+                            valueAr: 'القيمة',
+                            icon: 'sparkles',
+                            isVisible: true,
+                            order: productAttributes.length + 1
+                          }
+                        ]);
+                      }}
+                      className="px-3.5 py-1.5 bg-zaad-800 text-white rounded-xl text-xs font-bold hover:bg-zaad-700 transition-all flex items-center gap-1"
+                    >
+                      <Plus className="w-3.5 h-3.5 text-gold-400" />
+                      <span>إضافة خاصية</span>
+                    </button>
+                  </div>
+
+                  <div className="space-y-3 max-h-96 overflow-y-auto">
+                    {productAttributes.map((attr, aIdx) => (
+                      <div key={attr.id || aIdx} className="p-3 bg-ivory-50 border border-ivory-300 rounded-2xl flex flex-wrap items-center gap-3">
+                        <span className="w-6 h-6 rounded-lg bg-white border border-ivory-300 flex items-center justify-center font-bold text-xs">
+                          {aIdx + 1}
+                        </span>
+
+                        <div className="flex-1 min-w-[130px]">
+                          <label className="block text-[10px] font-bold text-charcoal-700 mb-0.5">اسم الخاصية:</label>
+                          <input
+                            type="text"
+                            value={attr.nameAr}
+                            onChange={(e) => {
+                              const updated = [...productAttributes];
+                              updated[aIdx] = { ...updated[aIdx], nameAr: e.target.value };
+                              setProductAttributes(updated);
+                            }}
+                            className="w-full bg-white border border-ivory-300 rounded-lg p-1.5 font-bold text-xs"
+                            placeholder="اللون"
+                          />
+                        </div>
+
+                        <div className="flex-1 min-w-[160px]">
+                          <label className="block text-[10px] font-bold text-charcoal-700 mb-0.5">القيمة:</label>
+                          <input
+                            type="text"
+                            value={attr.valueAr}
+                            onChange={(e) => {
+                              const updated = [...productAttributes];
+                              updated[aIdx] = { ...updated[aIdx], valueAr: e.target.value };
+                              setProductAttributes(updated);
+                            }}
+                            className="w-full bg-white border border-ivory-300 rounded-lg p-1.5 text-xs"
+                            placeholder="عنبري ذهبي"
+                          />
+                        </div>
+
+                        <div className="w-28">
+                          <label className="block text-[10px] font-bold text-charcoal-700 mb-0.5">الأيقونة:</label>
+                          <select
+                            value={attr.icon || 'sparkles'}
+                            onChange={(e) => {
+                              const updated = [...productAttributes];
+                              updated[aIdx] = { ...updated[aIdx], icon: e.target.value };
+                              setProductAttributes(updated);
+                            }}
+                            className="w-full bg-white border border-ivory-300 rounded-lg p-1.5 text-xs"
+                          >
+                            <option value="sparkles">✨ بريق</option>
+                            <option value="droplet">💧 قطرة / لون</option>
+                            <option value="feather">🪶 قوام</option>
+                            <option value="map-pin">📍 موطن</option>
+                            <option value="shield">🛡️ حماية</option>
+                            <option value="award">🏅 جودة</option>
+                            <option value="package">📦 عبوة</option>
+                          </select>
+                        </div>
+
+                        <div className="flex items-center gap-1.5 pt-2 sm:pt-0">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (aIdx === 0) return;
+                              const updated = [...productAttributes];
+                              const temp = updated[aIdx - 1];
+                              updated[aIdx - 1] = updated[aIdx];
+                              updated[aIdx] = temp;
+                              setProductAttributes(updated);
+                            }}
+                            disabled={aIdx === 0}
+                            className="p-1.5 bg-white border border-ivory-300 rounded-lg disabled:opacity-30"
+                            title="تحريك لأعلى"
+                          >
+                            <ArrowUp className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (aIdx === productAttributes.length - 1) return;
+                              const updated = [...productAttributes];
+                              const temp = updated[aIdx + 1];
+                              updated[aIdx + 1] = updated[aIdx];
+                              updated[aIdx] = temp;
+                              setProductAttributes(updated);
+                            }}
+                            disabled={aIdx === productAttributes.length - 1}
+                            className="p-1.5 bg-white border border-ivory-300 rounded-lg disabled:opacity-30"
+                            title="تحريك لأسفل"
+                          >
+                            <ArrowDown className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setProductAttributes(productAttributes.filter((_, i) => i !== aIdx));
+                            }}
+                            className="p-1.5 bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100"
+                            title="حذف"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 4: DYNAMIC TABS & CONTENT BLOCKS BUILDER */}
+              {modalTab === 'cms_tabs' && (
+                <div className="space-y-4 animate-fade-in">
+                  <div className="flex items-center justify-between border-b border-ivory-200 pb-3">
+                    <div>
+                      <h4 className="font-bold text-zaad-900 text-sm">التبويبات والمحتوى المخصص لهذا المنتج (Tabs & Blocks)</h4>
+                      <p className="text-[11px] text-charcoal-700/70">إذا تركت فارغة، سيتم تطبيق القالب الافتراضي المعتمد في CMS العام تلقائياً.</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setProductTabs([
+                          ...productTabs,
+                          {
+                            id: `tab-${Date.now()}`,
+                            slug: `tab-${productTabs.length + 1}`,
+                            titleAr: 'تبويب مخصص',
+                            isVisible: true,
+                            order: productTabs.length + 1,
+                            blocks: [
+                              {
+                                id: `blk-${Date.now()}`,
+                                type: 'rich_text',
+                                titleAr: 'عنوان المحتوى',
+                                bodyAr: 'نص المحتوى التوضيحي...',
+                                isVisible: true,
+                                order: 1
+                              }
+                            ]
+                          }
+                        ]);
+                      }}
+                      className="px-3.5 py-1.5 bg-gold-500 text-zaad-950 rounded-xl text-xs font-bold hover:bg-gold-400 transition-all flex items-center gap-1"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>إضافة تبويب مخصص</span>
+                    </button>
+                  </div>
+
+                  {productTabs.length === 0 ? (
+                    <div className="text-center py-8 bg-ivory-50 rounded-2xl border border-ivory-200 text-xs text-charcoal-700/70 space-y-1">
+                      <p className="font-bold text-zaad-900">هذا المنتج يستخدم التبويبات الافتراضية من لوحة CMS العامة.</p>
+                      <p>اضغط على زر &ldquo;إضافة تبويب مخصص&rdquo; إذا كنت ترغب في تخصيص تبويبات وبلوكات فريدة خاصة بهذا المنتج فقط.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4 max-h-96 overflow-y-auto">
+                      {productTabs.map((tab, tIdx) => (
+                        <div key={tab.id || tIdx} className="p-4 bg-ivory-50 border border-ivory-300 rounded-2xl space-y-3">
+                          <div className="flex items-center justify-between border-b border-ivory-200 pb-2">
+                            <div className="flex items-center gap-2 flex-1">
+                              <span className="w-6 h-6 rounded-lg bg-zaad-900 text-gold-300 flex items-center justify-center font-bold text-xs">
+                                {tIdx + 1}
+                              </span>
+                              <input
+                                type="text"
+                                value={tab.titleAr}
+                                onChange={(e) => {
+                                  const updated = [...productTabs];
+                                  updated[tIdx] = { ...updated[tIdx], titleAr: e.target.value };
+                                  setProductTabs(updated);
+                                }}
+                                className="bg-white border border-ivory-300 rounded-lg px-2.5 py-1 font-bold text-xs"
+                                placeholder="عنوان التبويب"
+                              />
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const updated = [...productTabs];
+                                  const blocks = [...(updated[tIdx].blocks || [])];
+                                  blocks.push({
+                                    id: `blk-${Date.now()}`,
+                                    type: 'rich_text',
+                                    titleAr: 'عنوان المحتوى',
+                                    bodyAr: 'أدخل النص...',
+                                    isVisible: true,
+                                    order: blocks.length + 1
+                                  });
+                                  updated[tIdx] = { ...updated[tIdx], blocks };
+                                  setProductTabs(updated);
+                                }}
+                                className="px-2 py-1 bg-white border border-ivory-300 rounded text-[10px] font-bold"
+                              >
+                                + بلوك نص
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setProductTabs(productTabs.filter((_, i) => i !== tIdx));
+                                }}
+                                className="p-1 text-red-600 hover:text-red-700"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Tab Blocks */}
+                          <div className="space-y-2">
+                            {(tab.blocks || []).map((blk, bIdx) => (
+                              <div key={blk.id || bIdx} className="p-2.5 bg-white border border-ivory-200 rounded-xl space-y-2">
+                                <div className="flex items-center justify-between">
+                                  <span className="font-bold text-[11px] text-zaad-900">بلوك #{bIdx + 1}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const updated = [...productTabs];
+                                      const blocks = (updated[tIdx].blocks || []).filter((_, i) => i !== bIdx);
+                                      updated[tIdx] = { ...updated[tIdx], blocks };
+                                      setProductTabs(updated);
+                                    }}
+                                    className="text-red-500 hover:text-red-700"
+                                  >
+                                    <Trash2 className="w-3 h-3" />
+                                  </button>
+                                </div>
+                                <input
+                                  type="text"
+                                  value={blk.titleAr || ''}
+                                  onChange={(e) => {
+                                    const updated = [...productTabs];
+                                    const blocks = [...(updated[tIdx].blocks || [])];
+                                    blocks[bIdx] = { ...blocks[bIdx], titleAr: e.target.value };
+                                    updated[tIdx] = { ...updated[tIdx], blocks };
+                                    setProductTabs(updated);
+                                  }}
+                                  placeholder="عنوان البلوك..."
+                                  className="w-full bg-ivory-50 border border-ivory-300 rounded px-2 py-1 text-xs font-bold"
+                                />
+                                <textarea
+                                  rows={2}
+                                  value={blk.bodyAr || ''}
+                                  onChange={(e) => {
+                                    const updated = [...productTabs];
+                                    const blocks = [...(updated[tIdx].blocks || [])];
+                                    blocks[bIdx] = { ...blocks[bIdx], bodyAr: e.target.value };
+                                    updated[tIdx] = { ...updated[tIdx], blocks };
+                                    setProductTabs(updated);
+                                  }}
+                                  placeholder="نص البلوك..."
+                                  className="w-full bg-ivory-50 border border-ivory-300 rounded px-2 py-1 text-xs"
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* TAB 5: INVENTORY & VISIBILITY */}
               {modalTab === 'inventory' && (
                 <div className="space-y-4 animate-fade-in">
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

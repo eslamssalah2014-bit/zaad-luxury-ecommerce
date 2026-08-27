@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
       compareAtPrice,
       costPrice,
       currency = 'EGP',
-      stockQuantity = 0,
+      stockQuantity = 20,
       lowStockThreshold = 5,
       weightGrams = 500,
       originRegionAr,
@@ -124,13 +124,19 @@ export async function POST(request: NextRequest) {
       fullStoryAr,
       healthBenefitsAr = [],
       pairingSuggestionsAr = [],
+      usageInstructionsAr,
       storageInstructionsAr,
-      images = ['/images/zaad-logo.png'],
+      images = [],
       isFeatured = false,
       isAvailable = true,
       visibilityStatus = 'published',
       badge,
-      latestLabBatch
+      latestLabBatch,
+      attributes = [],
+      tabs = [],
+      customShippingMessage,
+      customVatMessage,
+      customTrustBadgeText
     } = body;
 
     if (!nameAr || !price || !shortDescAr) {
@@ -177,7 +183,13 @@ export async function POST(request: NextRequest) {
         crystallization: 'نادر',
         cost_price: calculatedCost,
         visibility_status: visibilityStatus,
-        subcategory_id: subcategoryId || null
+        subcategory_id: subcategoryId || null,
+        attributes: Array.isArray(attributes) ? attributes : [],
+        tabs: Array.isArray(tabs) ? tabs : [],
+        usage_instructions_ar: usageInstructionsAr || null,
+        custom_shipping_message: customShippingMessage || null,
+        custom_vat_message: customVatMessage || null,
+        custom_trust_badge_text: customTrustBadgeText || null
       },
       badge: badge || null
     };
@@ -264,13 +276,19 @@ export async function PUT(request: NextRequest) {
       fullStoryAr,
       healthBenefitsAr,
       pairingSuggestionsAr,
+      usageInstructionsAr,
       storageInstructionsAr,
       images,
       isFeatured,
       isAvailable,
       visibilityStatus,
       badge,
-      latestLabBatch
+      latestLabBatch,
+      attributes = [],
+      tabs = [],
+      customShippingMessage,
+      customVatMessage,
+      customTrustBadgeText
     } = body;
 
     if (!id) {
@@ -313,7 +331,13 @@ export async function PUT(request: NextRequest) {
         crystallization: 'نادر',
         cost_price: calculatedCost,
         visibility_status: visibilityStatus || 'published',
-        subcategory_id: subcategoryId || null
+        subcategory_id: subcategoryId || null,
+        attributes: Array.isArray(attributes) ? attributes : [],
+        tabs: Array.isArray(tabs) ? tabs : [],
+        usage_instructions_ar: usageInstructionsAr || null,
+        custom_shipping_message: customShippingMessage || null,
+        custom_vat_message: customVatMessage || null,
+        custom_trust_badge_text: customTrustBadgeText || null
       },
       updated_at: new Date().toISOString()
     };
@@ -436,6 +460,7 @@ export function formatProductRow(data: any): Product {
     fullStoryAr: data.full_story_ar || '',
     healthBenefitsAr: Array.isArray(data.health_benefits_ar) ? data.health_benefits_ar : [],
     pairingSuggestionsAr: Array.isArray(data.pairing_suggestions_ar) ? data.pairing_suggestions_ar : [],
+    usageInstructionsAr: data.usage_instructions_ar || data.sensory_profile?.usage_instructions_ar || undefined,
     storageInstructionsAr: data.storage_instructions_ar || '',
     images: Array.isArray(data.images) && data.images.length > 0 ? data.images : ['/images/zaad-logo.png'],
     isFeatured: Boolean(data.is_featured),
@@ -445,6 +470,11 @@ export function formatProductRow(data: any): Product {
     reviewCount: Number(data.review_count || 0),
     sensoryProfile: data.sensory_profile || { sweetness: 4, floralAroma: 4, density: 4, intensity: 4, crystallization: 'نادر' },
     badge: data.badge,
+    attributes: Array.isArray(data.attributes) ? data.attributes : (Array.isArray(data.sensory_profile?.attributes) ? data.sensory_profile.attributes : undefined),
+    tabs: Array.isArray(data.tabs) ? data.tabs : (Array.isArray(data.sensory_profile?.tabs) ? data.sensory_profile.tabs : undefined),
+    customShippingMessage: data.custom_shipping_message || data.sensory_profile?.custom_shipping_message || undefined,
+    customVatMessage: data.custom_vat_message || data.sensory_profile?.custom_vat_message || undefined,
+    customTrustBadgeText: data.custom_trust_badge_text || data.sensory_profile?.custom_trust_badge_text || undefined,
     createdAt: data.created_at,
     updatedAt: data.updated_at,
     latestLabBatch: data.batches?.[0] ? {

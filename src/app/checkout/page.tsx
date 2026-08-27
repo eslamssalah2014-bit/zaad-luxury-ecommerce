@@ -64,7 +64,7 @@ export default function CheckoutPage() {
     return (
       <div className="min-h-[60vh] bg-ivory-100 flex items-center justify-center py-12 px-4">
         <div className="bg-white rounded-3xl p-8 max-w-md w-full text-center space-y-4 border border-ivory-300">
-          <h2 className="font-serif text-xl font-bold text-zaad-900">حقيبة المقتنيات فارغة</h2>
+          <h2 className="font-serif text-xl font-bold text-zaad-900">حقيبة المنتجات الطبيعية فارغة</h2>
           <p className="text-xs text-charcoal-700/70">يرجى إضافة منتجات قبل التوجه لإتمام الطلب.</p>
           <Link href="/shop" className="inline-block bg-zaad-800 text-white text-xs font-bold px-6 py-2.5 rounded-xl">
             استكشاف المنتجات الطبيعية

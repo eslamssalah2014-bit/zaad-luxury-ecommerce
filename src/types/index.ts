@@ -65,6 +65,8 @@ export interface Category {
   subcategories?: Subcategory[];
 }
 
+import { ProductAttribute, ProductTab } from './cms';
+
 export interface Product {
   id: string;
   slug: string;
@@ -96,6 +98,7 @@ export interface Product {
   fullStoryAr: string;
   healthBenefitsAr: string[];
   pairingSuggestionsAr: string[];
+  usageInstructionsAr?: string;
   storageInstructionsAr: string;
   images: string[];
   isFeatured: boolean;
@@ -106,6 +109,11 @@ export interface Product {
   sensoryProfile: SensoryProfile;
   latestLabBatch: LabAnalysis;
   badge?: string; // 'موسم نادر' | 'إصدار ملكي خاص' | 'الأكثر طلباً'
+  attributes?: ProductAttribute[];
+  tabs?: ProductTab[];
+  customShippingMessage?: string;
+  customVatMessage?: string;
+  customTrustBadgeText?: string;
   createdAt?: string;
   updatedAt?: string;
 }
