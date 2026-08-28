@@ -225,8 +225,8 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
     showAttributesGrid: true,
     showTabsSection: true,
     showRelatedProducts: true,
-    showLabBatch: false,
-    showSensoryProfile: false,
+    showLabBatch: true,
+    showSensoryProfile: true,
 
     defaultAttributes: [
       { id: 'attr-1', nameAr: 'اللون', valueAr: 'عنبري ذهبي نقي', icon: 'droplet', isVisible: true, order: 1 },

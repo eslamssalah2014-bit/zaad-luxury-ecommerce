@@ -367,8 +367,9 @@ export interface ProductPageGlobalConfig {
   showAttributesGrid: boolean;
   showTabsSection: boolean;
   showRelatedProducts: boolean;
-  showLabBatch: boolean;                // Default: false
-  showSensoryProfile: boolean;          // Default: false
+  showLabBatch: boolean;                // Purity Certificate & Lab Analysis
+  showPurityCertificate?: boolean;      // Alias for Purity Certificate
+  showSensoryProfile: boolean;          // Sensory Flavor & Aroma Profile
   
   // Global Default Tabs Template
   defaultTabs: ProductTab[];

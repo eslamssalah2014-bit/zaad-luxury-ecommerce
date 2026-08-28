@@ -1754,6 +1754,8 @@ export default function AdminCmsPage() {
                 { key: 'showQuantityStepper', label: 'عداد الكمية (Quantity Stepper)' },
                 { key: 'showAttributesGrid', label: 'شبكة الخصائص (Attributes Grid)' },
                 { key: 'showTabsSection', label: 'قسم التبويبات والمحتوى (Tabs Section)' },
+                { key: 'showLabBatch', label: 'شهادة النقاء والفحص المخبري (Purity & Lab Batch)' },
+                { key: 'showSensoryProfile', label: 'الملف الحسي والعطري (Sensory Profile)' },
                 { key: 'showRelatedProducts', label: 'المنتجات المتناغمة (Related Products)' }
               ].map((sw) => {
                 const isChecked = (settings.productDetailPage as any)?.[sw.key] ?? true;
