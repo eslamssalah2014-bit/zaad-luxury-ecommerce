@@ -535,12 +535,28 @@ export default function AdminProductsPage() {
         </button>
       </div>
 
-      {/* Notification Toast */}
+      {/* Global High-Priority Notification Toast (Rendered above modals) */}
       {notification && (
-        <div className={`p-4 rounded-2xl text-xs font-semibold flex items-center gap-2 animate-fade-in border ${notification.type === 'success' ? 'bg-green-50 border-green-300 text-green-800' : 'bg-red-50 border-red-300 text-red-800'
-          }`}>
-          {notification.type === 'success' ? <CheckCircle2 className="w-4 h-4 text-green-600 shrink-0" /> : <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />}
-          <span>{notification.message}</span>
+        <div className={`fixed top-6 left-1/2 -translate-x-1/2 z-[100] max-w-lg w-[90%] p-4 rounded-2xl text-xs font-semibold flex items-center justify-between gap-3 shadow-2xl animate-fade-in border backdrop-blur-xl ${
+          notification.type === 'success'
+            ? 'bg-green-950/90 border-green-500/60 text-green-200'
+            : 'bg-red-950/95 border-red-500/70 text-red-200'
+        }`}>
+          <div className="flex items-center gap-2.5">
+            {notification.type === 'success' ? (
+              <CheckCircle2 className="w-5 h-5 text-green-400 shrink-0" />
+            ) : (
+              <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
+            )}
+            <span className="leading-relaxed">{notification.message}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setNotification(null)}
+            className="text-ivory-400 hover:text-white p-1 rounded-lg transition-colors text-base font-bold"
+          >
+            ✕
+          </button>
         </div>
       )}
 
@@ -1829,6 +1845,14 @@ export default function AdminProductsPage() {
 
                   </div>
 
+                </div>
+              )}
+
+              {/* Inline Modal Error Message */}
+              {notification && notification.type === 'error' && (
+                <div className="p-3.5 rounded-xl bg-red-50 border border-red-300 text-red-800 flex items-center gap-2 text-xs font-semibold animate-shake">
+                  <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+                  <span>{notification.message}</span>
                 </div>
               )}
 
