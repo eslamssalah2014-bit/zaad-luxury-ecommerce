@@ -38,6 +38,18 @@ export function formatSupabaseProduct(d: any): Product {
 
   const subcategoryId = d.subcategory_id || d.sensory_profile?.subcategory_id || undefined;
 
+  // Format Health Benefits
+  let rawBenefits = Array.isArray(d.health_benefits_ar) ? d.health_benefits_ar : [];
+  const healthBenefits: { title: string; description: string }[] = rawBenefits.map((b: any) => {
+    if (typeof b === 'string') {
+      return { title: b, description: '' };
+    }
+    return {
+      title: String(b?.title || ''),
+      description: String(b?.description || '')
+    };
+  });
+
   return {
     id: d.id,
     slug: d.slug,
@@ -61,16 +73,25 @@ export function formatSupabaseProduct(d: any): Product {
     availableStock,
     lowStockThreshold: d.low_stock_threshold ?? 5,
     weightGrams: d.weight_grams ?? 500,
-    originRegionAr: d.origin_region_ar || '',
-    originRegionEn: d.origin_region_en || '',
-    floralSourceAr: d.floral_source_ar || '',
-    floralSourceEn: d.floral_source_en || '',
+    originRegionAr: d.origin_region_ar || undefined,
+    originRegionEn: d.origin_region_en || undefined,
+    floralSourceAr: d.floral_source_ar || undefined,
+    floralSourceEn: d.floral_source_en || undefined,
     shortDescAr: d.short_desc_ar || '',
     fullStoryAr: d.full_story_ar || '',
-    healthBenefitsAr: Array.isArray(d.health_benefits_ar) ? d.health_benefits_ar : [],
+    healthBenefits,
+    healthBenefit1Title: healthBenefits[0]?.title || '',
+    healthBenefit1Desc: healthBenefits[0]?.description || '',
+    healthBenefit2Title: healthBenefits[1]?.title || '',
+    healthBenefit2Desc: healthBenefits[1]?.description || '',
+    healthBenefit3Title: healthBenefits[2]?.title || '',
+    healthBenefit3Desc: healthBenefits[2]?.description || '',
+    healthBenefit4Title: healthBenefits[3]?.title || '',
+    healthBenefit4Desc: healthBenefits[3]?.description || '',
+    healthBenefitsAr: healthBenefits,
     pairingSuggestionsAr: Array.isArray(d.pairing_suggestions_ar) ? d.pairing_suggestions_ar : [],
     usageInstructionsAr: d.usage_instructions_ar || d.sensory_profile?.usage_instructions_ar || undefined,
-    storageInstructionsAr: d.storage_instructions_ar || '',
+    storageInstructionsAr: d.storage_instructions_ar || undefined,
     images: Array.isArray(d.images) && d.images.length > 0 ? d.images : ['/images/zaad-logo.png'],
     isFeatured: Boolean(d.is_featured),
     isAvailable: Boolean(d.is_available),
@@ -85,32 +106,7 @@ export function formatSupabaseProduct(d: any): Product {
     customVatMessage: d.custom_vat_message || d.sensory_profile?.custom_vat_message || undefined,
     customTrustBadgeText: d.custom_trust_badge_text || d.sensory_profile?.custom_trust_badge_text || undefined,
     createdAt: d.created_at,
-    updatedAt: d.updated_at,
-    latestLabBatch: latestBatch ? {
-      batchNumber: latestBatch.batch_number,
-      harvestSeason: latestBatch.harvest_season,
-      harvestDate: latestBatch.harvest_date,
-      testedDate: latestBatch.tested_date,
-      labName: latestBatch.lab_name,
-      moisturePercentage: Number(latestBatch.moisture_percentage),
-      hmfLevel: Number(latestBatch.hmf_level),
-      diastaseActivity: Number(latestBatch.diastase_activity),
-      sucrosePercentage: Number(latestBatch.sucrose_percentage),
-      pollenPurityPercentage: Number(latestBatch.pollen_purity_percentage),
-      certificatePdfUrl: latestBatch.certificate_pdf_url,
-      labSealImageUrl: latestBatch.lab_seal_image_url
-    } : {
-      batchNumber: 'ZD-2026-LIVE',
-      harvestSeason: 'المنتجات الطبيعية 2026',
-      harvestDate: '2026-01-15',
-      testedDate: '2026-02-01',
-      labName: 'مختبر الجودة الأوروبية المعتمد',
-      moisturePercentage: 14.2,
-      hmfLevel: 2.1,
-      diastaseActivity: 19.4,
-      sucrosePercentage: 0.8,
-      pollenPurityPercentage: 98.6
-    }
+    updatedAt: d.updated_at
   };
 }
 
@@ -165,10 +161,14 @@ export const getLiveProducts = cache(async function getLiveProducts(categoryId?:
   return cachedLiveProducts ? cachedLiveProducts.data : [];
 });
 
+import { INITIAL_PRODUCTS } from '@/lib/data/mockData';
+
 /**
- * Fetch a single live product by its slug directly from Supabase
+ * Fetch a single live product by its slug directly from Supabase with robust fallback to unique initial records
  */
 export const getLiveProductBySlug = cache(async function getLiveProductBySlug(slug: string): Promise<Product | null> {
+  const cleanSlug = decodeURIComponent(slug).toLowerCase().trim();
+
   try {
     const client = typeof window === 'undefined' ? supabaseAdmin : supabase;
     const { data, error } = await client
@@ -178,17 +178,47 @@ export const getLiveProductBySlug = cache(async function getLiveProductBySlug(sl
         categories(*),
         product_batches(*)
       `)
-      .eq('slug', slug)
+      .eq('slug', cleanSlug)
       .single();
 
     if (!error && data) {
       return formatSupabaseProduct(data);
     }
+
+    // Try secondary match in Supabase by SKU or alias
+    const { data: allSupabaseProds } = await client
+      .from('products')
+      .select(`
+        *,
+        categories(*),
+        product_batches(*)
+      `);
+
+    if (allSupabaseProds && allSupabaseProds.length > 0) {
+      const matched = allSupabaseProds.find((p: any) =>
+        p.slug?.toLowerCase() === cleanSlug ||
+        p.sku?.toLowerCase() === cleanSlug ||
+        p.name_en?.toLowerCase().replace(/\s+/g, '-') === cleanSlug
+      );
+      if (matched) {
+        return formatSupabaseProduct(matched);
+      }
+    }
   } catch (err) {
     console.error(`Error fetching product [${slug}] from Supabase:`, err);
   }
 
-  return null;
+  // Fallback to distinct mockData definition for this specific slug
+  const fallback = INITIAL_PRODUCTS.find(p =>
+    p.slug.toLowerCase() === cleanSlug ||
+    p.sku.toLowerCase() === cleanSlug ||
+    p.nameEn.toLowerCase().replace(/\s+/g, '-') === cleanSlug ||
+    (cleanSlug === 'royal' && p.slug === 'royal') ||
+    (cleanSlug === 'sidr-honey' && p.slug === 'sidr-honey') ||
+    (cleanSlug === 'adult-honey-blend' && p.slug === 'adult-honey-blend')
+  );
+
+  return fallback || null;
 });
 
 /**

@@ -122,7 +122,16 @@ export async function POST(request: NextRequest) {
       floralSourceEn,
       shortDescAr,
       fullStoryAr,
-      healthBenefitsAr = [],
+      healthBenefits = [],
+      healthBenefit1Title,
+      healthBenefit1Desc,
+      healthBenefit2Title,
+      healthBenefit2Desc,
+      healthBenefit3Title,
+      healthBenefit3Desc,
+      healthBenefit4Title,
+      healthBenefit4Desc,
+      healthBenefitsAr,
       pairingSuggestionsAr = [],
       usageInstructionsAr,
       storageInstructionsAr,
@@ -131,7 +140,6 @@ export async function POST(request: NextRequest) {
       isAvailable = true,
       visibilityStatus = 'published',
       badge,
-      latestLabBatch,
       attributes = [],
       tabs = [],
       customShippingMessage,
@@ -147,6 +155,21 @@ export async function POST(request: NextRequest) {
     const generatedSlug = (slug || nameEn || nameAr).toLowerCase().trim().replace(/\s+/g, '-').replace(/[^\w\u0621-\u064A-]+/g, '');
     const generatedSku = (sku || `ZD-${Math.floor(1000 + Math.random() * 9000)}`).toUpperCase();
 
+    // Construct structured health benefits array
+    let resolvedHealthBenefits = [];
+    if (healthBenefit1Title || healthBenefit1Desc || healthBenefit2Title || healthBenefit2Desc || healthBenefit3Title || healthBenefit3Desc || healthBenefit4Title || healthBenefit4Desc) {
+      resolvedHealthBenefits = [
+        { title: healthBenefit1Title || '', description: healthBenefit1Desc || '' },
+        { title: healthBenefit2Title || '', description: healthBenefit2Desc || '' },
+        { title: healthBenefit3Title || '', description: healthBenefit3Desc || '' },
+        { title: healthBenefit4Title || '', description: healthBenefit4Desc || '' }
+      ].filter(b => b.title || b.description);
+    } else if (Array.isArray(healthBenefits) && healthBenefits.length > 0) {
+      resolvedHealthBenefits = healthBenefits;
+    } else if (Array.isArray(healthBenefitsAr) && healthBenefitsAr.length > 0) {
+      resolvedHealthBenefits = healthBenefitsAr.map(b => typeof b === 'string' ? { title: b, description: '' } : b);
+    }
+
     const productPayload: any = {
       name_ar: nameAr,
       name_en: nameEn || nameAr,
@@ -161,15 +184,16 @@ export async function POST(request: NextRequest) {
       reserved_stock: 0,
       low_stock_threshold: Number(lowStockThreshold),
       weight_grams: Number(weightGrams),
-      origin_region_ar: originRegionAr || 'حضرموت - وادي دوعن',
-      origin_region_en: originRegionEn || 'Hadramout - Doan Valley',
-      floral_source_ar: floralSourceAr || 'أزهار أشجار السدر البرية',
-      floral_source_en: floralSourceEn || 'Wild Sidr Tree Nectar',
+      origin_region_ar: originRegionAr || null,
+      origin_region_en: originRegionEn || null,
+      floral_source_ar: floralSourceAr || null,
+      floral_source_en: floralSourceEn || null,
       short_desc_ar: shortDescAr,
       full_story_ar: fullStoryAr || shortDescAr,
-      health_benefits_ar: healthBenefitsAr,
+      health_benefits_ar: resolvedHealthBenefits,
       pairing_suggestions_ar: pairingSuggestionsAr,
-      storage_instructions_ar: storageInstructionsAr || 'يحفظ في مكان بارد وجاف بعيداً عن أشعة الشمس المباشرة',
+      usage_instructions_ar: usageInstructionsAr || null,
+      storage_instructions_ar: storageInstructionsAr || null,
       images: Array.isArray(images) && images.length > 0 ? images : ['/images/zaad-logo.png'],
       is_featured: Boolean(isFeatured),
       is_available: visibilityStatus === 'published' ? true : Boolean(isAvailable),
@@ -203,26 +227,6 @@ export async function POST(request: NextRequest) {
     if (insertError || !newProd) {
       console.error('Error inserting product in Supabase:', insertError);
       return NextResponse.json({ success: false, error: insertError?.message || 'فشل إنشاء المنتج' }, { status: 500 });
-    }
-
-    // Insert Initial Lab Batch if provided
-    if (latestLabBatch) {
-      await supabaseAdmin.from('product_batches').insert({
-        product_id: newProd.id,
-        batch_number: latestLabBatch.batchNumber || `ZD-${new Date().getFullYear()}-${generatedSku}`,
-        harvest_season: latestLabBatch.harvestSeason || `المنتجات الطبيعية ${new Date().getFullYear()}`,
-        harvest_date: latestLabBatch.harvestDate || '2026-01-15',
-        tested_date: latestLabBatch.testedDate || new Date().toISOString().split('T')[0],
-        lab_name: latestLabBatch.labName || 'مختبر الجودة الأوروبية المعتمد',
-        moisture_percentage: Number(latestLabBatch.moisturePercentage || 14.2),
-        hmf_level: Number(latestLabBatch.hmfLevel || 2.1),
-        diastase_activity: Number(latestLabBatch.diastaseActivity || 19.4),
-        sucrose_percentage: Number(latestLabBatch.sucrosePercentage || 0.8),
-        pollen_purity_percentage: Number(latestLabBatch.pollenPurityPercentage || 98.6),
-        initial_jars_count: Number(stockQuantity),
-        remaining_jars_count: Number(stockQuantity),
-        is_active_batch: true
-      });
     }
 
     // Record initial stock creation in inventory_movements
@@ -274,6 +278,15 @@ export async function PUT(request: NextRequest) {
       floralSourceEn,
       shortDescAr,
       fullStoryAr,
+      healthBenefits = [],
+      healthBenefit1Title,
+      healthBenefit1Desc,
+      healthBenefit2Title,
+      healthBenefit2Desc,
+      healthBenefit3Title,
+      healthBenefit3Desc,
+      healthBenefit4Title,
+      healthBenefit4Desc,
       healthBenefitsAr,
       pairingSuggestionsAr,
       usageInstructionsAr,
@@ -283,7 +296,6 @@ export async function PUT(request: NextRequest) {
       isAvailable,
       visibilityStatus,
       badge,
-      latestLabBatch,
       attributes = [],
       tabs = [],
       customShippingMessage,
@@ -296,6 +308,21 @@ export async function PUT(request: NextRequest) {
     }
 
     const calculatedCost = Number(costPrice || Math.round(Number(price) * 0.45));
+
+    // Construct structured health benefits array
+    let resolvedHealthBenefits = [];
+    if (healthBenefit1Title || healthBenefit1Desc || healthBenefit2Title || healthBenefit2Desc || healthBenefit3Title || healthBenefit3Desc || healthBenefit4Title || healthBenefit4Desc) {
+      resolvedHealthBenefits = [
+        { title: healthBenefit1Title || '', description: healthBenefit1Desc || '' },
+        { title: healthBenefit2Title || '', description: healthBenefit2Desc || '' },
+        { title: healthBenefit3Title || '', description: healthBenefit3Desc || '' },
+        { title: healthBenefit4Title || '', description: healthBenefit4Desc || '' }
+      ].filter(b => b.title || b.description);
+    } else if (Array.isArray(healthBenefits) && healthBenefits.length > 0) {
+      resolvedHealthBenefits = healthBenefits;
+    } else if (Array.isArray(healthBenefitsAr) && healthBenefitsAr.length > 0) {
+      resolvedHealthBenefits = healthBenefitsAr.map(b => typeof b === 'string' ? { title: b, description: '' } : b);
+    }
 
     const updatePayload: any = {
       name_ar: nameAr,
@@ -310,15 +337,16 @@ export async function PUT(request: NextRequest) {
       stock_quantity: Number(stockQuantity),
       low_stock_threshold: Number(lowStockThreshold),
       weight_grams: Number(weightGrams),
-      origin_region_ar: originRegionAr,
-      origin_region_en: originRegionEn,
-      floral_source_ar: floralSourceAr,
-      floral_source_en: floralSourceEn,
+      origin_region_ar: originRegionAr || null,
+      origin_region_en: originRegionEn || null,
+      floral_source_ar: floralSourceAr || null,
+      floral_source_en: floralSourceEn || null,
       short_desc_ar: shortDescAr,
       full_story_ar: fullStoryAr,
-      health_benefits_ar: healthBenefitsAr || [],
+      health_benefits_ar: resolvedHealthBenefits,
       pairing_suggestions_ar: pairingSuggestionsAr || [],
-      storage_instructions_ar: storageInstructionsAr,
+      usage_instructions_ar: usageInstructionsAr || null,
+      storage_instructions_ar: storageInstructionsAr || null,
       images: Array.isArray(images) && images.length > 0 ? images : ['/images/zaad-logo.png'],
       is_featured: Boolean(isFeatured),
       is_available: visibilityStatus === 'published' ? true : (visibilityStatus === 'out_of_stock' ? true : Boolean(isAvailable)),
@@ -351,26 +379,6 @@ export async function PUT(request: NextRequest) {
 
     if (updateError || !updatedProd) {
       return NextResponse.json({ success: false, error: updateError?.message || 'فشل تحديث المنتج' }, { status: 500 });
-    }
-
-    // Update Lab Batch if provided
-    if (latestLabBatch && latestLabBatch.batchNumber) {
-      await supabaseAdmin.from('product_batches').upsert({
-        product_id: id,
-        batch_number: latestLabBatch.batchNumber,
-        harvest_season: latestLabBatch.harvestSeason || 'المنتجات الطبيعية 2026',
-        harvest_date: latestLabBatch.harvestDate || '2026-01-15',
-        tested_date: latestLabBatch.testedDate || new Date().toISOString().split('T')[0],
-        lab_name: latestLabBatch.labName || 'مختبر الجودة الأوروبية المعتمد',
-        moisture_percentage: Number(latestLabBatch.moisturePercentage || 14.2),
-        hmf_level: Number(latestLabBatch.hmfLevel || 2.1),
-        diastase_activity: Number(latestLabBatch.diastaseActivity || 19.4),
-        sucrose_percentage: Number(latestLabBatch.sucrosePercentage || 0.8),
-        pollen_purity_percentage: Number(latestLabBatch.pollenPurityPercentage || 98.6),
-        initial_jars_count: Number(stockQuantity),
-        remaining_jars_count: Number(stockQuantity),
-        is_active_batch: true
-      }, { onConflict: 'batch_number' });
     }
 
     return NextResponse.json({ success: true, data: formatProductRow(updatedProd) });
@@ -429,6 +437,18 @@ export function formatProductRow(data: any): Product {
 
   const subcategoryId = data.subcategory_id || data.sensory_profile?.subcategory_id || undefined;
 
+  // Format Health Benefits
+  let rawBenefits = Array.isArray(data.health_benefits_ar) ? data.health_benefits_ar : [];
+  const healthBenefits: { title: string; description: string }[] = rawBenefits.map((b: any) => {
+    if (typeof b === 'string') {
+      return { title: b, description: '' };
+    }
+    return {
+      title: String(b?.title || ''),
+      description: String(b?.description || '')
+    };
+  });
+
   return {
     id: data.id,
     slug: data.slug,
@@ -452,16 +472,25 @@ export function formatProductRow(data: any): Product {
     availableStock,
     lowStockThreshold: Number(data.low_stock_threshold ?? 5),
     weightGrams: Number(data.weight_grams ?? 500),
-    originRegionAr: data.origin_region_ar || '',
-    originRegionEn: data.origin_region_en || '',
-    floralSourceAr: data.floral_source_ar || '',
-    floralSourceEn: data.floral_source_en || '',
+    originRegionAr: data.origin_region_ar || undefined,
+    originRegionEn: data.origin_region_en || undefined,
+    floralSourceAr: data.floral_source_ar || undefined,
+    floralSourceEn: data.floral_source_en || undefined,
     shortDescAr: data.short_desc_ar || '',
     fullStoryAr: data.full_story_ar || '',
-    healthBenefitsAr: Array.isArray(data.health_benefits_ar) ? data.health_benefits_ar : [],
+    healthBenefits,
+    healthBenefit1Title: healthBenefits[0]?.title || '',
+    healthBenefit1Desc: healthBenefits[0]?.description || '',
+    healthBenefit2Title: healthBenefits[1]?.title || '',
+    healthBenefit2Desc: healthBenefits[1]?.description || '',
+    healthBenefit3Title: healthBenefits[2]?.title || '',
+    healthBenefit3Desc: healthBenefits[2]?.description || '',
+    healthBenefit4Title: healthBenefits[3]?.title || '',
+    healthBenefit4Desc: healthBenefits[3]?.description || '',
+    healthBenefitsAr: healthBenefits,
     pairingSuggestionsAr: Array.isArray(data.pairing_suggestions_ar) ? data.pairing_suggestions_ar : [],
     usageInstructionsAr: data.usage_instructions_ar || data.sensory_profile?.usage_instructions_ar || undefined,
-    storageInstructionsAr: data.storage_instructions_ar || '',
+    storageInstructionsAr: data.storage_instructions_ar || undefined,
     images: Array.isArray(data.images) && data.images.length > 0 ? data.images : ['/images/zaad-logo.png'],
     isFeatured: Boolean(data.is_featured),
     isAvailable: Boolean(data.is_available),
@@ -476,31 +505,6 @@ export function formatProductRow(data: any): Product {
     customVatMessage: data.custom_vat_message || data.sensory_profile?.custom_vat_message || undefined,
     customTrustBadgeText: data.custom_trust_badge_text || data.sensory_profile?.custom_trust_badge_text || undefined,
     createdAt: data.created_at,
-    updatedAt: data.updated_at,
-    latestLabBatch: data.batches?.[0] ? {
-      batchNumber: data.batches[0].batch_number,
-      harvestSeason: data.batches[0].harvest_season,
-      harvestDate: data.batches[0].harvest_date,
-      testedDate: data.batches[0].tested_date,
-      labName: data.batches[0].lab_name,
-      moisturePercentage: Number(data.batches[0].moisture_percentage),
-      hmfLevel: Number(data.batches[0].hmf_level),
-      diastaseActivity: Number(data.batches[0].diastase_activity),
-      sucrosePercentage: Number(data.batches[0].sucrose_percentage),
-      pollenPurityPercentage: Number(data.batches[0].pollen_purity_percentage),
-      certificatePdfUrl: data.batches[0].certificate_pdf_url,
-      labSealImageUrl: data.batches[0].lab_seal_image_url
-    } : {
-      batchNumber: 'ZD-2026-LIVE',
-      harvestSeason: 'المنتجات الطبيعية 2026',
-      harvestDate: '2026-01-15',
-      testedDate: '2026-02-01',
-      labName: 'مختبر الجودة الأوروبية المعتمد',
-      moisturePercentage: 14.2,
-      hmfLevel: 2.1,
-      diastaseActivity: 19.4,
-      sucrosePercentage: 0.8,
-      pollenPurityPercentage: 98.6
-    }
+    updatedAt: data.updated_at
   };
 }

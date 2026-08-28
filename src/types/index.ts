@@ -67,6 +67,11 @@ export interface Category {
 
 import { ProductAttribute, ProductTab } from './cms';
 
+export interface HealthBenefitItem {
+  title: string;
+  description: string;
+}
+
 export interface Product {
   id: string;
   slug: string;
@@ -90,25 +95,39 @@ export interface Product {
   availableStock?: number;
   lowStockThreshold: number;
   weightGrams: number;
-  originRegionAr: string;
+  originRegionAr?: string;
   originRegionEn?: string;
-  floralSourceAr: string;
+  floralSourceAr?: string;
   floralSourceEn?: string;
   shortDescAr: string;
   fullStoryAr: string;
-  healthBenefitsAr: string[];
-  pairingSuggestionsAr: string[];
+
+  // Product-Specific Health Benefits (Titles + Descriptions)
+  healthBenefits?: HealthBenefitItem[];
+  healthBenefit1Title?: string;
+  healthBenefit1Desc?: string;
+  healthBenefit2Title?: string;
+  healthBenefit2Desc?: string;
+  healthBenefit3Title?: string;
+  healthBenefit3Desc?: string;
+  healthBenefit4Title?: string;
+  healthBenefit4Desc?: string;
+  healthBenefitsAr?: (string | HealthBenefitItem)[];
+
+  // Product-Specific Usage and Storage
   usageInstructionsAr?: string;
-  storageInstructionsAr: string;
+  storageInstructionsAr?: string;
+
+  pairingSuggestionsAr?: string[];
   images: string[];
   isFeatured: boolean;
   isAvailable: boolean;
   visibilityStatus?: ProductVisibility;
   rating: number;
   reviewCount: number;
-  sensoryProfile: SensoryProfile;
-  latestLabBatch: LabAnalysis;
-  badge?: string; // 'موسم نادر' | 'إصدار ملكي خاص' | 'الأكثر طلباً'
+  sensoryProfile?: SensoryProfile;
+  latestLabBatch?: LabAnalysis;
+  badge?: string;
   attributes?: ProductAttribute[];
   tabs?: ProductTab[];
   customShippingMessage?: string;

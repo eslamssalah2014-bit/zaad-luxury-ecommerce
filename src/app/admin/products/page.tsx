@@ -37,7 +37,10 @@ import {
   HelpCircle,
   Quote,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
+  HeartHandshake,
+  Clock,
+  ShieldCheck
 } from 'lucide-react';
 import { useCurrency } from '@/context/CurrencyContext';
 import { Product, Category, Subcategory, ProductVisibility } from '@/types';
@@ -57,7 +60,7 @@ export default function AdminProductsPage() {
 
   // Modal State
   const [productModalOpen, setProductModalOpen] = useState(false);
-  const [modalTab, setModalTab] = useState<'basic' | 'pricing' | 'attributes' | 'cms_tabs' | 'inventory' | 'media' | 'lab'>('basic');
+  const [modalTab, setModalTab] = useState<'basic' | 'pricing' | 'attributes' | 'cms_tabs' | 'inventory' | 'media' | 'benefits'>('basic');
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
   // Upload State
@@ -100,14 +103,15 @@ export default function AdminProductsPage() {
   const [customVatMessage, setCustomVatMessage] = useState('');
   const [customTrustBadgeText, setCustomTrustBadgeText] = useState('');
 
-  // Lab Batch Fields
-  const [batchNumber, setBatchNumber] = useState('');
-  const [harvestSeason, setHarvestSeason] = useState('المنتجات الطبيعية 2026');
-  const [labName, setLabName] = useState('مختبر الجودة الأوروبية المعتمد');
-  const [moisturePercentage, setMoisturePercentage] = useState<number>(14.2);
-  const [hmfLevel, setHmfLevel] = useState<number>(2.1);
-  const [diastaseActivity, setDiastaseActivity] = useState<number>(19.4);
-  const [pollenPurityPercentage, setPollenPurityPercentage] = useState<number>(98.6);
+  // Product-Specific Health Benefits (1 to 4)
+  const [healthBenefit1Title, setHealthBenefit1Title] = useState('');
+  const [healthBenefit1Desc, setHealthBenefit1Desc] = useState('');
+  const [healthBenefit2Title, setHealthBenefit2Title] = useState('');
+  const [healthBenefit2Desc, setHealthBenefit2Desc] = useState('');
+  const [healthBenefit3Title, setHealthBenefit3Title] = useState('');
+  const [healthBenefit3Desc, setHealthBenefit3Desc] = useState('');
+  const [healthBenefit4Title, setHealthBenefit4Title] = useState('');
+  const [healthBenefit4Desc, setHealthBenefit4Desc] = useState('');
 
   const loadData = useCallback(async () => {
     try {
@@ -157,9 +161,9 @@ export default function AdminProductsPage() {
       setStockQuantity(prod.stockQuantity);
       setLowStockThreshold(prod.lowStockThreshold);
       setWeightGrams(prod.weightGrams);
-      setOriginRegionAr(prod.originRegionAr);
+      setOriginRegionAr(prod.originRegionAr || '');
       setOriginRegionEn(prod.originRegionEn || '');
-      setFloralSourceAr(prod.floralSourceAr);
+      setFloralSourceAr(prod.floralSourceAr || '');
       setFloralSourceEn(prod.floralSourceEn || '');
       setShortDescAr(prod.shortDescAr);
       setFullStoryAr(prod.fullStoryAr);
@@ -170,28 +174,27 @@ export default function AdminProductsPage() {
       setVisibilityStatus(prod.visibilityStatus || 'published');
       setBadge(prod.badge || '');
 
+      // Health Benefits
+      setHealthBenefit1Title(prod.healthBenefit1Title || prod.healthBenefits?.[0]?.title || (typeof prod.healthBenefitsAr?.[0] === 'string' ? prod.healthBenefitsAr[0] : (prod.healthBenefitsAr?.[0] as any)?.title) || '');
+      setHealthBenefit1Desc(prod.healthBenefit1Desc || prod.healthBenefits?.[0]?.description || (prod.healthBenefitsAr?.[0] as any)?.description || '');
+      setHealthBenefit2Title(prod.healthBenefit2Title || prod.healthBenefits?.[1]?.title || (typeof prod.healthBenefitsAr?.[1] === 'string' ? prod.healthBenefitsAr[1] : (prod.healthBenefitsAr?.[1] as any)?.title) || '');
+      setHealthBenefit2Desc(prod.healthBenefit2Desc || prod.healthBenefits?.[1]?.description || (prod.healthBenefitsAr?.[1] as any)?.description || '');
+      setHealthBenefit3Title(prod.healthBenefit3Title || prod.healthBenefits?.[2]?.title || (typeof prod.healthBenefitsAr?.[2] === 'string' ? prod.healthBenefitsAr[2] : (prod.healthBenefitsAr?.[2] as any)?.title) || '');
+      setHealthBenefit3Desc(prod.healthBenefit3Desc || prod.healthBenefits?.[2]?.description || (prod.healthBenefitsAr?.[2] as any)?.description || '');
+      setHealthBenefit4Title(prod.healthBenefit4Title || prod.healthBenefits?.[3]?.title || (typeof prod.healthBenefitsAr?.[3] === 'string' ? prod.healthBenefitsAr[3] : (prod.healthBenefitsAr?.[3] as any)?.title) || '');
+      setHealthBenefit4Desc(prod.healthBenefit4Desc || prod.healthBenefits?.[3]?.description || (prod.healthBenefitsAr?.[3] as any)?.description || '');
+
       // Dynamic CMS Attributes & Tabs
       setProductAttributes(prod.attributes && prod.attributes.length > 0 ? prod.attributes : [
         { id: 'attr-1', nameAr: 'اللون', valueAr: 'عنبري ذهبي نقي', icon: 'droplet', isVisible: true, order: 1 },
         { id: 'attr-2', nameAr: 'الرائحة', valueAr: 'عطرية زهرية دافئة', icon: 'sparkles', isVisible: true, order: 2 },
         { id: 'attr-3', nameAr: 'القوام', valueAr: 'حريري كثيف ومتماسك', icon: 'feather', isVisible: true, order: 3 },
-        { id: 'attr-4', nameAr: 'المصدر', valueAr: prod.floralSourceAr || 'أشجار ومروج برية', icon: 'map-pin', isVisible: true, order: 4 },
-        { id: 'attr-5', nameAr: 'بلد المنشأ', valueAr: prod.originRegionAr || 'جمهورية مصر العربية', icon: 'shield', isVisible: true, order: 5 },
         { id: 'attr-6', nameAr: 'الوزن الصافي', valueAr: `${prod.weightGrams || 500} جرام`, icon: 'package', isVisible: true, order: 6 },
       ]);
       setProductTabs(prod.tabs || []);
       setCustomShippingMessage(prod.customShippingMessage || '');
       setCustomVatMessage(prod.customVatMessage || '');
       setCustomTrustBadgeText(prod.customTrustBadgeText || '');
-
-      // Lab Batch
-      setBatchNumber(prod.latestLabBatch?.batchNumber || `ZD-2026-${prod.sku}`);
-      setHarvestSeason(prod.latestLabBatch?.harvestSeason || 'المنتجات الطبيعية 2026');
-      setLabName(prod.latestLabBatch?.labName || 'مختبر الجودة الأوروبية المعتمد');
-      setMoisturePercentage(prod.latestLabBatch?.moisturePercentage || 14.2);
-      setHmfLevel(prod.latestLabBatch?.hmfLevel || 2.1);
-      setDiastaseActivity(prod.latestLabBatch?.diastaseActivity || 19.4);
-      setPollenPurityPercentage(prod.latestLabBatch?.pollenPurityPercentage || 98.6);
     } else {
       setEditingProduct(null);
       setNameAr('');
@@ -207,10 +210,10 @@ export default function AdminProductsPage() {
       setStockQuantity(25);
       setLowStockThreshold(5);
       setWeightGrams(500);
-      setOriginRegionAr('حضرموت - وادي دوعن');
-      setOriginRegionEn('Hadramout - Doan Valley');
-      setFloralSourceAr('أزهار أشجار السدر البرية الجبلية');
-      setFloralSourceEn('Wild Mountain Sidr Blossom');
+      setOriginRegionAr('');
+      setOriginRegionEn('');
+      setFloralSourceAr('');
+      setFloralSourceEn('');
       setShortDescAr('');
       setFullStoryAr('');
       setUsageInstructionsAr('');
@@ -220,28 +223,27 @@ export default function AdminProductsPage() {
       setVisibilityStatus('published');
       setBadge('');
 
+      // Reset Health Benefits
+      setHealthBenefit1Title('');
+      setHealthBenefit1Desc('');
+      setHealthBenefit2Title('');
+      setHealthBenefit2Desc('');
+      setHealthBenefit3Title('');
+      setHealthBenefit3Desc('');
+      setHealthBenefit4Title('');
+      setHealthBenefit4Desc('');
+
       // Dynamic CMS Attributes & Tabs
       setProductAttributes([
         { id: 'attr-1', nameAr: 'اللون', valueAr: 'عنبري ذهبي نقي', icon: 'droplet', isVisible: true, order: 1 },
         { id: 'attr-2', nameAr: 'الرائحة', valueAr: 'عطرية زهرية دافئة', icon: 'sparkles', isVisible: true, order: 2 },
         { id: 'attr-3', nameAr: 'القوام', valueAr: 'حريري كثيف ومتماسك', icon: 'feather', isVisible: true, order: 3 },
-        { id: 'attr-4', nameAr: 'المصدر', valueAr: 'أشجار ومروج برية', icon: 'map-pin', isVisible: true, order: 4 },
-        { id: 'attr-5', nameAr: 'بلد المنشأ', valueAr: 'جمهورية مصر العربية', icon: 'shield', isVisible: true, order: 5 },
         { id: 'attr-6', nameAr: 'الوزن الصافي', valueAr: '500 جرام', icon: 'package', isVisible: true, order: 6 },
       ]);
       setProductTabs([]);
       setCustomShippingMessage('');
       setCustomVatMessage('');
       setCustomTrustBadgeText('');
-
-      // Lab Batch
-      setBatchNumber(`ZD-2026-${Math.floor(100 + Math.random() * 900)}`);
-      setHarvestSeason('المنتجات الطبيعية 2026');
-      setLabName('مختبر الجودة الأوروبية المعتمد');
-      setMoisturePercentage(14.2);
-      setHmfLevel(2.1);
-      setDiastaseActivity(19.4);
-      setPollenPurityPercentage(98.6);
     }
     setProductModalOpen(true);
   };
@@ -348,12 +350,20 @@ export default function AdminProductsPage() {
         stockQuantity: Number(stockQuantity),
         lowStockThreshold: Number(lowStockThreshold),
         weightGrams: Number(weightGrams),
-        originRegionAr,
-        originRegionEn,
-        floralSourceAr,
-        floralSourceEn,
+        originRegionAr: originRegionAr || null,
+        originRegionEn: originRegionEn || null,
+        floralSourceAr: floralSourceAr || null,
+        floralSourceEn: floralSourceEn || null,
         shortDescAr,
         fullStoryAr,
+        healthBenefit1Title,
+        healthBenefit1Desc,
+        healthBenefit2Title,
+        healthBenefit2Desc,
+        healthBenefit3Title,
+        healthBenefit3Desc,
+        healthBenefit4Title,
+        healthBenefit4Desc,
         usageInstructionsAr: usageInstructionsAr || null,
         storageInstructionsAr: storageInstructionsAr || null,
         images,
@@ -365,19 +375,7 @@ export default function AdminProductsPage() {
         tabs: productTabs,
         customShippingMessage: customShippingMessage || null,
         customVatMessage: customVatMessage || null,
-        customTrustBadgeText: customTrustBadgeText || null,
-        latestLabBatch: {
-          batchNumber,
-          harvestSeason,
-          harvestDate: '2026-01-15',
-          testedDate: new Date().toISOString().split('T')[0],
-          labName,
-          moisturePercentage: Number(moisturePercentage),
-          hmfLevel: Number(hmfLevel),
-          diastaseActivity: Number(diastaseActivity),
-          sucrosePercentage: 0.8,
-          pollenPurityPercentage: Number(pollenPurityPercentage)
-        }
+        customTrustBadgeText: customTrustBadgeText || null
       };
 
       const res = await adminFetch('/api/products', {
@@ -775,11 +773,11 @@ export default function AdminProductsPage() {
               </button>
               <button
                 type="button"
-                onClick={() => setModalTab('lab')}
-                className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${modalTab === 'lab' ? 'bg-zaad-900 text-gold-400 shadow-sm' : 'text-charcoal-700 hover:text-zaad-900'
+                onClick={() => setModalTab('benefits')}
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${modalTab === 'benefits' ? 'bg-zaad-900 text-gold-400 shadow-sm' : 'text-charcoal-700 hover:text-zaad-900'
                   }`}
               >
-                شهادة فحص النقاء
+                الفوائد والاستخدام والتخزين
               </button>
             </div>
 
@@ -1609,89 +1607,146 @@ export default function AdminProductsPage() {
                 </div>
               )}
 
-              {/* TAB 5: LAB CERTIFICATION */}
-              {modalTab === 'lab' && (
-                <div className="space-y-4 animate-fade-in">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block font-bold text-zaad-900 mb-1">رقم التشغيلة المخبرية (Batch Number)</label>
-                      <input
-                        type="text"
-                        value={batchNumber}
-                        onChange={(e) => setBatchNumber(e.target.value)}
-                        placeholder="ZD-2026-SD01"
-                        className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 font-mono font-bold focus:border-gold-500 focus:outline-none"
-                      />
+              {/* TAB 5: HEALTH BENEFITS, USAGE & STORAGE INSTRUCTIONS */}
+              {modalTab === 'benefits' && (
+                <div className="space-y-6 animate-fade-in">
+                  
+                  {/* Health Benefits 1 to 4 Section */}
+                  <div className="space-y-4">
+                    <div className="border-b border-ivory-200 pb-2">
+                      <h4 className="font-bold text-zaad-900 text-sm flex items-center gap-2">
+                        <HeartHandshake className="w-4 h-4 text-gold-600" />
+                        <span>الفوائد الصحية والخصائص الحيوية للمنتج (Health Benefits)</span>
+                      </h4>
+                      <p className="text-[11px] text-charcoal-700/70">أدخل الفوائد الصحية المحددة لهذا المنتج والتي ستظهر في بطاقات التبويب بالموقع.</p>
                     </div>
 
-                    <div>
-                      <label className="block font-bold text-zaad-900 mb-1">موسم الإنتاج</label>
-                      <input
-                        type="text"
-                        value={harvestSeason}
-                        onChange={(e) => setHarvestSeason(e.target.value)}
-                        placeholder="المنتجات الطبيعية 2026"
-                        className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 focus:border-gold-500 focus:outline-none"
-                      />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {/* Benefit 1 */}
+                      <div className="p-4 bg-ivory-50 border border-ivory-300 rounded-2xl space-y-2">
+                        <span className="text-[11px] font-bold text-zaad-900 flex items-center gap-1.5">
+                          <span className="w-5 h-5 rounded-full bg-zaad-900 text-gold-400 flex items-center justify-center font-mono font-bold text-[10px]">1</span>
+                          <span>الفائدة الصحية الأولى (Benefit 1):</span>
+                        </span>
+                        <input
+                          type="text"
+                          value={healthBenefit1Title}
+                          onChange={(e) => setHealthBenefit1Title(e.target.value)}
+                          placeholder="عنوان الفائدة (مثال: تعزيز الطاقة والتحمل البدني)"
+                          className="w-full bg-white border border-ivory-300 rounded-xl p-2.5 font-bold text-xs focus:border-gold-500 focus:outline-none"
+                        />
+                        <textarea
+                          rows={2}
+                          value={healthBenefit1Desc}
+                          onChange={(e) => setHealthBenefit1Desc(e.target.value)}
+                          placeholder="شرح وتفاصيل الفائدة الأولى..."
+                          className="w-full bg-white border border-ivory-300 rounded-xl p-2 text-xs focus:border-gold-500 focus:outline-none leading-relaxed"
+                        />
+                      </div>
+
+                      {/* Benefit 2 */}
+                      <div className="p-4 bg-ivory-50 border border-ivory-300 rounded-2xl space-y-2">
+                        <span className="text-[11px] font-bold text-zaad-900 flex items-center gap-1.5">
+                          <span className="w-5 h-5 rounded-full bg-zaad-900 text-gold-400 flex items-center justify-center font-mono font-bold text-[10px]">2</span>
+                          <span>الفائدة الصحية الثانية (Benefit 2):</span>
+                        </span>
+                        <input
+                          type="text"
+                          value={healthBenefit2Title}
+                          onChange={(e) => setHealthBenefit2Title(e.target.value)}
+                          placeholder="عنوان الفائدة (مثال: تقوية المناعة الطبيعية)"
+                          className="w-full bg-white border border-ivory-300 rounded-xl p-2.5 font-bold text-xs focus:border-gold-500 focus:outline-none"
+                        />
+                        <textarea
+                          rows={2}
+                          value={healthBenefit2Desc}
+                          onChange={(e) => setHealthBenefit2Desc(e.target.value)}
+                          placeholder="شرح وتفاصيل الفائدة الثانية..."
+                          className="w-full bg-white border border-ivory-300 rounded-xl p-2 text-xs focus:border-gold-500 focus:outline-none leading-relaxed"
+                        />
+                      </div>
+
+                      {/* Benefit 3 */}
+                      <div className="p-4 bg-ivory-50 border border-ivory-300 rounded-2xl space-y-2">
+                        <span className="text-[11px] font-bold text-zaad-900 flex items-center gap-1.5">
+                          <span className="w-5 h-5 rounded-full bg-zaad-900 text-gold-400 flex items-center justify-center font-mono font-bold text-[10px]">3</span>
+                          <span>الفائدة الصحية الثالثة (Benefit 3):</span>
+                        </span>
+                        <input
+                          type="text"
+                          value={healthBenefit3Title}
+                          onChange={(e) => setHealthBenefit3Title(e.target.value)}
+                          placeholder="عنوان الفائدة (مثال: دعم الجهاز الهضمي والامتصاص)"
+                          className="w-full bg-white border border-ivory-300 rounded-xl p-2.5 font-bold text-xs focus:border-gold-500 focus:outline-none"
+                        />
+                        <textarea
+                          rows={2}
+                          value={healthBenefit3Desc}
+                          onChange={(e) => setHealthBenefit3Desc(e.target.value)}
+                          placeholder="شرح وتفاصيل الفائدة الثالثة..."
+                          className="w-full bg-white border border-ivory-300 rounded-xl p-2 text-xs focus:border-gold-500 focus:outline-none leading-relaxed"
+                        />
+                      </div>
+
+                      {/* Benefit 4 */}
+                      <div className="p-4 bg-ivory-50 border border-ivory-300 rounded-2xl space-y-2">
+                        <span className="text-[11px] font-bold text-zaad-900 flex items-center gap-1.5">
+                          <span className="w-5 h-5 rounded-full bg-zaad-900 text-gold-400 flex items-center justify-center font-mono font-bold text-[10px]">4</span>
+                          <span>الفائدة الصحية الرابعة (Benefit 4):</span>
+                        </span>
+                        <input
+                          type="text"
+                          value={healthBenefit4Title}
+                          onChange={(e) => setHealthBenefit4Title(e.target.value)}
+                          placeholder="عنوان الفائدة (مثال: تنقية وتجديد الخلايا)"
+                          className="w-full bg-white border border-ivory-300 rounded-xl p-2.5 font-bold text-xs focus:border-gold-500 focus:outline-none"
+                        />
+                        <textarea
+                          rows={2}
+                          value={healthBenefit4Desc}
+                          onChange={(e) => setHealthBenefit4Desc(e.target.value)}
+                          placeholder="شرح وتفاصيل الفائدة الرابعة..."
+                          className="w-full bg-white border border-ivory-300 rounded-xl p-2 text-xs focus:border-gold-500 focus:outline-none leading-relaxed"
+                        />
+                      </div>
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block font-bold text-zaad-900 mb-1">اسم المختبر المعتمد</label>
-                    <input
-                      type="text"
-                      value={labName}
-                      onChange={(e) => setLabName(e.target.value)}
-                      placeholder="مختبر الجودة الأوروبية المعتمد"
-                      className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 focus:border-gold-500 focus:outline-none"
-                    />
+                  {/* Usage & Storage Instructions Section */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-ivory-200 pt-4">
+                    
+                    {/* Usage Instructions */}
+                    <div className="space-y-2">
+                      <label className="block font-bold text-zaad-900 flex items-center gap-1.5 text-xs">
+                        <Clock className="w-4 h-4 text-gold-600" />
+                        <span>طرق الاستخدام والطقوس اليومية الموصى بها (Usage Instructions)</span>
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={usageInstructionsAr}
+                        onChange={(e) => setUsageInstructionsAr(e.target.value)}
+                        placeholder="مثال: تناول ملعقة صباحاً على الريق مع ماء فاتر..."
+                        className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 text-xs focus:border-gold-500 focus:outline-none leading-relaxed"
+                      />
+                    </div>
+
+                    {/* Storage Instructions */}
+                    <div className="space-y-2">
+                      <label className="block font-bold text-zaad-900 flex items-center gap-1.5 text-xs">
+                        <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                        <span>إرشادات حفظ النقاء والتخزين (Storage Instructions)</span>
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={storageInstructionsAr}
+                        onChange={(e) => setStorageInstructionsAr(e.target.value)}
+                        placeholder="مثال: يحفظ في مكان بارد وجاف تحت 22 درجة مئوية..."
+                        className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 text-xs focus:border-gold-500 focus:outline-none leading-relaxed"
+                      />
+                    </div>
+
                   </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-ivory-50 p-4 rounded-2xl border border-ivory-200">
-                    <div>
-                      <label className="block font-bold text-zaad-900 mb-1 text-[11px]">نسبة الرطوبة % (&lt; 20%)</label>
-                      <input
-                        type="number"
-                        step="0.1"
-                        value={moisturePercentage}
-                        onChange={(e) => setMoisturePercentage(Number(e.target.value))}
-                        className="w-full bg-white border border-ivory-300 rounded-xl p-2 font-mono"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block font-bold text-zaad-900 mb-1 text-[11px]">مستوى HMF (&lt; 80)</label>
-                      <input
-                        type="number"
-                        step="0.1"
-                        value={hmfLevel}
-                        onChange={(e) => setHmfLevel(Number(e.target.value))}
-                        className="w-full bg-white border border-ivory-300 rounded-xl p-2 font-mono"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block font-bold text-zaad-900 mb-1 text-[11px]">نشاط الدياستيز (&gt; 8)</label>
-                      <input
-                        type="number"
-                        step="0.1"
-                        value={diastaseActivity}
-                        onChange={(e) => setDiastaseActivity(Number(e.target.value))}
-                        className="w-full bg-white border border-ivory-300 rounded-xl p-2 font-mono"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block font-bold text-zaad-900 mb-1 text-[11px]">نقاء حبوب اللقاح %</label>
-                      <input
-                        type="number"
-                        step="0.1"
-                        value={pollenPurityPercentage}
-                        onChange={(e) => setPollenPurityPercentage(Number(e.target.value))}
-                        className="w-full bg-white border border-ivory-300 rounded-xl p-2 font-mono"
-                      />
-                    </div>
-                  </div>
                 </div>
               )}
 

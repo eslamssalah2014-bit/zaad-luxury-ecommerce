@@ -21,19 +21,15 @@ import {
   Quote as QuoteIcon,
   HelpCircle,
   Package,
-  Calendar,
   Clock,
-  FlaskConical,
   BookOpen,
   HeartHandshake,
-  CheckCircle2,
-  FileCheck2,
-  Info
+  CheckCircle2
 } from 'lucide-react';
 import { getLiveProductBySlug, getLiveProducts } from '@/lib/services/productService';
 import { getCmsSettings } from '@/lib/services/cmsService';
 import { supabase } from '@/lib/supabase/client';
-import { Product, Review } from '@/types';
+import { Product, Review, HealthBenefitItem } from '@/types';
 import {
   CmsSettingsDocument,
   ProductAttribute,
@@ -79,7 +75,7 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [activeTabId, setActiveTabId] = useState<string>('');
+  const [activeTabId, setActiveTabId] = useState<string>('tab-story-details');
   const [copiedLink, setCopiedLink] = useState(false);
   const [expandedFaqIndex, setExpandedFaqIndex] = useState<number | null>(null);
 
@@ -100,6 +96,10 @@ export default function ProductDetailPage() {
     async function loadData() {
       if (!slug) return;
       setLoading(true);
+      setSelectedImageIndex(0);
+      setQuantity(1);
+      setReviewSubmitted(false);
+
       try {
         const [liveProd, allProds, cmsDoc] = await Promise.all([
           getLiveProductBySlug(slug),
@@ -112,33 +112,40 @@ export default function ProductDetailPage() {
 
           if (liveProd) {
             setProduct(liveProd);
-            setRelatedProducts(allProds.filter(p => p.slug !== slug).slice(0, 3));
-
-            // Determine initial active tab
+            setRelatedProducts(allProds.filter(p => p.slug !== liveProd.slug && p.id !== liveProd.id).slice(0, 3));
             setActiveTabId('tab-story-details');
 
             // Fetch reviews from Supabase
-            const { data: revData } = await supabase
-              .from('reviews')
-              .select('*')
-              .eq('product_id', liveProd.id)
-              .eq('status', 'approved');
+            try {
+              const { data: revData } = await supabase
+                .from('reviews')
+                .select('*')
+                .eq('product_id', liveProd.id)
+                .eq('status', 'approved');
 
-            if (revData) {
-              const mappedRevs: Review[] = revData.map((r: any) => ({
-                id: String(r.id ?? ''),
-                productId: String(r.product_id ?? liveProd.id),
-                productNameAr: liveProd.nameAr,
-                customerName: String(r.customer_name ?? 'مقتني موثق'),
-                rating: Number(r.rating ?? 5),
-                titleAr: String(r.title_ar ?? 'تجربة استثنائية'),
-                commentAr: String(r.comment_ar ?? ''),
-                isVerifiedPurchase: Boolean(r.is_verified_purchase),
-                helpfulCount: Number(r.helpful_count ?? 0),
-                createdAt: String(r.created_at ?? new Date().toISOString())
-              }));
-              setReviews(mappedRevs);
+              if (revData && revData.length > 0) {
+                const mappedRevs: Review[] = revData.map((r: any) => ({
+                  id: String(r.id ?? ''),
+                  productId: String(r.product_id ?? liveProd.id),
+                  productNameAr: liveProd.nameAr,
+                  customerName: String(r.customer_name ?? 'مقتني موثق'),
+                  rating: Number(r.rating ?? 5),
+                  titleAr: String(r.title_ar ?? 'تجربة استثنائية'),
+                  commentAr: String(r.comment_ar ?? ''),
+                  isVerifiedPurchase: Boolean(r.is_verified_purchase),
+                  helpfulCount: Number(r.helpful_count ?? 0),
+                  createdAt: String(r.created_at ?? new Date().toISOString())
+                }));
+                setReviews(mappedRevs);
+              } else {
+                setReviews([]);
+              }
+            } catch (revErr) {
+              console.error('Error fetching reviews:', revErr);
+              setReviews([]);
             }
+          } else {
+            setProduct(null);
           }
           setLoading(false);
         }
@@ -156,7 +163,7 @@ export default function ProductDetailPage() {
       <div className="min-h-[70vh] bg-ivory-100 flex items-center justify-center">
         <div className="text-center font-serif text-zaad-900 text-lg flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-gold-500 animate-spin" />
-          <span>جاري تحميل بيانات المنتج الطبيعي...</span>
+          <span>جاري تحميل بيانات المنتج...</span>
         </div>
       </div>
     );
@@ -189,7 +196,6 @@ export default function ProductDetailPage() {
     showAttributesGrid: true,
     showTabsSection: true,
     showRelatedProducts: true,
-    showLabBatch: true,
     showSensoryProfile: true,
     defaultAttributes: [],
     defaultTabs: []
@@ -243,72 +249,61 @@ export default function ProductDetailPage() {
     }
   };
 
-  // Compute Dynamic Attributes for Top Grid
+  // Compute Dynamic Attributes exclusively from THIS product
   const effectiveAttributes: ProductAttribute[] = (product.attributes && product.attributes.length > 0)
     ? product.attributes.filter(a => a.isVisible !== false)
     : [
-        { id: 'attr-src', nameAr: 'المصدر الزهري', valueAr: product.floralSourceAr || 'أشجار ومروج برية نادرة', icon: 'droplet', isVisible: Boolean(product.floralSourceAr), order: 1 },
-        { id: 'attr-org', nameAr: 'المنطقة والموطن', valueAr: product.originRegionAr || 'جمهورية مصر العربية', icon: 'map-pin', isVisible: Boolean(product.originRegionAr), order: 2 },
-        { id: 'attr-wt', nameAr: 'الوزن الصافي', valueAr: `${product.weightGrams || 500} جرام`, icon: 'package', isVisible: true, order: 3 },
-        { id: 'attr-st', nameAr: 'حفظ النقاء', valueAr: product.storageInstructionsAr || 'يحفظ بدرجة حرارة الغرفة', icon: 'shield', isVisible: true, order: 4 }
-      ].filter(a => a.isVisible);
+        product.weightGrams ? { id: 'attr-wt', nameAr: 'الوزن الصافي', valueAr: `${product.weightGrams} جرام`, icon: 'package', isVisible: true, order: 1 } : null
+      ].filter(Boolean) as ProductAttribute[];
 
-  // Synthesize Complete Tabs System to ensure NO CMS field is hidden
+  // Normalize Health Benefits list (Title + Description)
+  const healthBenefitsList: HealthBenefitItem[] = (
+    product.healthBenefits && product.healthBenefits.length > 0
+      ? product.healthBenefits
+      : (Array.isArray(product.healthBenefitsAr)
+        ? product.healthBenefitsAr.map(b => typeof b === 'string' ? { title: b, description: '' } : b)
+        : [])
+  ).filter(b => b.title || b.description);
+
+  const hasBenefits = healthBenefitsList.length > 0;
+  const hasUsage = Boolean(product.usageInstructionsAr);
+  const hasStorage = Boolean(product.storageInstructionsAr);
+  const hasPairings = Boolean(product.pairingSuggestionsAr && product.pairingSuggestionsAr.length > 0);
+
   const synthesizedTabs: ProductTab[] = [
-    // 1. Story & Natural Heritage Tab
+    // 1. Story & Natural Heritage Tab (Loaded with this product's full story & specs)
     {
       id: 'tab-story-details',
       slug: 'story-details',
       titleAr: 'قصة وتفاصيل المنتج',
-      badgeAr: 'الأصالة والنقاء',
+      badgeAr: product.categoryNameAr || 'الأصالة والنقاء',
       isVisible: true,
       order: 1,
       blocks: [
-        ...(product.fullStoryAr ? [{
-          id: 'blk-main-story',
-          type: 'rich_text' as const,
-          titleAr: 'الإرث وقصة النقاء الطبيعي',
-          bodyAr: product.fullStoryAr,
-          isVisible: true,
-          order: 1
-        }] : []),
         ...(product.tabs?.find(t => t.slug === 'details' || t.slug === 'story-details')?.blocks || [])
       ]
     },
 
-    // 2. Health Benefits, Usage Rituals & Storage Tab
-    {
+    // 2. Health Benefits, Usage Rituals & Storage Tab (Only if this product has benefits or usage/storage)
+    ...((hasBenefits || hasUsage || hasStorage || hasPairings) ? [{
       id: 'tab-benefits-usage',
       slug: 'benefits-usage',
       titleAr: 'الفوائد وطرق الاستخدام والتخزين',
-      badgeAr: 'الطقوس الحيوية',
+      badgeAr: 'الطقوس والفوائد',
       isVisible: true,
       order: 2,
       blocks: [
         ...(product.tabs?.find(t => t.slug === 'benefits-usage' || t.slug === 'benefits')?.blocks || [])
       ]
-    },
+    }] : []),
 
-    // 3. Certified Purity & Lab Analysis Tab
-    {
-      id: 'tab-purity-lab',
-      slug: 'purity-lab',
-      titleAr: 'شهادة النقاء والفحص المخبري',
-      badgeAr: 'معتمد 100%',
-      isVisible: pConfig.showLabBatch !== false,
-      order: 3,
-      blocks: [
-        ...(product.tabs?.find(t => t.slug === 'purity-lab' || t.slug === 'lab')?.blocks || [])
-      ]
-    },
-
-    // 4. Custom CMS Tabs entered by Admin
-    ...(product.tabs || []).filter(t => 
-      t.isVisible !== false && 
+    // 3. Custom CMS Tabs entered specifically for this product
+    ...(product.tabs || []).filter(t =>
+      t.isVisible !== false &&
       !['details', 'story-details', 'benefits-usage', 'benefits', 'purity-lab', 'lab', 'reviews'].includes(t.slug)
     ),
 
-    // 5. Customer Reviews Tab
+    // 4. Customer Reviews Tab
     {
       id: 'tab-reviews',
       slug: 'reviews',
@@ -331,7 +326,7 @@ export default function ProductDetailPage() {
     switch (block.type) {
       case 'rich_text':
         return (
-          <div key={block.id} className="space-y-3 bg-ivory-50/50 p-5 rounded-2xl border border-ivory-200">
+          <div key={block.id} className="space-y-3 bg-ivory-50/60 p-5 sm:p-6 rounded-2xl border border-ivory-200">
             {block.titleAr && (
               <h3 className="font-serif text-base sm:text-lg font-bold text-zaad-900 flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-gold-600" />
@@ -339,7 +334,7 @@ export default function ProductDetailPage() {
               </h3>
             )}
             {block.bodyAr && (
-              <p className="text-sm text-charcoal-800 leading-relaxed font-light whitespace-pre-line">
+              <p className="text-xs sm:text-sm text-charcoal-800 leading-relaxed font-light whitespace-pre-line">
                 {block.bodyAr}
               </p>
             )}
@@ -486,8 +481,6 @@ export default function ProductDetailPage() {
     }
   };
 
-  const labBatch = product.latestLabBatch;
-
   return (
     <div className="min-h-screen bg-ivory-100 text-charcoal-900 py-6 sm:py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
@@ -525,7 +518,7 @@ export default function ProductDetailPage() {
                 priority
               />
 
-              {/* Floating Luxury Badges */}
+              {/* Floating Luxury Badges (Unique per product) */}
               {product.badge && (
                 <div className="absolute top-4 right-4 z-10">
                   <span className="bg-zaad-900/90 backdrop-blur-md text-gold-300 text-xs font-bold px-4 py-1.5 rounded-full border border-gold-400/50 shadow-md flex items-center gap-1.5">
@@ -579,7 +572,7 @@ export default function ProductDetailPage() {
                       : 'border-ivory-300 hover:border-gold-300 opacity-70 hover:opacity-100'
                       }`}
                   >
-                    <Image src={img} alt={`صورة ${idx + 1}`} fill unoptimized className="object-cover" />
+                    <Image src={img} alt={`${product.nameAr} - صورة ${idx + 1}`} fill unoptimized className="object-cover" />
                   </button>
                 ))}
               </div>
@@ -591,11 +584,11 @@ export default function ProductDetailPage() {
                 <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
                 <div>
                   <strong className="text-zaad-900 block font-bold">ميثاق النقاء والجودة الحيوية</strong>
-                  <span className="text-[11px] text-charcoal-600">طبيعي 100% خام غير مبستر وغير معالج حرارياً</span>
+                  <span className="text-[11px] text-charcoal-600">منتج طبيعي خام 100% غير مبستر</span>
                 </div>
               </div>
-              <span className="text-gold-700 font-bold font-mono text-[11px] bg-gold-50 px-2.5 py-1 rounded-lg border border-gold-200">
-                دفعة: {labBatch?.batchNumber || 'ZD-2026'}
+              <span className="text-emerald-700 font-bold text-[11px] bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
+                طبيعي 100%
               </span>
             </div>
           </div>
@@ -611,9 +604,9 @@ export default function ProductDetailPage() {
                   {product.nameAr}
                 </h1>
 
-                {/* Tagline Below Title (Mandatory CMS Field) */}
+                {/* Tagline Below Title (Unique per product) */}
                 {product.taglineAr && (
-                  <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-gold-50/80 border border-gold-200/80 text-gold-900 text-xs font-semibold">
+                  <div className="mt-2 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-gold-50/90 border border-gold-200 text-gold-950 text-xs font-semibold">
                     <Sparkles className="w-3.5 h-3.5 text-gold-600 shrink-0" />
                     <span>{product.taglineAr}</span>
                   </div>
@@ -662,11 +655,11 @@ export default function ProductDetailPage() {
                 </div>
               </div>
 
-              {/* Short Description (Mandatory CMS Field) */}
+              {/* Short Description (Unique per product) */}
               {product.shortDescAr && (
                 <div className="bg-white p-3.5 rounded-xl border border-ivory-200/80 shadow-xs">
                   <span className="text-[10px] font-bold text-gold-700 uppercase tracking-wider block mb-1">
-                    نبذة عن المنتج:
+                    نبذة عن هذا المنتج:
                   </span>
                   <p className="text-xs sm:text-sm text-charcoal-800 leading-relaxed font-light">
                     {product.shortDescAr}
@@ -677,7 +670,7 @@ export default function ProductDetailPage() {
               {/* Dynamic Product Quality Attributes Grid */}
               {pConfig.showAttributesGrid && effectiveAttributes.length > 0 && (
                 <div className="space-y-1.5 pt-1">
-                  <span className="text-[11px] font-bold text-zaad-900 block">المواصفات الحيوية الفورية:</span>
+                  <span className="text-[11px] font-bold text-zaad-900 block">المواصفات الحيوية:</span>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                     {effectiveAttributes.map((attr) => (
                       <div key={attr.id} className="bg-ivory-50 p-2.5 rounded-xl border border-ivory-200 flex items-center gap-2">
@@ -787,17 +780,17 @@ export default function ProductDetailPage() {
             <div className="space-y-8">
 
               {/* =========================================================================
-                  TAB 1: STORY & NATURAL DETAILS
+                  TAB 1: STORY & PRODUCT DETAILS
               ========================================================================= */}
               {activeTab.id === 'tab-story-details' && (
                 <div className="space-y-8 animate-fade-in">
                   
-                  {/* Full Story Description */}
+                  {/* Full Story Description (Specific to THIS product) */}
                   {product.fullStoryAr && (
                     <div className="bg-ivory-50 p-6 sm:p-8 rounded-3xl border border-ivory-300 space-y-4">
                       <div className="flex items-center gap-2 text-zaad-900">
                         <BookOpen className="w-5 h-5 text-gold-600" />
-                        <h3 className="font-serif text-lg sm:text-xl font-bold">قصة ونقاء المنتج الطبيعي</h3>
+                        <h3 className="font-serif text-lg sm:text-xl font-bold">قصة ونقاء {product.nameAr}</h3>
                       </div>
                       <p className="text-xs sm:text-sm text-charcoal-800 leading-relaxed font-light whitespace-pre-line">
                         {product.fullStoryAr}
@@ -805,61 +798,26 @@ export default function ProductDetailPage() {
                     </div>
                   )}
 
-                  {/* Botanical Specifications Matrix */}
-                  <div className="space-y-4">
-                    <h4 className="font-serif text-base font-bold text-zaad-900 flex items-center gap-2">
-                      <MapPin className="w-4 h-4 text-emerald-600" />
-                      <span>الموطن والمنشأ النباتي</span>
-                    </h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                      <div className="p-4 rounded-2xl bg-ivory-50 border border-ivory-200">
-                        <span className="text-[10px] font-bold text-charcoal-600 block">المصدر الزهري:</span>
-                        <strong className="text-xs text-zaad-900 font-bold block mt-1">{product.floralSourceAr || 'أشجار برية نادرة'}</strong>
-                        {product.floralSourceEn && (
-                          <span className="text-[10px] text-charcoal-500 font-serif italic block mt-0.5">{product.floralSourceEn}</span>
-                        )}
-                      </div>
-
-                      <div className="p-4 rounded-2xl bg-ivory-50 border border-ivory-200">
-                        <span className="text-[10px] font-bold text-charcoal-600 block">بلد وموقع الجني:</span>
-                        <strong className="text-xs text-zaad-900 font-bold block mt-1">{product.originRegionAr || 'جمهورية مصر العربية'}</strong>
-                        {product.originRegionEn && (
-                          <span className="text-[10px] text-charcoal-500 font-serif italic block mt-0.5">{product.originRegionEn}</span>
-                        )}
-                      </div>
-
-                      <div className="p-4 rounded-2xl bg-ivory-50 border border-ivory-200">
-                        <span className="text-[10px] font-bold text-charcoal-600 block">الوزن الصافي:</span>
-                        <strong className="text-xs text-zaad-900 font-bold block mt-1">{product.weightGrams || 500} جرام</strong>
-                        <span className="text-[10px] text-charcoal-500 block mt-0.5">برطمان زجاجي فاخر معتم</span>
-                      </div>
-
-                      <div className="p-4 rounded-2xl bg-ivory-50 border border-ivory-200">
-                        <span className="text-[10px] font-bold text-charcoal-600 block">طريقة الحفظ:</span>
-                        <strong className="text-xs text-zaad-900 font-bold block mt-1">{product.storageInstructionsAr || 'حرارة الغرفة العادية'}</strong>
-                        <span className="text-[10px] text-charcoal-500 block mt-0.5">يحفظ بعيداً عن الرطوبة</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Sensory Profile Bars */}
+                  {/* Sensory Profile Bars (Specific to THIS product) */}
                   {pConfig.showSensoryProfile && product.sensoryProfile && (
                     <div className="bg-white p-6 rounded-3xl border border-ivory-300 shadow-sm space-y-4">
                       <div className="flex items-center justify-between border-b border-ivory-200 pb-3">
                         <h4 className="font-serif text-base font-bold text-zaad-900 flex items-center gap-2">
                           <Sparkles className="w-4 h-4 text-gold-600" />
-                          <span>الملف الحسي والعطري المتوازن</span>
+                          <span>الملف الحسي والعطري لهذا المنتج</span>
                         </h4>
-                        <span className="text-xs text-gold-700 font-semibold font-mono">
-                          معدل التبلور: {product.sensoryProfile.crystallization || 'نادر'}
-                        </span>
+                        {product.sensoryProfile.crystallization && (
+                          <span className="text-xs text-gold-700 font-semibold font-mono">
+                            طبيعة القوام والتبلور: {product.sensoryProfile.crystallization}
+                          </span>
+                        )}
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                         {[
                           { label: 'الحلاوة الطبيعية', val: product.sensoryProfile.sweetness || 4 },
                           { label: 'الشذى العطري الزهري', val: product.sensoryProfile.floralAroma || 4 },
-                          { label: 'القوام والكثافة', val: product.sensoryProfile.density || 5 },
+                          { label: 'القوام والكثافة', val: product.sensoryProfile.density || 4 },
                           { label: 'عمق النكهة والأثر', val: product.sensoryProfile.intensity || 4 }
                         ].map((s, idx) => (
                           <div key={idx} className="p-3.5 rounded-2xl bg-ivory-50 border border-ivory-200 space-y-2">
@@ -891,68 +849,73 @@ export default function ProductDetailPage() {
               {activeTab.id === 'tab-benefits-usage' && (
                 <div className="space-y-8 animate-fade-in">
 
-                  {/* Health Benefits Grid */}
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2 text-zaad-900">
-                      <HeartHandshake className="w-5 h-5 text-gold-600" />
-                      <h3 className="font-serif text-lg sm:text-xl font-bold">الخصائص الحيوية والفوائد الصحية</h3>
-                    </div>
+                  {/* Health Benefits Grid (Unique per product with Titles + Descriptions) */}
+                  {hasBenefits && (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2 text-zaad-900">
+                        <HeartHandshake className="w-5 h-5 text-gold-600" />
+                        <h3 className="font-serif text-lg sm:text-xl font-bold">الخصائص الحيوية والفوائد الصحية</h3>
+                      </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                      {(product.healthBenefitsAr?.length ? product.healthBenefitsAr : [
-                        'تركيز عالٍ من مضادات الأكسدة الطبيعية المقاومة للشوارد الحرة',
-                        'دعم مناعة الجسم والحيوية والنشاط اليومي المستدام',
-                        'غني بالإنزيمات الحية المفيدة لصحة الجهاز الهضمي والامتصاص',
-                        'مهدئ ومجدد للخلايا ومصدر طبيعي فوري للطاقة النظيفة'
-                      ]).map((benefit, idx) => (
-                        <div key={idx} className="p-5 rounded-2xl bg-ivory-50 border border-ivory-200 flex items-start gap-3 shadow-xs">
-                          <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center shrink-0">
-                            <CheckCircle2 className="w-4 h-4" />
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {healthBenefitsList.map((benefit, idx) => (
+                          <div key={idx} className="p-5 rounded-2xl bg-ivory-50 border border-ivory-200 flex items-start gap-3.5 shadow-xs">
+                            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center shrink-0 mt-0.5">
+                              <CheckCircle2 className="w-4 h-4" />
+                            </div>
+                            <div className="space-y-1">
+                              <h4 className="text-xs sm:text-sm font-bold text-zaad-900">{benefit.title}</h4>
+                              {benefit.description && (
+                                <p className="text-xs text-charcoal-700 leading-relaxed font-light">
+                                  {benefit.description}
+                                </p>
+                              )}
+                            </div>
                           </div>
-                          <div>
-                            <h4 className="text-xs font-bold text-zaad-900">{benefit}</h4>
-                            <p className="text-[11px] text-charcoal-600 mt-1 leading-relaxed">
-                              مستخلص نقي من الطبيعة العذراء بدون أي إضافات صناعية.
-                            </p>
-                          </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* Usage & Storage Two-Column Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    
-                    {/* Usage Instructions Card */}
-                    <div className="p-6 rounded-3xl bg-white border border-ivory-300 shadow-sm space-y-3">
-                      <div className="flex items-center gap-2 text-zaad-900">
-                        <Clock className="w-5 h-5 text-gold-600" />
-                        <h4 className="font-serif text-base font-bold">طرق الاستخدام والطقوس اليومية</h4>
-                      </div>
-                      <p className="text-xs sm:text-sm text-charcoal-800 leading-relaxed font-light whitespace-pre-line">
-                        {product.usageInstructionsAr || 'يُفضل تناول ملعقة صباحية على الريق يومياً، أو إذابتها في ماء فاتر بدرجة حرارة أقل من 40 مئوية للمحافظة على النشاط الأنزيمي الحيوي.'}
-                      </p>
+                  {(hasUsage || hasStorage) && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      
+                      {/* Usage Instructions Card */}
+                      {product.usageInstructionsAr && (
+                        <div className="p-6 rounded-3xl bg-white border border-ivory-300 shadow-sm space-y-3">
+                          <div className="flex items-center gap-2 text-zaad-900">
+                            <Clock className="w-5 h-5 text-gold-600" />
+                            <h4 className="font-serif text-base font-bold">طرق الاستخدام والطقوس الموصى بها</h4>
+                          </div>
+                          <p className="text-xs sm:text-sm text-charcoal-800 leading-relaxed font-light whitespace-pre-line">
+                            {product.usageInstructionsAr}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Storage Instructions Card */}
+                      {product.storageInstructionsAr && (
+                        <div className="p-6 rounded-3xl bg-white border border-ivory-300 shadow-sm space-y-3">
+                          <div className="flex items-center gap-2 text-zaad-900">
+                            <ShieldCheck className="w-5 h-5 text-emerald-600" />
+                            <h4 className="font-serif text-base font-bold">إرشادات حفظ النقاء والتخزين</h4>
+                          </div>
+                          <p className="text-xs sm:text-sm text-charcoal-800 leading-relaxed font-light whitespace-pre-line">
+                            {product.storageInstructionsAr}
+                          </p>
+                        </div>
+                      )}
+
                     </div>
+                  )}
 
-                    {/* Storage Instructions Card */}
-                    <div className="p-6 rounded-3xl bg-white border border-ivory-300 shadow-sm space-y-3">
-                      <div className="flex items-center gap-2 text-zaad-900">
-                        <ShieldCheck className="w-5 h-5 text-emerald-600" />
-                        <h4 className="font-serif text-base font-bold">إرشادات حفظ النقاء والتخزين</h4>
-                      </div>
-                      <p className="text-xs sm:text-sm text-charcoal-800 leading-relaxed font-light whitespace-pre-line">
-                        {product.storageInstructionsAr || 'يحفظ في درجة حرارة الغرفة العادية (18-24 مئوية) بعيداً عن أشعة الشمس المباشرة والرطوبة. لا يُحفظ في الثلاجة للمحافظة على القوام الحريري والنشاط الأنزيمي.'}
-                      </p>
-                    </div>
-
-                  </div>
-
-                  {/* Pairing Suggestions */}
-                  {product.pairingSuggestionsAr && product.pairingSuggestionsAr.length > 0 && (
+                  {/* Pairing Suggestions (Unique per product) */}
+                  {hasPairings && (
                     <div className="p-5 rounded-2xl bg-ivory-50 border border-ivory-200 space-y-2">
                       <strong className="text-xs font-bold text-zaad-900 block">اقتراحات التذوق والتناغم:</strong>
                       <div className="flex flex-wrap gap-2">
-                        {product.pairingSuggestionsAr.map((pair, idx) => (
+                        {(product.pairingSuggestionsAr || []).map((pair, idx) => (
                           <span key={idx} className="bg-white px-3 py-1 rounded-xl text-xs text-charcoal-800 border border-ivory-300 font-medium">
                             🌿 {pair}
                           </span>
@@ -968,136 +931,9 @@ export default function ProductDetailPage() {
               )}
 
               {/* =========================================================================
-                  TAB 3: CERTIFIED PURITY & LAB ANALYSIS
+                  TAB 3: CUSTOM CMS TABS (RENDERED FULLY FOR THIS PRODUCT)
               ========================================================================= */}
-              {activeTab.id === 'tab-purity-lab' && (
-                <div className="space-y-8 animate-fade-in">
-                  
-                  {/* Official Certificate Card */}
-                  <div className="bg-gradient-to-br from-zaad-950 via-zaad-900 to-zaad-800 text-ivory-100 p-6 sm:p-8 rounded-3xl border border-gold-500/40 shadow-xl relative overflow-hidden">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gold-500/30 pb-4">
-                      <div>
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold-500/20 text-gold-300 text-[11px] font-bold border border-gold-500/30 mb-2">
-                          <FileCheck2 className="w-3.5 h-3.5" />
-                          <span>شهادة الجودة والنقاء المخبري المعتمد</span>
-                        </div>
-                        <h3 className="font-serif text-xl sm:text-2xl font-bold text-white">
-                          بيانات الفحص الكيميائي والبيولوجي للدفعة
-                        </h3>
-                      </div>
-                      <div className="text-left font-mono">
-                        <span className="text-xs text-gold-300 block">رقم الدفعة الموثقة:</span>
-                        <strong className="text-sm font-bold text-white">{labBatch?.batchNumber || 'ZD-2026-LIVE'}</strong>
-                      </div>
-                    </div>
-
-                    {/* Lab Metadata Info */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 text-xs">
-                      <div>
-                        <span className="text-gold-400/80 block text-[10px]">المختبر المعتمد:</span>
-                        <strong className="text-white font-medium">{labBatch?.labName || 'مختبر الجودة الأوروبية المعتمد'}</strong>
-                      </div>
-                      <div>
-                        <span className="text-gold-400/80 block text-[10px]">موسم الجني:</span>
-                        <strong className="text-white font-medium">{labBatch?.harvestSeason || 'المنتجات الطبيعية 2026'}</strong>
-                      </div>
-                      <div>
-                        <span className="text-gold-400/80 block text-[10px]">تاريخ القطف:</span>
-                        <strong className="text-white font-mono">{labBatch?.harvestDate || '2026-01-15'}</strong>
-                      </div>
-                      <div>
-                        <span className="text-gold-400/80 block text-[10px]">تاريخ الفحص والاعتماد:</span>
-                        <strong className="text-white font-mono">{labBatch?.testedDate || '2026-02-01'}</strong>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* 5 Core Laboratory Metrics Grid */}
-                  <div className="space-y-4">
-                    <h4 className="font-serif text-base font-bold text-zaad-900 flex items-center gap-2">
-                      <FlaskConical className="w-4 h-4 text-gold-600" />
-                      <span>المؤشرات المخبرية المعتمدة للجودة الحيوية</span>
-                    </h4>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {/* Metric 1: Moisture */}
-                      <div className="p-5 rounded-2xl bg-ivory-50 border border-ivory-200 space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs font-bold text-zaad-900">نسبة الرطوبة الطبيعية</span>
-                          <span className="text-sm font-bold text-gold-700 font-mono">{labBatch?.moisturePercentage ?? 14.2}%</span>
-                        </div>
-                        <p className="text-[11px] text-charcoal-600 leading-relaxed">
-                          معيار النقاء الأوروبي &lt; 20% (مؤشر نضج العسل وعدم تخمره).
-                        </p>
-                      </div>
-
-                      {/* Metric 2: HMF */}
-                      <div className="p-5 rounded-2xl bg-ivory-50 border border-ivory-200 space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs font-bold text-zaad-900">مؤشر HMF (الطزاجة)</span>
-                          <span className="text-sm font-bold text-gold-700 font-mono">{labBatch?.hmfLevel ?? 2.1} mg/kg</span>
-                        </div>
-                        <p className="text-[11px] text-charcoal-600 leading-relaxed">
-                          المعيار الدولي &lt; 80 mg/kg (يثبت عدم تعرض المنتج لأي تسخين صناعي).
-                        </p>
-                      </div>
-
-                      {/* Metric 3: Diastase Activity */}
-                      <div className="p-5 rounded-2xl bg-ivory-50 border border-ivory-200 space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs font-bold text-zaad-900">نشاط الإنزيمات الحية</span>
-                          <span className="text-sm font-bold text-emerald-700 font-mono">{labBatch?.diastaseActivity ?? 19.4} DN</span>
-                        </div>
-                        <p className="text-[11px] text-charcoal-600 leading-relaxed">
-                          المعيار القياسي &gt; 8 (مؤشر غنى المنتج بالإنزيمات الحية النشطة).
-                        </p>
-                      </div>
-
-                      {/* Metric 4: Sucrose Level */}
-                      <div className="p-5 rounded-2xl bg-ivory-50 border border-ivory-200 space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs font-bold text-zaad-900">نسبة السكروز الطبيعي</span>
-                          <span className="text-sm font-bold text-gold-700 font-mono">{labBatch?.sucrosePercentage ?? 0.8}%</span>
-                        </div>
-                        <p className="text-[11px] text-charcoal-600 leading-relaxed">
-                          المعيار القياسي &lt; 5% (يؤكد النقاء الخالص والتغذية الطبيعية 100%).
-                        </p>
-                      </div>
-
-                      {/* Metric 5: Pollen Purity */}
-                      <div className="p-5 rounded-2xl bg-ivory-50 border border-ivory-200 space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs font-bold text-zaad-900">نقاء حبوب اللقاح</span>
-                          <span className="text-sm font-bold text-gold-700 font-mono">{labBatch?.pollenPurityPercentage ?? 98.6}%</span>
-                        </div>
-                        <p className="text-[11px] text-charcoal-600 leading-relaxed">
-                          فحص البصمة المجهرية يؤكد تطابق المصدر الزهري الأحادي المعلن.
-                        </p>
-                      </div>
-
-                      {/* Safety Card */}
-                      <div className="p-5 rounded-2xl bg-emerald-50/80 border border-emerald-200 space-y-2 flex flex-col justify-center">
-                        <div className="flex items-center gap-2 text-emerald-800 font-bold text-xs">
-                          <CheckCircle2 className="w-4 h-4 shrink-0" />
-                          <span>مطابق للمعايير القياسية العالمية</span>
-                        </div>
-                        <p className="text-[11px] text-emerald-700 leading-relaxed">
-                          خالٍ تماماً من المضادات الحيوية والمبيدات والمواد الحافظة.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Render any additional custom blocks */}
-                  {activeTab.blocks?.map(renderBlock)}
-
-                </div>
-              )}
-
-              {/* =========================================================================
-                  TAB 4: CUSTOM CMS TABS (RENDERED FULLY)
-              ========================================================================= */}
-              {!['tab-story-details', 'tab-benefits-usage', 'tab-purity-lab', 'tab-reviews'].includes(activeTab.id) && (
+              {!['tab-story-details', 'tab-benefits-usage', 'tab-reviews'].includes(activeTab.id) && (
                 <div className="space-y-6 animate-fade-in">
                   {activeTab.blocks?.length > 0 ? (
                     activeTab.blocks.map(renderBlock)
@@ -1110,7 +946,7 @@ export default function ProductDetailPage() {
               )}
 
               {/* =========================================================================
-                  TAB 5: REVIEWS TAB
+                  TAB 4: REVIEWS TAB
               ========================================================================= */}
               {activeTab.id === 'tab-reviews' && (
                 <div className="space-y-8 animate-fade-in">
@@ -1122,7 +958,7 @@ export default function ProductDetailPage() {
                         {pConfig.reviewsHeadingAr || 'آراء وتجارب المقتنين'}
                       </h3>
                       <p className="text-xs text-charcoal-700/70">
-                        تقييمات موثقة من عملاء ومقتني دار زاد للنقاء
+                        تقييمات موثقة لـ {product.nameAr}
                       </p>
                     </div>
                     <div className="flex items-center gap-3">
@@ -1171,7 +1007,7 @@ export default function ProductDetailPage() {
                       ))
                     ) : (
                       <div className="py-8 text-center bg-ivory-50 rounded-2xl border border-ivory-200 text-xs text-charcoal-600">
-                        كن أول من يشاركنا انطباعه وتقييمه لهذا المنتج الطبيعي الاستثنائي.
+                        كن أول من يشاركنا انطباعه وتقييمه لـ {product.nameAr}.
                       </div>
                     )}
                   </div>

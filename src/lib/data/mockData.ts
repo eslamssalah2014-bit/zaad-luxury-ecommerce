@@ -435,6 +435,201 @@ export const INITIAL_PRODUCTS: Product[] = [
       pollenPurityPercentage: 100.0,
       certificatePdfUrl: '/certificates/ZD-2026-RJ05.pdf'
     }
+  },
+  {
+    id: 'prod-7',
+    slug: 'adult-honey-blend',
+    sku: 'ZD-ADULT-450',
+    nameAr: 'خلطة زاد للبالغين بالجينسنغ والغذاء الملكي',
+    nameEn: 'House of ZAAD Adult Energy & Vitality Honey Blend',
+    taglineAr: 'تركيبة حيوية استثنائية تجمع عسل السدر الخام مع خلاصة الجينسنغ الأحمر وغذاء الملكات وحبوب اللقاح.',
+    categoryId: 'cat-4',
+    categoryNameAr: 'منتجات الخلية الفاخرة',
+    price: 590,
+    compareAtPrice: 690,
+    currency: 'EGP',
+    stockQuantity: 25,
+    reservedStock: 2,
+    lowStockThreshold: 5,
+    weightGrams: 450,
+    originRegionAr: 'مزارع الوادي الجديد ومناحل سيناء العضوية',
+    originRegionEn: 'New Valley & Sinai Organic Reserves',
+    floralSourceAr: 'سدر بري + جينسنغ أحمر كوري + حبوب لقاح النخيل + غذاء ملكات طازج',
+    floralSourceEn: 'Wild Sidr + Korean Red Ginseng + Royal Jelly + Palm Pollen',
+    shortDescAr: 'خلطة طبيعية متكاملة مصممة خصيصاً للبالغين لتعزيز النشاط البدني والذهني ومقاومة الإجهاد اليومي بتركيز نشط 100%.',
+    fullStoryAr: `صيغت خلطة زاد للبالغين بعناية فائقة لتجمع أقوى عناصر الخلية مع أعشاب الحيوية الشرقية. يتم مزج غذاء الملكات الطازج مع خلاصة الجينسنغ الأحمر وغبار طلع النخيل داخل قاعدة من عسل السدر الجبلي النقي بدرجات حرارة منخفضة جداً تحافظ على كافة الإنزيمات الحية والخصائص الحيوية للمكونات دون أي مواد كيميائية أو سكريات مضافة.`,
+    healthBenefitsAr: [
+      'دعم فوري للطاقة الحيوية والقدرة على التحمل البدني والنشاط',
+      'تعزيز التركيز والصفاء الذهني وتقليل الإجهاد المزمن والتوتر',
+      'تقوية المناعة الطبيعية وتجديد الحيوية اليومية المستدامة للبالغين',
+      'تحسين الدورة الدموية ومقاومة عوامل التأكسد والشيخوخة المبكرة'
+    ],
+    pairingSuggestionsAr: [
+      'ملعقة واحدة على الريق صباحاً مع كوب ماء فاتر',
+      'قبل التمارين الرياضية أو النشاط البدني بساعة',
+      'إضافته لسموذي المكسرات والتمور الطبيعية'
+    ],
+    usageInstructionsAr: 'تناول ملعقة واحدة (15 جرام) صباحاً على الريق أو قبل النشاط البدني بساعة. يُفضل عدم تناول المشروبات الساخنة بعدها مباشرة للحفاظ على فاعلية الجينسنغ والإنزيمات الحية.',
+    storageInstructionsAr: 'يحفظ في مكان بارد وجاف تحت 22 درجة مئوية. يُفضل تحريك المزيج بملعقة خشبية قبل كل استخدام لضمان تجانس المكونات.',
+    images: [
+      '/images/zaad-nature-honey-clover.jpg',
+      'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?auto=format&fit=crop&w=1000&q=85'
+    ],
+    isFeatured: true,
+    isAvailable: true,
+    rating: 4.97,
+    reviewCount: 38,
+    badge: 'الأعلى طلباً للبالغين',
+    sensoryProfile: {
+      sweetness: 4,
+      floralAroma: 4,
+      density: 5,
+      intensity: 5,
+      crystallization: 'كثيف متماسك'
+    },
+    latestLabBatch: {
+      batchNumber: 'ZD-2026-ADULT01',
+      harvestSeason: 'خلطة الموسم الطازجة 2026',
+      harvestDate: '2026-02-10',
+      testedDate: '2026-02-20',
+      labName: 'المركز الإقليمي لتحاليل الأغذية الحيوية',
+      moisturePercentage: 14.5,
+      hmfLevel: 1.9,
+      diastaseActivity: 21.3,
+      sucrosePercentage: 0.6,
+      pollenPurityPercentage: 99.4,
+      certificatePdfUrl: '/certificates/ZD-2026-ADULT01.pdf'
+    }
+  },
+  {
+    id: 'prod-8',
+    slug: 'royal',
+    sku: 'ZD-ROYAL-500',
+    nameAr: 'عسل السدر الملكي التراثي النادر',
+    nameEn: 'Royal Reserve Heritage Sidr Honey',
+    taglineAr: 'خلاصة قطاف أشجار السدر المعمرة في دوعن، معبأ يدوياً بإصدار مرقم محدود.',
+    categoryId: 'cat-1',
+    categoryNameAr: 'أعسال السدر النادرة',
+    price: 650,
+    compareAtPrice: 780,
+    currency: 'EGP',
+    stockQuantity: 18,
+    reservedStock: 2,
+    lowStockThreshold: 5,
+    weightGrams: 500,
+    originRegionAr: 'أودية دوعن العتيقة، حضرموت',
+    originRegionEn: 'Ancient Doan Valleys, Hadramout',
+    floralSourceAr: 'أشجار السدر العتيقة المعمرة (Ziziphus Spina-Christi)',
+    floralSourceEn: 'Ancient Wild Sidr Trees',
+    shortDescAr: 'الإصدار الملكي التراثي من عسل السدر الصافي، يتميز بكثافة لزجة استثنائية ونكهة خشبية فخمة تدوم طويلاً في الفم مع نقاء أحادي الزهرة يفوق 99.8%.',
+    fullStoryAr: `يمثل هذا الإصدار أرقى ما تجود به طبيعة وادي دوعن، حيث تقطف الأقراص الشمعية يدوياً من مناحل تقليدية معزولة عن أي شوائب بيئية. يمر العسل باختبارات فحص صارمة لضمان نقاء أحادي الزهرة بنسبة تتجاوز 99% وتوثيق خلوه من أي تغذية سكرية صناعية.`,
+    healthBenefitsAr: [
+      'أعلى تركيز لمركبات الفلافونويد ومضادات الأكسدة الفائقة',
+      'ترميم الغشاء المخاطي ودعم الجهاز الهضمي والقولون',
+      'تعزيز المناعة العامة وتنشيط الكبد وتطهير السموم',
+      'مصدر طبيعي فاخر للمعادن النادرة والإنزيمات الحية'
+    ],
+    pairingSuggestionsAr: [
+      'تذوق قطرات نقية على الريق للاستمتاع بالنكهة الملكية',
+      'مع الجبن العضوي المعتق وقطع الجوز الملكي',
+      'إضافته للقهوة العربية الأصيلة'
+    ],
+    usageInstructionsAr: 'ملعقة خشبية صغيرة صباحاً على الريق لتذوق النكهة العطرية والتمتع بكامل الفوائد الإنزيمية.',
+    storageInstructionsAr: 'يحفظ في مكان معتم بدرجة حرارة الغرفة (18-24 مئوية). لا يحفظ في الثلاجة مطلقاً.',
+    images: [
+      'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?auto=format&fit=crop&w=1000&q=85',
+      '/images/zaad-nature-honey-clover.jpg'
+    ],
+    isFeatured: true,
+    isAvailable: true,
+    rating: 5.0,
+    reviewCount: 49,
+    badge: 'إصدار ملكي خاص',
+    sensoryProfile: {
+      sweetness: 4,
+      floralAroma: 5,
+      density: 5,
+      intensity: 5,
+      crystallization: 'نادر جداً'
+    },
+    latestLabBatch: {
+      batchNumber: 'ZD-2026-ROYAL99',
+      harvestSeason: 'موسم الشتاء الملكي 2026',
+      harvestDate: '2026-01-12',
+      testedDate: '2026-01-28',
+      labName: 'مختبرات الجودة النوعية الأوروبية (Eurofins Scientific)',
+      moisturePercentage: 13.6,
+      hmfLevel: 1.2,
+      diastaseActivity: 24.8,
+      sucrosePercentage: 0.3,
+      pollenPurityPercentage: 99.8,
+      certificatePdfUrl: '/certificates/ZD-2026-ROYAL99.pdf'
+    }
+  },
+  {
+    id: 'prod-9',
+    slug: 'sidr-honey',
+    sku: 'ZD-SDR-WILD',
+    nameAr: 'عسل السدر البري الطبيعي 100%',
+    nameEn: 'Pure Wild Sidr Honey',
+    taglineAr: 'رحيق نقي من أزهار السدر البرية في مروج الطبيعة النقية.',
+    categoryId: 'cat-1',
+    categoryNameAr: 'أعسال السدر النادرة',
+    price: 390,
+    compareAtPrice: 460,
+    currency: 'EGP',
+    stockQuantity: 30,
+    reservedStock: 3,
+    lowStockThreshold: 8,
+    weightGrams: 500,
+    originRegionAr: 'المحميات الطبيعية، جمهورية مصر العربية',
+    originRegionEn: 'Protected Natural Reserves, Egypt',
+    floralSourceAr: 'أشجار السدر والنبق البرية',
+    floralSourceEn: 'Wild Lotus & Sidr Trees',
+    shortDescAr: 'عسل سدر طبيعي 100% خام غير مبستر، خفيف ولذيذ بقوام حريري ولون عنبري ذهبي مناسب للاستخدام العائلي اليومي ودعم المناعة.',
+    fullStoryAr: `عسل السدر البري من زاد يجسد التوازن المثالي بين الطعم اللذيذ والقيمة الغذائية العالية. يتم جنيه من أزهار شجر السدر البري في مواسم الإزهار السنوية، ويفلتر بارداً ليصل إليكم بكامل نقائه ومذاقه الأصيل دون أي تسخين يفقده فوائده.`,
+    healthBenefitsAr: [
+      'دعم مناعة العائلة والأطفال ضد نزلات البرد وتغير الفصول',
+      'مُحلي طبيعي بديل وصحي للسكر الأبيض في المشروبات والأطعمة',
+      'مهدئ لطيف للجهاز التنفسي والحلق والسعال',
+      'يمد الجسم بالطاقة الصباحية النظيفة دون رفع مفاجئ للسكريات'
+    ],
+    pairingSuggestionsAr: [
+      'ملعقة كبيرة مذابة في كوب ماء دافئ أو شاي أعشاب',
+      'مع التوست المحمص والمكسرات النيئة',
+      'فوق سلطة الفواكه الطازجة والزبادي'
+    ],
+    usageInstructionsAr: 'ملعقة كبيرة يومياً محلاة في المشروبات الدافئة أو على الخبز والمخبوزات الصباحية.',
+    storageInstructionsAr: 'يحفظ في خزانة المطبخ في درجة حرارة الغرفة بعيداً عن الضوء المباشر والرطوبة.',
+    images: [
+      '/images/zaad-nature-honey-clover.jpg',
+      'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?auto=format&fit=crop&w=1000&q=85'
+    ],
+    isFeatured: true,
+    isAvailable: true,
+    rating: 4.91,
+    reviewCount: 35,
+    badge: 'نقاء طبيعي 100%',
+    sensoryProfile: {
+      sweetness: 4,
+      floralAroma: 4,
+      density: 4,
+      intensity: 4,
+      crystallization: 'بطيء'
+    },
+    latestLabBatch: {
+      batchNumber: 'ZD-2026-SDR-WILD',
+      harvestSeason: 'محصول ربيع 2026',
+      harvestDate: '2026-02-01',
+      testedDate: '2026-02-15',
+      labName: 'المختبر المركزي لتحليل الأغذية والأعسال',
+      moisturePercentage: 15.2,
+      hmfLevel: 2.5,
+      diastaseActivity: 18.5,
+      sucrosePercentage: 0.9,
+      pollenPurityPercentage: 96.5,
+      certificatePdfUrl: '/certificates/ZD-2026-SDR-WILD.pdf'
+    }
   }
 ];
 
