@@ -250,11 +250,9 @@ export default function ProductDetailPage() {
   };
 
   // Compute Dynamic Attributes exclusively from THIS product
-  const effectiveAttributes: ProductAttribute[] = (product.attributes && product.attributes.length > 0)
+  const effectiveAttributes: ProductAttribute[] = (Array.isArray(product.attributes) && product.attributes.length > 0)
     ? product.attributes.filter(a => a.isVisible !== false)
-    : [
-        product.weightGrams ? { id: 'attr-wt', nameAr: 'الوزن الصافي', valueAr: `${product.weightGrams} جرام`, icon: 'package', isVisible: true, order: 1 } : null
-      ].filter(Boolean) as ProductAttribute[];
+    : [];
 
   // Normalize Health Benefits list (Title + Description)
   const healthBenefitsList: HealthBenefitItem[] = (

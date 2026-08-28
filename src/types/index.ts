@@ -1,3 +1,5 @@
+import { ProductAttribute, ProductTab } from './cms';
+
 export type UserRole = 'super_admin' | 'admin' | 'operations' | 'customer_support' | 'customer';
 
 export interface User {
@@ -20,6 +22,15 @@ export interface SensoryProfile {
   density: number;        // 1-5
   intensity: number;      // 1-5
   crystallization: string; // 'نادر' | 'بطيء' | 'متوسط' | 'سريع'
+  cost_price?: number;
+  visibility_status?: ProductVisibility;
+  subcategory_id?: string | null;
+  attributes?: ProductAttribute[];
+  tabs?: ProductTab[];
+  usage_instructions_ar?: string | null;
+  custom_shipping_message?: string | null;
+  custom_vat_message?: string | null;
+  custom_trust_badge_text?: string | null;
 }
 
 export interface LabAnalysis {
@@ -64,8 +75,6 @@ export interface Category {
   itemCount?: number;
   subcategories?: Subcategory[];
 }
-
-import { ProductAttribute, ProductTab } from './cms';
 
 export interface HealthBenefitItem {
   title: string;

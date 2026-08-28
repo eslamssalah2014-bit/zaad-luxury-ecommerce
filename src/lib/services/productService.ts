@@ -100,8 +100,12 @@ export function formatSupabaseProduct(d: any): Product {
     reviewCount: Number(d.review_count || 0),
     sensoryProfile: d.sensory_profile || { sweetness: 4, floralAroma: 4, density: 4, intensity: 4, crystallization: 'نادر' },
     badge: d.badge || undefined,
-    attributes: Array.isArray(d.attributes) ? d.attributes : (Array.isArray(d.sensory_profile?.attributes) ? d.sensory_profile.attributes : undefined),
-    tabs: Array.isArray(d.tabs) ? d.tabs : (Array.isArray(d.sensory_profile?.tabs) ? d.sensory_profile.tabs : undefined),
+    attributes: Array.isArray(d.sensory_profile?.attributes)
+      ? d.sensory_profile.attributes
+      : (Array.isArray(d.attributes) ? d.attributes : []),
+    tabs: Array.isArray(d.sensory_profile?.tabs)
+      ? d.sensory_profile.tabs
+      : (Array.isArray(d.tabs) ? d.tabs : []),
     customShippingMessage: d.custom_shipping_message || d.sensory_profile?.custom_shipping_message || undefined,
     customVatMessage: d.custom_vat_message || d.sensory_profile?.custom_vat_message || undefined,
     customTrustBadgeText: d.custom_trust_badge_text || d.sensory_profile?.custom_trust_badge_text || undefined,

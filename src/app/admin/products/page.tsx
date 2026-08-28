@@ -184,14 +184,23 @@ export default function AdminProductsPage() {
       setHealthBenefit4Title(prod.healthBenefit4Title || prod.healthBenefits?.[3]?.title || (typeof prod.healthBenefitsAr?.[3] === 'string' ? prod.healthBenefitsAr[3] : (prod.healthBenefitsAr?.[3] as any)?.title) || '');
       setHealthBenefit4Desc(prod.healthBenefit4Desc || prod.healthBenefits?.[3]?.description || (prod.healthBenefitsAr?.[3] as any)?.description || '');
 
-      // Dynamic CMS Attributes & Tabs
-      setProductAttributes(prod.attributes && prod.attributes.length > 0 ? prod.attributes : [
-        { id: 'attr-1', nameAr: 'اللون', valueAr: 'عنبري ذهبي نقي', icon: 'droplet', isVisible: true, order: 1 },
-        { id: 'attr-2', nameAr: 'الرائحة', valueAr: 'عطرية زهرية دافئة', icon: 'sparkles', isVisible: true, order: 2 },
-        { id: 'attr-3', nameAr: 'القوام', valueAr: 'حريري كثيف ومتماسك', icon: 'feather', isVisible: true, order: 3 },
-        { id: 'attr-6', nameAr: 'الوزن الصافي', valueAr: `${prod.weightGrams || 500} جرام`, icon: 'package', isVisible: true, order: 6 },
-      ]);
-      setProductTabs(prod.tabs || []);
+      // Dynamic CMS Attributes & Tabs (Preserve empty arrays)
+      if (Array.isArray(prod.attributes)) {
+        setProductAttributes(prod.attributes);
+      } else if (Array.isArray(prod.sensoryProfile?.attributes)) {
+        setProductAttributes(prod.sensoryProfile.attributes);
+      } else {
+        setProductAttributes([]);
+      }
+
+      if (Array.isArray(prod.tabs)) {
+        setProductTabs(prod.tabs);
+      } else if (Array.isArray(prod.sensoryProfile?.tabs)) {
+        setProductTabs(prod.sensoryProfile.tabs);
+      } else {
+        setProductTabs([]);
+      }
+
       setCustomShippingMessage(prod.customShippingMessage || '');
       setCustomVatMessage(prod.customVatMessage || '');
       setCustomTrustBadgeText(prod.customTrustBadgeText || '');
@@ -350,10 +359,10 @@ export default function AdminProductsPage() {
         stockQuantity: Number(stockQuantity),
         lowStockThreshold: Number(lowStockThreshold),
         weightGrams: Number(weightGrams),
-        originRegionAr: originRegionAr || null,
-        originRegionEn: originRegionEn || null,
-        floralSourceAr: floralSourceAr || null,
-        floralSourceEn: floralSourceEn || null,
+        originRegionAr: originRegionAr || 'وادي دوعن، حضرموت',
+        originRegionEn: originRegionEn || 'Doan Valley, Hadramout',
+        floralSourceAr: floralSourceAr || 'أشجار ومروج برية',
+        floralSourceEn: floralSourceEn || 'Wild Flora',
         shortDescAr,
         fullStoryAr,
         healthBenefit1Title,
@@ -371,12 +380,21 @@ export default function AdminProductsPage() {
         isAvailable: visibilityStatus === 'published' || visibilityStatus === 'out_of_stock',
         visibilityStatus,
         badge: badge || null,
-        attributes: productAttributes,
-        tabs: productTabs,
+        attributes: Array.isArray(productAttributes) ? productAttributes : [],
+        tabs: Array.isArray(productTabs) ? productTabs : [],
         customShippingMessage: customShippingMessage || null,
         customVatMessage: customVatMessage || null,
         customTrustBadgeText: customTrustBadgeText || null
       };
+
+      console.log('[CMS Product Editor] Submitting product payload to API:', {
+        action: editingProduct ? 'UPDATE' : 'CREATE',
+        productId: payload.id,
+        nameAr: payload.nameAr,
+        attributesCount: payload.attributes.length,
+        attributes: payload.attributes,
+        tabsCount: payload.tabs.length
+      });
 
       const res = await adminFetch('/api/products', {
         method: editingProduct ? 'PUT' : 'POST',
@@ -385,14 +403,18 @@ export default function AdminProductsPage() {
       });
 
       const json = await res.json();
+      console.log('[CMS Product Editor] Received API response:', json);
+
       if (json.success) {
-        showNotification('success', editingProduct ? 'تم تحديث بيانات المنتج بنجاح في Supabase' : 'تم إضافة المنتج الجديد بنجاح في Supabase');
+        showNotification('success', editingProduct ? 'تم حفظ وتحديث بيانات المنتج والخصائص الحيوية بنجاح' : 'تم إضافة المنتج الجديد بنجاح');
         setProductModalOpen(false);
         await loadData();
       } else {
+        console.error('[CMS Product Editor Error] API returned error:', json.error);
         showNotification('error', json.error || 'فشل حفظ المنتج');
       }
     } catch (err: any) {
+      console.error('[CMS Product Editor Exception]:', err);
       showNotification('error', err?.message || 'حدث خطأ أثناء الحفظ');
     }
   };
@@ -1053,138 +1075,165 @@ export default function AdminProductsPage() {
               {/* TAB 3: DYNAMIC ATTRIBUTES BUILDER */}
               {modalTab === 'attributes' && (
                 <div className="space-y-4 animate-fade-in">
-                  <div className="flex items-center justify-between border-b border-ivory-200 pb-3">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-ivory-200 pb-3">
                     <div>
                       <h4 className="font-bold text-zaad-900 text-sm">الخصائص الحيوية للمنتج (Dynamic Attributes)</h4>
                       <p className="text-[11px] text-charcoal-700/70">أضف خصائص غير محدودة مثل اللون، الرائحة، القوام، المصدر، بلد المنشأ</p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setProductAttributes([
-                          ...productAttributes,
-                          {
+                    <div className="flex items-center gap-2">
+                      {productAttributes.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (window.confirm('هل أنت متأكد من رغبتك في حذف جميع الخصائص؟')) {
+                              console.log('[CMS Product Editor] User deleted all attributes');
+                              setProductAttributes([]);
+                            }
+                          }}
+                          className="px-3 py-1.5 bg-red-50 text-red-700 border border-red-200 rounded-xl text-xs font-bold hover:bg-red-100 transition-all flex items-center gap-1"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>حذف جميع الخصائص</span>
+                        </button>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newAttr: ProductAttribute = {
                             id: `attr-${Date.now()}`,
                             nameAr: 'خاصية جديدة',
                             valueAr: 'القيمة',
                             icon: 'sparkles',
                             isVisible: true,
                             order: productAttributes.length + 1
-                          }
-                        ]);
-                      }}
-                      className="px-3.5 py-1.5 bg-zaad-800 text-white rounded-xl text-xs font-bold hover:bg-zaad-700 transition-all flex items-center gap-1"
-                    >
-                      <Plus className="w-3.5 h-3.5 text-gold-400" />
-                      <span>إضافة خاصية</span>
-                    </button>
+                          };
+                          console.log('[CMS Product Editor] Adding new attribute:', newAttr);
+                          setProductAttributes([...productAttributes, newAttr]);
+                        }}
+                        className="px-3.5 py-1.5 bg-zaad-800 text-white rounded-xl text-xs font-bold hover:bg-zaad-700 transition-all flex items-center gap-1 shadow-sm"
+                      >
+                        <Plus className="w-3.5 h-3.5 text-gold-400" />
+                        <span>إضافة خاصية</span>
+                      </button>
+                    </div>
                   </div>
 
-                  <div className="space-y-3 max-h-96 overflow-y-auto">
-                    {productAttributes.map((attr, aIdx) => (
-                      <div key={attr.id || aIdx} className="p-3 bg-ivory-50 border border-ivory-300 rounded-2xl flex flex-wrap items-center gap-3">
-                        <span className="w-6 h-6 rounded-lg bg-white border border-ivory-300 flex items-center justify-center font-bold text-xs">
-                          {aIdx + 1}
-                        </span>
+                  {productAttributes.length === 0 ? (
+                    <div className="text-center py-10 bg-ivory-50 rounded-2xl border-2 border-dashed border-ivory-300 space-y-2">
+                      <p className="text-xs font-bold text-zaad-900">لا توجد أي خصائص مضافة لهذا المنتج حالياً (قائمة فارغة).</p>
+                      <p className="text-[11px] text-charcoal-700/60 max-w-md mx-auto">
+                        يمكنك حفظ المنتج بدون أي خصائص، أو الضغط على زر &quot;إضافة خاصية&quot; أعلاه لإنشاء خصائص مخصصة.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3 max-h-96 overflow-y-auto">
+                      {productAttributes.map((attr, aIdx) => (
+                        <div key={attr.id || aIdx} className="p-3 bg-ivory-50 border border-ivory-300 rounded-2xl flex flex-wrap items-center gap-3">
+                          <span className="w-6 h-6 rounded-lg bg-white border border-ivory-300 flex items-center justify-center font-bold text-xs">
+                            {aIdx + 1}
+                          </span>
 
-                        <div className="flex-1 min-w-[130px]">
-                          <label className="block text-[10px] font-bold text-charcoal-700 mb-0.5">اسم الخاصية:</label>
-                          <input
-                            type="text"
-                            value={attr.nameAr}
-                            onChange={(e) => {
-                              const updated = [...productAttributes];
-                              updated[aIdx] = { ...updated[aIdx], nameAr: e.target.value };
-                              setProductAttributes(updated);
-                            }}
-                            className="w-full bg-white border border-ivory-300 rounded-lg p-1.5 font-bold text-xs"
-                            placeholder="اللون"
-                          />
-                        </div>
+                          <div className="flex-1 min-w-[130px]">
+                            <label className="block text-[10px] font-bold text-charcoal-700 mb-0.5">اسم الخاصية:</label>
+                            <input
+                              type="text"
+                              value={attr.nameAr}
+                              onChange={(e) => {
+                                const updated = [...productAttributes];
+                                updated[aIdx] = { ...updated[aIdx], nameAr: e.target.value };
+                                setProductAttributes(updated);
+                              }}
+                              className="w-full bg-white border border-ivory-300 rounded-lg p-1.5 font-bold text-xs"
+                              placeholder="اللون"
+                            />
+                          </div>
 
-                        <div className="flex-1 min-w-[160px]">
-                          <label className="block text-[10px] font-bold text-charcoal-700 mb-0.5">القيمة:</label>
-                          <input
-                            type="text"
-                            value={attr.valueAr}
-                            onChange={(e) => {
-                              const updated = [...productAttributes];
-                              updated[aIdx] = { ...updated[aIdx], valueAr: e.target.value };
-                              setProductAttributes(updated);
-                            }}
-                            className="w-full bg-white border border-ivory-300 rounded-lg p-1.5 text-xs"
-                            placeholder="عنبري ذهبي"
-                          />
-                        </div>
+                          <div className="flex-1 min-w-[160px]">
+                            <label className="block text-[10px] font-bold text-charcoal-700 mb-0.5">القيمة:</label>
+                            <input
+                              type="text"
+                              value={attr.valueAr}
+                              onChange={(e) => {
+                                const updated = [...productAttributes];
+                                updated[aIdx] = { ...updated[aIdx], valueAr: e.target.value };
+                                setProductAttributes(updated);
+                              }}
+                              className="w-full bg-white border border-ivory-300 rounded-lg p-1.5 text-xs"
+                              placeholder="عنبري ذهبي"
+                            />
+                          </div>
 
-                        <div className="w-28">
-                          <label className="block text-[10px] font-bold text-charcoal-700 mb-0.5">الأيقونة:</label>
-                          <select
-                            value={attr.icon || 'sparkles'}
-                            onChange={(e) => {
-                              const updated = [...productAttributes];
-                              updated[aIdx] = { ...updated[aIdx], icon: e.target.value };
-                              setProductAttributes(updated);
-                            }}
-                            className="w-full bg-white border border-ivory-300 rounded-lg p-1.5 text-xs"
-                          >
-                            <option value="sparkles">✨ بريق</option>
-                            <option value="droplet">💧 قطرة / لون</option>
-                            <option value="feather">🪶 قوام</option>
-                            <option value="map-pin">📍 موطن</option>
-                            <option value="shield">🛡️ حماية</option>
-                            <option value="award">🏅 جودة</option>
-                            <option value="package">📦 عبوة</option>
-                          </select>
-                        </div>
+                          <div className="w-28">
+                            <label className="block text-[10px] font-bold text-charcoal-700 mb-0.5">الأيقونة:</label>
+                            <select
+                              value={attr.icon || 'sparkles'}
+                              onChange={(e) => {
+                                const updated = [...productAttributes];
+                                updated[aIdx] = { ...updated[aIdx], icon: e.target.value };
+                                setProductAttributes(updated);
+                              }}
+                              className="w-full bg-white border border-ivory-300 rounded-lg p-1.5 text-xs"
+                            >
+                              <option value="sparkles">✨ بريق</option>
+                              <option value="droplet">💧 قطرة / لون</option>
+                              <option value="feather">🪶 قوام</option>
+                              <option value="map-pin">📍 موطن</option>
+                              <option value="shield">🛡️ حماية</option>
+                              <option value="award">🏅 جودة</option>
+                              <option value="package">📦 عبوة</option>
+                            </select>
+                          </div>
 
-                        <div className="flex items-center gap-1.5 pt-2 sm:pt-0">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (aIdx === 0) return;
-                              const updated = [...productAttributes];
-                              const temp = updated[aIdx - 1];
-                              updated[aIdx - 1] = updated[aIdx];
-                              updated[aIdx] = temp;
-                              setProductAttributes(updated);
-                            }}
-                            disabled={aIdx === 0}
-                            className="p-1.5 bg-white border border-ivory-300 rounded-lg disabled:opacity-30"
-                            title="تحريك لأعلى"
-                          >
-                            <ArrowUp className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (aIdx === productAttributes.length - 1) return;
-                              const updated = [...productAttributes];
-                              const temp = updated[aIdx + 1];
-                              updated[aIdx + 1] = updated[aIdx];
-                              updated[aIdx] = temp;
-                              setProductAttributes(updated);
-                            }}
-                            disabled={aIdx === productAttributes.length - 1}
-                            className="p-1.5 bg-white border border-ivory-300 rounded-lg disabled:opacity-30"
-                            title="تحريك لأسفل"
-                          >
-                            <ArrowDown className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setProductAttributes(productAttributes.filter((_, i) => i !== aIdx));
-                            }}
-                            className="p-1.5 bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100"
-                            title="حذف"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
+                          <div className="flex items-center gap-1.5 pt-2 sm:pt-0">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (aIdx === 0) return;
+                                const updated = [...productAttributes];
+                                const temp = updated[aIdx - 1];
+                                updated[aIdx - 1] = updated[aIdx];
+                                updated[aIdx] = temp;
+                                setProductAttributes(updated);
+                              }}
+                              disabled={aIdx === 0}
+                              className="p-1.5 bg-white border border-ivory-300 rounded-lg disabled:opacity-30"
+                              title="تحريك لأعلى"
+                            >
+                              <ArrowUp className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (aIdx === productAttributes.length - 1) return;
+                                const updated = [...productAttributes];
+                                const temp = updated[aIdx + 1];
+                                updated[aIdx + 1] = updated[aIdx];
+                                updated[aIdx] = temp;
+                                setProductAttributes(updated);
+                              }}
+                              disabled={aIdx === productAttributes.length - 1}
+                              className="p-1.5 bg-white border border-ivory-300 rounded-lg disabled:opacity-30"
+                              title="تحريك لأسفل"
+                            >
+                              <ArrowDown className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                console.log('[CMS Product Editor] Deleting attribute at index:', aIdx);
+                                setProductAttributes(productAttributes.filter((_, i) => i !== aIdx));
+                              }}
+                              className="p-1.5 bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100"
+                              title="حذف"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 

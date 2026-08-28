@@ -147,7 +147,15 @@ export async function POST(request: NextRequest) {
       customTrustBadgeText
     } = body;
 
+    console.log('[API Products POST] Received creation request:', {
+      nameAr,
+      price,
+      attributesCount: Array.isArray(attributes) ? attributes.length : 0,
+      tabsCount: Array.isArray(tabs) ? tabs.length : 0
+    });
+
     if (!nameAr || !price || !shortDescAr) {
+      console.warn('[API Products POST Validation Failed]: Missing required fields (nameAr, price, shortDescAr)');
       return NextResponse.json({ success: false, error: 'الاسم والسعر والوصف القصير حقول مطلوبة' }, { status: 400 });
     }
 
@@ -170,6 +178,9 @@ export async function POST(request: NextRequest) {
       resolvedHealthBenefits = healthBenefitsAr.map(b => typeof b === 'string' ? { title: b, description: '' } : b);
     }
 
+    const sanitizedAttributes = Array.isArray(attributes) ? attributes : [];
+    const sanitizedTabs = Array.isArray(tabs) ? tabs : [];
+
     const productPayload: any = {
       name_ar: nameAr,
       name_en: nameEn || nameAr,
@@ -184,10 +195,10 @@ export async function POST(request: NextRequest) {
       reserved_stock: 0,
       low_stock_threshold: Number(lowStockThreshold),
       weight_grams: Number(weightGrams),
-      origin_region_ar: originRegionAr || null,
-      origin_region_en: originRegionEn || null,
-      floral_source_ar: floralSourceAr || null,
-      floral_source_en: floralSourceEn || null,
+      origin_region_ar: originRegionAr || 'وادي دوعن، حضرموت',
+      origin_region_en: originRegionEn || 'Doan Valley, Hadramout',
+      floral_source_ar: floralSourceAr || 'أشجار ومروج برية',
+      floral_source_en: floralSourceEn || 'Wild Flora',
       short_desc_ar: shortDescAr,
       full_story_ar: fullStoryAr || shortDescAr,
       health_benefits_ar: resolvedHealthBenefits,
@@ -208,8 +219,8 @@ export async function POST(request: NextRequest) {
         cost_price: calculatedCost,
         visibility_status: visibilityStatus,
         subcategory_id: subcategoryId || null,
-        attributes: Array.isArray(attributes) ? attributes : [],
-        tabs: Array.isArray(tabs) ? tabs : [],
+        attributes: sanitizedAttributes,
+        tabs: sanitizedTabs,
         usage_instructions_ar: usageInstructionsAr || null,
         custom_shipping_message: customShippingMessage || null,
         custom_vat_message: customVatMessage || null,
@@ -218,6 +229,8 @@ export async function POST(request: NextRequest) {
       badge: badge || null
     };
 
+    console.log('[API Products POST] Inserting into Supabase with sanitized payload');
+
     const { data: newProd, error: insertError } = await supabaseAdmin
       .from('products')
       .insert(productPayload)
@@ -225,9 +238,11 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (insertError || !newProd) {
-      console.error('Error inserting product in Supabase:', insertError);
+      console.error('[API Products POST Error] Supabase insert failed:', insertError);
       return NextResponse.json({ success: false, error: insertError?.message || 'فشل إنشاء المنتج' }, { status: 500 });
     }
+
+    console.log('[API Products POST Success] Created product ID:', newProd.id);
 
     // Record initial stock creation in inventory_movements
     if (Number(stockQuantity) > 0) {
@@ -243,6 +258,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, data: formatProductRow(newProd) }, { status: 201 });
   } catch (error: any) {
+    console.error('[API Products POST Exception]:', error);
     return NextResponse.json({ success: false, error: error?.message || 'Server error' }, { status: 500 });
   }
 }
@@ -252,6 +268,7 @@ export async function PUT(request: NextRequest) {
     // Enforce Super Admin Authorization
     const auth = await verifyAdminSession(request);
     if (!auth.isAuthorized) {
+      console.warn('[API Products PUT Auth Failed]:', auth.error);
       return NextResponse.json({ success: false, error: auth.error || 'غير مصرح' }, { status: auth.status || 401 });
     }
 
@@ -296,18 +313,33 @@ export async function PUT(request: NextRequest) {
       isAvailable,
       visibilityStatus,
       badge,
-      attributes = [],
-      tabs = [],
+      attributes,
+      tabs,
       customShippingMessage,
       customVatMessage,
       customTrustBadgeText
     } = body;
 
+    console.log('[API Products PUT] Received update request for ID:', id, {
+      nameAr,
+      attributesType: typeof attributes,
+      attributesCount: Array.isArray(attributes) ? attributes.length : 'not_an_array',
+      tabsCount: Array.isArray(tabs) ? tabs.length : 'not_an_array'
+    });
+
     if (!id) {
+      console.warn('[API Products PUT Validation Failed]: Missing product ID');
       return NextResponse.json({ success: false, error: 'معرف المنتج مطلوب' }, { status: 400 });
     }
 
-    const calculatedCost = Number(costPrice || Math.round(Number(price) * 0.45));
+    // Fetch existing product record to preserve any unset fields and prevent not-null constraint failures
+    const { data: existingProd } = await supabaseAdmin
+      .from('products')
+      .select('origin_region_ar, origin_region_en, floral_source_ar, floral_source_en, sensory_profile, short_desc_ar, full_story_ar')
+      .eq('id', id)
+      .maybeSingle();
+
+    const calculatedCost = Number(costPrice || Math.round(Number(price || 500) * 0.45));
 
     // Construct structured health benefits array
     let resolvedHealthBenefits = [];
@@ -324,6 +356,34 @@ export async function PUT(request: NextRequest) {
       resolvedHealthBenefits = healthBenefitsAr.map(b => typeof b === 'string' ? { title: b, description: '' } : b);
     }
 
+    // Explicitly handle attributes and tabs array:
+    // If an array is passed (even if empty []), use it! If undefined, preserve existing.
+    const sanitizedAttributes = Array.isArray(attributes)
+      ? attributes
+      : (Array.isArray(existingProd?.sensory_profile?.attributes) ? existingProd.sensory_profile.attributes : []);
+
+    const sanitizedTabs = Array.isArray(tabs)
+      ? tabs
+      : (Array.isArray(existingProd?.sensory_profile?.tabs) ? existingProd.sensory_profile.tabs : []);
+
+    const mergedSensoryProfile = {
+      ...(existingProd?.sensory_profile || {}),
+      sweetness: existingProd?.sensory_profile?.sweetness ?? 4,
+      floralAroma: existingProd?.sensory_profile?.floralAroma ?? 4,
+      density: existingProd?.sensory_profile?.density ?? 4,
+      intensity: existingProd?.sensory_profile?.intensity ?? 4,
+      crystallization: existingProd?.sensory_profile?.crystallization ?? 'نادر',
+      cost_price: calculatedCost,
+      visibility_status: visibilityStatus || existingProd?.sensory_profile?.visibility_status || 'published',
+      subcategory_id: subcategoryId || null,
+      attributes: sanitizedAttributes,
+      tabs: sanitizedTabs,
+      usage_instructions_ar: usageInstructionsAr || null,
+      custom_shipping_message: customShippingMessage || null,
+      custom_vat_message: customVatMessage || null,
+      custom_trust_badge_text: customTrustBadgeText || null
+    };
+
     const updatePayload: any = {
       name_ar: nameAr,
       name_en: nameEn,
@@ -337,12 +397,12 @@ export async function PUT(request: NextRequest) {
       stock_quantity: Number(stockQuantity),
       low_stock_threshold: Number(lowStockThreshold),
       weight_grams: Number(weightGrams),
-      origin_region_ar: originRegionAr || null,
-      origin_region_en: originRegionEn || null,
-      floral_source_ar: floralSourceAr || null,
-      floral_source_en: floralSourceEn || null,
-      short_desc_ar: shortDescAr,
-      full_story_ar: fullStoryAr,
+      origin_region_ar: originRegionAr || existingProd?.origin_region_ar || 'وادي دوعن، حضرموت',
+      origin_region_en: originRegionEn || existingProd?.origin_region_en || 'Doan Valley, Hadramout',
+      floral_source_ar: floralSourceAr || existingProd?.floral_source_ar || 'أشجار ومروج برية',
+      floral_source_en: floralSourceEn || existingProd?.floral_source_en || 'Wild Flora',
+      short_desc_ar: shortDescAr || existingProd?.short_desc_ar || nameAr,
+      full_story_ar: fullStoryAr || existingProd?.full_story_ar || shortDescAr || nameAr,
       health_benefits_ar: resolvedHealthBenefits,
       pairing_suggestions_ar: pairingSuggestionsAr || [],
       usage_instructions_ar: usageInstructionsAr || null,
@@ -351,24 +411,13 @@ export async function PUT(request: NextRequest) {
       is_featured: Boolean(isFeatured),
       is_available: visibilityStatus === 'published' ? true : (visibilityStatus === 'out_of_stock' ? true : Boolean(isAvailable)),
       badge: badge || null,
-      sensory_profile: {
-        sweetness: 4,
-        floralAroma: 4,
-        density: 4,
-        intensity: 4,
-        crystallization: 'نادر',
-        cost_price: calculatedCost,
-        visibility_status: visibilityStatus || 'published',
-        subcategory_id: subcategoryId || null,
-        attributes: Array.isArray(attributes) ? attributes : [],
-        tabs: Array.isArray(tabs) ? tabs : [],
-        usage_instructions_ar: usageInstructionsAr || null,
-        custom_shipping_message: customShippingMessage || null,
-        custom_vat_message: customVatMessage || null,
-        custom_trust_badge_text: customTrustBadgeText || null
-      },
+      sensory_profile: mergedSensoryProfile,
       updated_at: new Date().toISOString()
     };
+
+    console.log('[API Products PUT] Executing Supabase update for ID:', id, {
+      attributesPersistedCount: sanitizedAttributes.length
+    });
 
     const { data: updatedProd, error: updateError } = await supabaseAdmin
       .from('products')
@@ -378,11 +427,15 @@ export async function PUT(request: NextRequest) {
       .single();
 
     if (updateError || !updatedProd) {
+      console.error('[API Products PUT Error] Supabase update failed:', updateError);
       return NextResponse.json({ success: false, error: updateError?.message || 'فشل تحديث المنتج' }, { status: 500 });
     }
 
+    console.log('[API Products PUT Success] Successfully updated product ID:', id);
+
     return NextResponse.json({ success: true, data: formatProductRow(updatedProd) });
   } catch (error: any) {
+    console.error('[API Products PUT Exception]:', error);
     return NextResponse.json({ success: false, error: error?.message || 'Server error' }, { status: 500 });
   }
 }
@@ -499,8 +552,12 @@ export function formatProductRow(data: any): Product {
     reviewCount: Number(data.review_count || 0),
     sensoryProfile: data.sensory_profile || { sweetness: 4, floralAroma: 4, density: 4, intensity: 4, crystallization: 'نادر' },
     badge: data.badge,
-    attributes: Array.isArray(data.attributes) ? data.attributes : (Array.isArray(data.sensory_profile?.attributes) ? data.sensory_profile.attributes : undefined),
-    tabs: Array.isArray(data.tabs) ? data.tabs : (Array.isArray(data.sensory_profile?.tabs) ? data.sensory_profile.tabs : undefined),
+    attributes: Array.isArray(data.sensory_profile?.attributes)
+      ? data.sensory_profile.attributes
+      : (Array.isArray(data.attributes) ? data.attributes : []),
+    tabs: Array.isArray(data.sensory_profile?.tabs)
+      ? data.sensory_profile.tabs
+      : (Array.isArray(data.tabs) ? data.tabs : []),
     customShippingMessage: data.custom_shipping_message || data.sensory_profile?.custom_shipping_message || undefined,
     customVatMessage: data.custom_vat_message || data.sensory_profile?.custom_vat_message || undefined,
     customTrustBadgeText: data.custom_trust_badge_text || data.sensory_profile?.custom_trust_badge_text || undefined,
