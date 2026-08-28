@@ -65,6 +65,7 @@ export default function AdminProductsPage() {
 
   // Upload State
   const [uploadingImages, setUploadingImages] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -340,60 +341,87 @@ export default function AdminProductsPage() {
   };
 
   // Save Product (Create or Update)
-  const handleSaveProduct = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSaveProduct = async (e?: React.FormEvent) => {
+    if (e && typeof e.preventDefault === 'function') {
+      e.preventDefault();
+    }
+
+    // Step 1: Pre-validation with friendly Tab redirection
+    if (!nameAr || nameAr.trim() === '') {
+      showNotification('error', 'يرجى إدخال اسم المنتج باللغة العربية');
+      setModalTab('basic');
+      return;
+    }
+
+    if (!sku || sku.trim() === '') {
+      showNotification('error', 'يرجى إدخال رمز SKU للمنتج');
+      setModalTab('basic');
+      return;
+    }
+
+    if (price === undefined || isNaN(Number(price)) || Number(price) <= 0) {
+      showNotification('error', 'يرجى إدخال سعر بيع صحيح للمنتج');
+      setModalTab('pricing');
+      return;
+    }
+
+    setIsSaving(true);
+
     try {
+      const generatedSlug = slug
+        ? slug.toLowerCase().trim().replace(/\s+/g, '-')
+        : (nameEn ? nameEn.toLowerCase().trim().replace(/\s+/g, '-') : (nameAr || 'product').toLowerCase().trim().replace(/\s+/g, '-'));
+
       const payload = {
         id: editingProduct?.id,
-        nameAr,
-        nameEn,
-        slug: slug || nameEn.toLowerCase().replace(/\s+/g, '-'),
-        sku,
-        taglineAr,
-        categoryId,
+        nameAr: nameAr.trim(),
+        nameEn: nameEn?.trim() || nameAr.trim(),
+        slug: generatedSlug,
+        sku: sku.trim().toUpperCase(),
+        taglineAr: taglineAr?.trim() || null,
+        categoryId: categoryId || null,
         subcategoryId: subcategoryId || null,
         price: Number(price),
         compareAtPrice: compareAtPrice ? Number(compareAtPrice) : null,
-        costPrice: Number(costPrice),
+        costPrice: Number(costPrice || Math.round(Number(price) * 0.45)),
         currency: 'EGP',
-        stockQuantity: Number(stockQuantity),
-        lowStockThreshold: Number(lowStockThreshold),
-        weightGrams: Number(weightGrams),
+        stockQuantity: Number(stockQuantity ?? 0),
+        lowStockThreshold: Number(lowStockThreshold ?? 5),
+        weightGrams: Number(weightGrams ?? 500),
         originRegionAr: originRegionAr || 'وادي دوعن، حضرموت',
         originRegionEn: originRegionEn || 'Doan Valley, Hadramout',
         floralSourceAr: floralSourceAr || 'أشجار ومروج برية',
         floralSourceEn: floralSourceEn || 'Wild Flora',
-        shortDescAr,
-        fullStoryAr,
-        healthBenefit1Title,
-        healthBenefit1Desc,
-        healthBenefit2Title,
-        healthBenefit2Desc,
-        healthBenefit3Title,
-        healthBenefit3Desc,
-        healthBenefit4Title,
-        healthBenefit4Desc,
-        usageInstructionsAr: usageInstructionsAr || null,
-        storageInstructionsAr: storageInstructionsAr || null,
-        images,
-        isFeatured,
+        shortDescAr: shortDescAr?.trim() || nameAr.trim(),
+        fullStoryAr: fullStoryAr?.trim() || shortDescAr?.trim() || nameAr.trim(),
+        healthBenefit1Title: healthBenefit1Title?.trim() || '',
+        healthBenefit1Desc: healthBenefit1Desc?.trim() || '',
+        healthBenefit2Title: healthBenefit2Title?.trim() || '',
+        healthBenefit2Desc: healthBenefit2Desc?.trim() || '',
+        healthBenefit3Title: healthBenefit3Title?.trim() || '',
+        healthBenefit3Desc: healthBenefit3Desc?.trim() || '',
+        healthBenefit4Title: healthBenefit4Title?.trim() || '',
+        healthBenefit4Desc: healthBenefit4Desc?.trim() || '',
+        usageInstructionsAr: usageInstructionsAr?.trim() || null,
+        storageInstructionsAr: storageInstructionsAr?.trim() || null,
+        images: Array.isArray(images) && images.length > 0 ? images : ['/images/zaad-logo.png'],
+        isFeatured: Boolean(isFeatured),
         isAvailable: visibilityStatus === 'published' || visibilityStatus === 'out_of_stock',
-        visibilityStatus,
-        badge: badge || null,
+        visibilityStatus: visibilityStatus || 'published',
+        badge: badge?.trim() || null,
         attributes: Array.isArray(productAttributes) ? productAttributes : [],
         tabs: Array.isArray(productTabs) ? productTabs : [],
-        customShippingMessage: customShippingMessage || null,
-        customVatMessage: customVatMessage || null,
-        customTrustBadgeText: customTrustBadgeText || null
+        customShippingMessage: customShippingMessage?.trim() || null,
+        customVatMessage: customVatMessage?.trim() || null,
+        customTrustBadgeText: customTrustBadgeText?.trim() || null
       };
 
-      console.log('[CMS Product Editor] Submitting product payload to API:', {
-        action: editingProduct ? 'UPDATE' : 'CREATE',
-        productId: payload.id,
-        nameAr: payload.nameAr,
-        attributesCount: payload.attributes.length,
-        attributes: payload.attributes,
-        tabsCount: payload.tabs.length
+      console.log('[CMS Product Editor Save Pipeline] Starting save execution...');
+      console.log('[CMS Product Editor Save Pipeline] Product ID:', payload.id || 'NEW_PRODUCT');
+      console.log('[CMS Product Editor Save Pipeline] Submitted payload:', payload);
+      console.log('[CMS Product Editor Save Pipeline] Dynamic attributes payload:', {
+        count: payload.attributes.length,
+        items: payload.attributes
       });
 
       const res = await adminFetch('/api/products', {
@@ -402,20 +430,25 @@ export default function AdminProductsPage() {
         body: JSON.stringify(payload)
       });
 
+      console.log('[CMS Product Editor Save Pipeline] HTTP Response Status:', res.status, res.statusText);
+
       const json = await res.json();
-      console.log('[CMS Product Editor] Received API response:', json);
+      console.log('[CMS Product Editor Save Pipeline] API response body:', json);
 
       if (json.success) {
+        console.log('[CMS Product Editor Save Pipeline] Database update SUCCESS for ID:', json.data?.id || payload.id);
         showNotification('success', editingProduct ? 'تم حفظ وتحديث بيانات المنتج والخصائص الحيوية بنجاح' : 'تم إضافة المنتج الجديد بنجاح');
         setProductModalOpen(false);
         await loadData();
       } else {
-        console.error('[CMS Product Editor Error] API returned error:', json.error);
-        showNotification('error', json.error || 'فشل حفظ المنتج');
+        console.error('[CMS Product Editor Save Pipeline Error] API returned error:', json.error);
+        showNotification('error', json.error || 'فشل حفظ المنتج في قاعدة البيانات');
       }
     } catch (err: any) {
-      console.error('[CMS Product Editor Exception]:', err);
-      showNotification('error', err?.message || 'حدث خطأ أثناء الحفظ');
+      console.error('[CMS Product Editor Save Pipeline Exception]:', err);
+      showNotification('error', err?.message || 'حدث خطأ غير متوقع أثناء الحفظ');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -1811,9 +1844,11 @@ export default function AdminProductsPage() {
 
                 <button
                   type="submit"
-                  className="px-6 py-2.5 bg-zaad-900 hover:bg-zaad-800 text-gold-400 border border-gold-500/40 text-xs font-bold rounded-xl shadow-lg transition-all"
+                  disabled={isSaving}
+                  className="px-6 py-2.5 bg-zaad-900 hover:bg-zaad-800 text-gold-400 border border-gold-500/40 text-xs font-bold rounded-xl shadow-lg transition-all flex items-center gap-2 disabled:opacity-60"
                 >
-                  {editingProduct ? 'حفظ التعديلات في Supabase' : 'إيداع المحصول بالكتالوج'}
+                  {isSaving && <span className="w-3.5 h-3.5 border-2 border-gold-400 border-t-transparent rounded-full animate-spin" />}
+                  <span>{isSaving ? 'جاري الحفظ في Supabase...' : (editingProduct ? 'حفظ التعديلات في Supabase' : 'إيداع المحصول بالكتالوج')}</span>
                 </button>
               </div>
 
