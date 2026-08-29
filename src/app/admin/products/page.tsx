@@ -261,40 +261,56 @@ export default function AdminProductsPage() {
   // Direct Image File Upload
   const handleFileUpload = async (files: FileList | File[] | null) => {
     if (!files || files.length === 0) return;
+    if (uploadingImages) {
+      console.warn('[CMS Image Upload]: Upload already in progress. Ignoring duplicate trigger.');
+      return;
+    }
+
+    const validFiles: File[] = [];
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (file.size > 15 * 1024 * 1024) {
+        showNotification('error', `حجم الملف (${file.name}) يتجاوز 15 ميجابايت.`);
+        return;
+      }
+      validFiles.push(file);
+    }
+
+    if (validFiles.length === 0) return;
+
     setUploadingImages(true);
+    console.log(`[CMS Image Upload] Starting upload for ${validFiles.length} file(s)...`, validFiles.map(f => f.name));
 
     try {
       const formData = new FormData();
-      let count = 0;
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        if (file.size > 10 * 1024 * 1024) {
-          showNotification('error', `حجم الملف (${file.name}) يتجاوز 10 ميجابايت.`);
-          setUploadingImages(false);
-          return;
-        }
+      validFiles.forEach((file) => {
         formData.append('files', file);
-        count++;
-      }
+      });
 
       const res = await adminFetch('/api/admin/upload', {
         method: 'POST',
         body: formData
       });
 
+      console.log('[CMS Image Upload] HTTP Status:', res.status, res.statusText);
       const json = await res.json();
+      console.log('[CMS Image Upload] API Response:', json);
+
       if (json.success && Array.isArray(json.urls) && json.urls.length > 0) {
         setImages((prev) => {
           const isOnlyPlaceholder = prev.length === 1 && prev[0] === '/images/zaad-logo.png';
-          return isOnlyPlaceholder ? json.urls : [...prev, ...json.urls];
+          const newImagesList = isOnlyPlaceholder ? json.urls : [...prev, ...json.urls];
+          // Deduplicate by URL
+          return Array.from(new Set(newImagesList));
         });
         showNotification('success', `تم رفع ${json.urls.length} صورة بنجاح وإضافتها للمنتج.`);
       } else {
-        showNotification('error', json.error || 'فشل رفع الصور.');
+        console.error('[CMS Image Upload Error]:', json.error);
+        showNotification('error', json.error || 'فشل رفع الصور إلى السحابة.');
       }
     } catch (err: any) {
-      console.error('Upload error:', err);
-      showNotification('error', err?.message || 'حدث خطأ أثناء رفع الصور.');
+      console.error('[CMS Image Upload Exception]:', err);
+      showNotification('error', err?.message || 'حدث خطأ غير متوقع أثناء رفع الصور.');
     } finally {
       setUploadingImages(false);
       if (fileInputRef.current) {
@@ -1510,26 +1526,37 @@ export default function AdminProductsPage() {
 
                   {/* Direct File Upload & Drag-and-Drop Zone */}
                   <div
-                    onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                    onDragOver={(e) => { 
+                      e.preventDefault(); 
+                      if (!uploadingImages) setDragOver(true); 
+                    }}
                     onDragLeave={() => setDragOver(false)}
                     onDrop={(e) => {
                       e.preventDefault();
                       setDragOver(false);
-                      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                      if (!uploadingImages && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
                         handleFileUpload(e.dataTransfer.files);
                       }
                     }}
-                    className={`relative border-2 border-dashed rounded-3xl p-8 text-center transition-all duration-300 ${dragOver
-                      ? 'border-gold-500 bg-gold-500/10 scale-[1.01]'
-                      : 'border-ivory-300 bg-ivory-50/70 hover:border-gold-400 hover:bg-ivory-100/50'
-                      }`}
+                    className={`relative border-2 border-dashed rounded-3xl p-8 text-center transition-all duration-300 ${
+                      uploadingImages
+                        ? 'border-gold-400 bg-gold-50/50 cursor-wait opacity-90'
+                        : dragOver
+                        ? 'border-gold-500 bg-gold-500/10 scale-[1.01]'
+                        : 'border-ivory-300 bg-ivory-50/70 hover:border-gold-400 hover:bg-ivory-100/50'
+                    }`}
                   >
                     <input
                       ref={fileInputRef}
                       type="file"
                       multiple
-                      accept="image/jpeg,image/png,image/webp,image/jpg"
-                      onChange={(e) => handleFileUpload(e.target.files)}
+                      disabled={uploadingImages}
+                      accept="image/jpeg,image/png,image/webp,image/jpg,image/gif,image/svg+xml,image/avif"
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files.length > 0) {
+                          handleFileUpload(e.target.files);
+                        }
+                      }}
                       className="hidden"
                     />
 
@@ -1543,9 +1570,12 @@ export default function AdminProductsPage() {
                       </div>
 
                       {uploadingImages ? (
-                        <div className="space-y-1">
+                        <div className="space-y-2 max-w-sm mx-auto">
                           <p className="font-bold text-sm text-zaad-900">جاري معالجة ورفع الصور إلى السحابة (Supabase Storage)...</p>
-                          <p className="text-xs text-charcoal-700/60 font-mono">يرجى الانتظار بضع ثوانٍ</p>
+                          <div className="w-full bg-ivory-200 h-2 rounded-full overflow-hidden">
+                            <div className="bg-gradient-to-r from-gold-500 to-zaad-900 h-full rounded-full animate-pulse w-3/4 mx-auto" />
+                          </div>
+                          <p className="text-xs text-charcoal-700/60 font-mono">يرجى الانتظار، لا تغلق النافذة...</p>
                         </div>
                       ) : (
                         <div className="space-y-2">
@@ -1559,8 +1589,14 @@ export default function AdminProductsPage() {
                           <div className="pt-2">
                             <button
                               type="button"
-                              onClick={() => fileInputRef.current?.click()}
-                              className="bg-gradient-to-r from-zaad-900 to-zaad-950 text-gold-400 hover:text-gold-300 font-bold px-6 py-2.5 rounded-xl text-xs border border-gold-500/40 shadow-lg flex items-center gap-2 mx-auto transition-all hover:scale-105"
+                              disabled={uploadingImages}
+                              onClick={() => {
+                                if (fileInputRef.current) {
+                                  fileInputRef.current.value = '';
+                                  fileInputRef.current.click();
+                                }
+                              }}
+                              className="bg-gradient-to-r from-zaad-900 to-zaad-950 text-gold-400 hover:text-gold-300 font-bold px-6 py-2.5 rounded-xl text-xs border border-gold-500/40 shadow-lg flex items-center gap-2 mx-auto transition-all hover:scale-105 disabled:opacity-50"
                             >
                               <ImagePlus className="w-4 h-4" />
                               <span>اختيار صور من الجهاز (Upload Images)</span>
@@ -1568,9 +1604,9 @@ export default function AdminProductsPage() {
                           </div>
 
                           <div className="pt-2 text-[11px] text-charcoal-700/60 flex items-center justify-center gap-4">
-                            <span>الصيغ المدعومة: JPG, PNG, WEBP</span>
+                            <span>الصيغ المدعومة: JPG, PNG, WEBP, SVG</span>
                             <span>•</span>
-                            <span>الحد الأقصى للملف: 10 ميجابايت</span>
+                            <span>الحد الأقصى للملف: 15 ميجابايت</span>
                             <span>•</span>
                             <span>يدعم رفع عدة صور معاً</span>
                           </div>
