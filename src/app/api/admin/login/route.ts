@@ -44,7 +44,9 @@ export async function POST(request: NextRequest) {
 
     if (error || !data.user) {
       // Record failed attempt
-      const attempts = (attemptRecord ? attemptRecord.attempts : 0) + 1;
+      const now = Date.now();
+      const existing = rateLimitMap.get(rateLimitKey);
+      const attempts = (existing ? existing.attempts : 0) + 1;
       const lockUntil = attempts >= MAX_FAILED_ATTEMPTS ? now + LOCKOUT_DURATION_MS : 0;
       rateLimitMap.set(rateLimitKey, { attempts, lockUntil });
 
