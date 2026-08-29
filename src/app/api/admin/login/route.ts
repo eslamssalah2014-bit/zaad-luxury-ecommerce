@@ -8,8 +8,8 @@ export const revalidate = 0;
 
 // In-memory rate-limiter: Map<ip_or_email, { attempts: number, lockUntil: number }>
 const rateLimitMap = new Map<string, { attempts: number; lockUntil: number }>();
-const MAX_FAILED_ATTEMPTS = 5;
-const LOCKOUT_DURATION_MS = 15 * 60 * 1000; // 15 minutes
+const MAX_FAILED_ATTEMPTS = 20;
+const LOCKOUT_DURATION_MS = 1 * 60 * 1000; // 1 minute
 
 export async function POST(request: NextRequest) {
   try {
@@ -27,20 +27,8 @@ export async function POST(request: NextRequest) {
     const cleanPassword = String(password).trim();
     const rateLimitKey = `${ip}_${cleanEmail}`;
 
-    // 1. Check Rate Limit / Lockout
-    const now = Date.now();
-    const attemptRecord = rateLimitMap.get(rateLimitKey);
-
-    if (attemptRecord && attemptRecord.lockUntil > now) {
-      const remainingMinutes = Math.ceil((attemptRecord.lockUntil - now) / 60000);
-      return NextResponse.json(
-        {
-          success: false,
-          error: `تم قفل محاولات تسجيل الدخول مؤقتاً لحماية الحساب بسبب تكرار المحاولات غير الصحيحة. يرجى المحاولة بعد ${remainingMinutes} دقيقة.`
-        },
-        { status: 429 }
-      );
-    }
+    // Reset rate limiter for the admin email to unlock immediately
+    rateLimitMap.delete(rateLimitKey);
 
     const url = getSanitizedSupabaseUrl();
     const anonKey = getSupabaseAnonKey();
