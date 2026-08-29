@@ -175,12 +175,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Ensure bucket exists
-    try {
-      await supabaseAdmin.storage.createBucket('product-images', { public: true });
-    } catch {
-      // Bucket exists
-    }
+    console.log(`[API CMS Media Upload] Received ${rawFiles.length} file(s) for folder: ${folder}`);
 
     const uploadedItems: CmsMediaItem[] = [];
 

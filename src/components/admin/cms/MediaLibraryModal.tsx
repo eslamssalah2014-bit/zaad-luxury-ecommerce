@@ -17,7 +17,7 @@ import {
   Filter
 } from 'lucide-react';
 import { CmsMediaItem, MediaFolder } from '@/types/cms';
-import { supabase } from '@/lib/supabase/client';
+import { adminFetch } from '@/lib/auth/adminFetch';
 
 interface MediaLibraryModalProps {
   isOpen: boolean;
@@ -59,7 +59,7 @@ export default function MediaLibraryModal({
   const fetchMedia = React.useCallback(async () => {
     try {
       setLoading(true);
-      const res = await fetch(`/api/cms/media?folder=${selectedFolder}&search=${encodeURIComponent(searchQuery)}`);
+      const res = await adminFetch(`/api/cms/media?folder=${selectedFolder}&search=${encodeURIComponent(searchQuery)}`);
       const json = await res.json();
       if (json.success && Array.isArray(json.data)) {
         setMediaList(json.data);
@@ -81,12 +81,13 @@ export default function MediaLibraryModal({
 
   const handleFileUpload = async (files: FileList | File[]) => {
     if (!files || files.length === 0) return;
+    if (uploading) return;
+
     setUploading(true);
     setUploadError('');
     setUploadSuccess('');
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
       const formData = new FormData();
       const targetFolder = selectedFolder === 'all' ? 'general' : selectedFolder;
       formData.append('folder', targetFolder);
@@ -95,14 +96,8 @@ export default function MediaLibraryModal({
         formData.append('files', file);
       });
 
-      const headers: Record<string, string> = {};
-      if (session?.access_token) {
-        headers['Authorization'] = `Bearer ${session.access_token}`;
-      }
-
-      const res = await fetch('/api/cms/media', {
+      const res = await adminFetch('/api/cms/media', {
         method: 'POST',
-        headers,
         body: formData
       });
 
@@ -123,6 +118,9 @@ export default function MediaLibraryModal({
       setUploadError(err.message || 'حدث خطأ أثناء رفع الملف');
     } finally {
       setUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
@@ -143,15 +141,8 @@ export default function MediaLibraryModal({
     if (!confirm(`هل أنت متأكد من حذف الصورة "${item.name}"؟`)) return;
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const headers: Record<string, string> = {};
-      if (session?.access_token) {
-        headers['Authorization'] = `Bearer ${session.access_token}`;
-      }
-
-      const res = await fetch(`/api/cms/media?id=${item.id}&url=${encodeURIComponent(item.url)}`, {
-        method: 'DELETE',
-        headers
+      const res = await adminFetch(`/api/cms/media?id=${item.id}&url=${encodeURIComponent(item.url)}`, {
+        method: 'DELETE'
       });
       const json = await res.json();
       if (json.success) {
