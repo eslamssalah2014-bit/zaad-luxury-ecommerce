@@ -65,6 +65,8 @@ export default function AdminProductsPage() {
 
   // Upload State
   const [uploadingImages, setUploadingImages] = useState(false);
+  const [mediaUploadError, setMediaUploadError] = useState<string | null>(null);
+  const [mediaUploadSuccess, setMediaUploadSuccess] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -266,11 +268,20 @@ export default function AdminProductsPage() {
       return;
     }
 
+    setMediaUploadError(null);
+    setMediaUploadSuccess(null);
+
     const validFiles: File[] = [];
+    const MAX_SIZE = 10 * 1024 * 1024; // 10MB Supabase bucket limit
+
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      if (file.size > 15 * 1024 * 1024) {
-        showNotification('error', `حجم الملف (${file.name}) يتجاوز 15 ميجابايت.`);
+      console.log(`[CMS Image Upload] 1. File Selected: ${file.name} | Size: ${(file.size / 1024 / 1024).toFixed(2)} MB | MIME: ${file.type}`);
+
+      if (file.size > MAX_SIZE) {
+        const errorMsg = `حجم الملف (${file.name}) هو ${(file.size / 1024 / 1024).toFixed(2)} ميجابايت، ويتجاوز الحد الأقصى المسموح (10 ميجابايت). يرجى ضغط الصورة أو اختيار صورة أصغر.`;
+        setMediaUploadError(errorMsg);
+        showNotification('error', errorMsg);
         return;
       }
       validFiles.push(file);
@@ -279,7 +290,7 @@ export default function AdminProductsPage() {
     if (validFiles.length === 0) return;
 
     setUploadingImages(true);
-    console.log(`[CMS Image Upload] Starting upload for ${validFiles.length} file(s)...`, validFiles.map(f => f.name));
+    console.log(`[CMS Image Upload] 2. Starting upload process for ${validFiles.length} file(s)...`);
 
     try {
       const formData = new FormData();
@@ -287,30 +298,38 @@ export default function AdminProductsPage() {
         formData.append('files', file);
       });
 
+      console.log('[CMS Image Upload] 3. Dispatching multipart request to /api/admin/upload...');
       const res = await adminFetch('/api/admin/upload', {
         method: 'POST',
         body: formData
       });
 
-      console.log('[CMS Image Upload] HTTP Status:', res.status, res.statusText);
+      console.log('[CMS Image Upload] 4. Server HTTP Status:', res.status, res.statusText);
       const json = await res.json();
-      console.log('[CMS Image Upload] API Response:', json);
+      console.log('[CMS Image Upload] 5. Server Response Body:', json);
 
-      if (json.success && Array.isArray(json.urls) && json.urls.length > 0) {
+      if (res.ok && json.success && Array.isArray(json.urls) && json.urls.length > 0) {
         setImages((prev) => {
           const isOnlyPlaceholder = prev.length === 1 && prev[0] === '/images/zaad-logo.png';
           const newImagesList = isOnlyPlaceholder ? json.urls : [...prev, ...json.urls];
           // Deduplicate by URL
           return Array.from(new Set(newImagesList));
         });
-        showNotification('success', `تم رفع ${json.urls.length} صورة بنجاح وإضافتها للمنتج.`);
+        const successMsg = `تم رفع ${json.urls.length} صورة بنجاح إلى سحابة Supabase Storage.`;
+        setMediaUploadSuccess(successMsg);
+        showNotification('success', successMsg);
+        console.log('[CMS Image Upload] ✓ Upload Completed Successfully. URLs:', json.urls);
       } else {
-        console.error('[CMS Image Upload Error]:', json.error);
-        showNotification('error', json.error || 'فشل رفع الصور إلى السحابة.');
+        const errMsg = json.error || `فشل الرفع من الخادم (رمز الحالة: ${res.status})`;
+        console.error('[CMS Image Upload Failure]:', { status: res.status, error: json.error, json });
+        setMediaUploadError(errMsg);
+        showNotification('error', errMsg);
       }
     } catch (err: any) {
       console.error('[CMS Image Upload Exception]:', err);
-      showNotification('error', err?.message || 'حدث خطأ غير متوقع أثناء رفع الصور.');
+      const exceptionMsg = err?.message || 'حدث خطأ في شبكة الاتصال أثناء محاولة الرفع.';
+      setMediaUploadError(exceptionMsg);
+      showNotification('error', exceptionMsg);
     } finally {
       setUploadingImages(false);
       if (fileInputRef.current) {
@@ -1523,6 +1542,43 @@ export default function AdminProductsPage() {
               {/* TAB 4: MEDIA GALLERY & CLOUD STORAGE UPLOAD */}
               {modalTab === 'media' && (
                 <div className="space-y-6 animate-fade-in">
+
+                  {/* Inline Upload Error Banner */}
+                  {mediaUploadError && (
+                    <div className="p-4 rounded-2xl bg-red-950/95 border border-red-500/80 text-red-100 shadow-xl flex items-start justify-between gap-3 animate-shake">
+                      <div className="flex items-start gap-2.5">
+                        <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-bold text-xs text-red-300 mb-0.5">خطأ في رفع الصورة إلى Supabase Storage:</p>
+                          <p className="text-xs font-mono leading-relaxed select-all">{mediaUploadError}</p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setMediaUploadError(null)}
+                        className="text-red-400 hover:text-white p-1 rounded-lg transition-colors text-xs font-bold"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Inline Upload Success Banner */}
+                  {mediaUploadSuccess && (
+                    <div className="p-3.5 rounded-2xl bg-green-950/90 border border-green-500/60 text-green-200 shadow-lg flex items-center justify-between gap-3 animate-fade-in">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-green-400 shrink-0" />
+                        <span className="text-xs font-bold">{mediaUploadSuccess}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setMediaUploadSuccess(null)}
+                        className="text-green-400 hover:text-white p-1 rounded-lg transition-colors text-xs font-bold"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  )}
 
                   {/* Direct File Upload & Drag-and-Drop Zone */}
                   <div
