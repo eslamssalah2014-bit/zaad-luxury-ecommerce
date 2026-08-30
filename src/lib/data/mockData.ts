@@ -6,7 +6,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     nameAr: 'أعسال السدر النادرة',
     nameEn: 'Rare Sidr Honeys',
     slug: 'rare-sidr',
-    descriptionAr: 'أنقى أنواع عسل السدر المقطوف من أودية دوعن وجبال عسير العذراء وفق أعلى معايير النقاء الملكي.',
+    descriptionAr: 'أنقى أنواع عسل السدر المقطوف من أصفى المحميات والمناحل العذراء وفق أعلى معايير النقاء الملكي.',
     imageUrl: '/images/zaad-nature-honey-clover.jpg',
     sortOrder: 1,
     itemCount: 4,
@@ -48,9 +48,9 @@ export const INITIAL_PRODUCTS: Product[] = [
     id: 'prod-1',
     slug: 'royal-sidr-doan',
     sku: 'ZD-SDR-500',
-    nameAr: 'عسل سدر دوعني ملكي فاخر',
-    nameEn: 'Royal Doani Sidr Honey',
-    taglineAr: 'تاج الأعسال النادرة، مقطوف يدوياً من أعالي وادي دوعن الخالد بنقاء استثنائي.',
+    nameAr: 'عسل سدر ملكي فاخر',
+    nameEn: 'Royal Sidr Honey',
+    taglineAr: 'تاج الأعسال النادرة، مقطوف يدوياً من أشجار السدر البرية بنقاء استثنائي.',
     categoryId: 'cat-1',
     categoryNameAr: 'أعسال السدر النادرة',
     price: 490,
@@ -60,12 +60,12 @@ export const INITIAL_PRODUCTS: Product[] = [
     reservedStock: 4,
     lowStockThreshold: 10,
     weightGrams: 500,
-    originRegionAr: 'وادي دوعن، حضرموت',
-    originRegionEn: 'Doan Valley, Hadramout',
+    originRegionAr: '',
+    originRegionEn: '',
     floralSourceAr: 'شجر السدر البري المعمر (Ziziphus Spina-Christi)',
     floralSourceEn: 'Ancient Wild Sidr Trees',
     shortDescAr: 'عسل سدر أحادي الزهرة بنسبة نقاء لقاح تتجاوز 98.6%، يمتاز بقوام حريري ثقيل ولون كهرماني ذهبي ونكهة خشبية دافئة لا تضاهى.',
-    fullStoryAr: `في قلب أودية دوعن المعزولة عن أي مصادر تلوث، حيث تتجذر أشجار السدر لقرون طويلة في تربة غنية بالمعادن، يجمع نحالونا المعتمدون هذا الرحيق النادر في فترة إزهار وجيزة لا تتجاوز بضعة أسابيع في العام.
+    fullStoryAr: `في قلب المحميات الطبيعية المعزولة عن أي مصادر تلوث، حيث تتجذر أشجار السدر لقرون طويلة في تربة غنية بالمعادن، يجمع نحالونا المعتمدون هذا الرحيق النادر في فترة إزهار وجيزة لا تتجاوز بضعة أسابيع في العام.
     
     يمر كل برطمان بعملية فلترة يدوية باردة ثلاثية المراحل دون أي تسخين أو معالجة حرارية للحفاظ على الإنزيمات الحية ومركبات الفلافونويد الفعالة. هذا الإصدار يخضع لمعايير جودة صارمة توثق خلوه التام من السكريات المضافة والمتبقيات الكيميائية.`,
     healthBenefitsAr: [
@@ -262,8 +262,8 @@ export const INITIAL_PRODUCTS: Product[] = [
     weightGrams: 1500,
     originRegionAr: 'إصدار منتقى من أفضل محاصيل الجزيرة وآسيا',
     originRegionEn: 'Exclusive Multi-Valley Collection',
-    floralSourceAr: 'سدر دوعني + سمر جبلي + مروج بيضاء',
-    floralSourceEn: 'Doani Sidr + Mountain Samar + White Meadow',
+    floralSourceAr: 'سدر ملكي + سمر جبلي + مروج بيضاء',
+    floralSourceEn: 'Royal Sidr + Mountain Samar + White Meadow',
     shortDescAr: 'المجموعة الإهدائية الأكثر فخامة. تتضمن 3 برطمانات كريستالية معتمة لحفظ النقاء، مع ملعقتين محفورتين من خشب الزيتون المعمر وبطاقة إهداء مذهبة.',
     fullStoryAr: `صممت مجموعة الاحتياط الملكي لتمثل قمة الفخامة العربية والضيافة الرفيعة. تم تصنيع كل صندوق يدوياً من خشب الجوز الطبيعي المبطن بالمخمل الأخضر الملكي، مختوماً بشعار زاد المذهب.
     
@@ -403,7 +403,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     ],
     pairingSuggestionsAr: [
       'جرام واحد تحت اللسان صباحاً قبل الإفطار',
-      'خلطه مع عسل السدر الدوعني لتركيبة طاقة ملكية'
+      'خلطه مع عسل السدر الملكي لتركيبة طاقة حيوية'
     ],
     storageInstructionsAr: 'يحفظ مجمدًا أو مبردًا في الثلاجة (تحت 4 درجات مئوية).',
     images: [
@@ -507,7 +507,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     sku: 'ZD-ROYAL-500',
     nameAr: 'عسل السدر الملكي التراثي النادر',
     nameEn: 'Royal Reserve Heritage Sidr Honey',
-    taglineAr: 'خلاصة قطاف أشجار السدر المعمرة في دوعن، معبأ يدوياً بإصدار مرقم محدود.',
+    taglineAr: 'خلاصة قطاف أشجار السدر المعمرة، معبأ يدوياً بإصدار مرقم محدود.',
     categoryId: 'cat-1',
     categoryNameAr: 'أعسال السدر النادرة',
     price: 650,
@@ -517,12 +517,12 @@ export const INITIAL_PRODUCTS: Product[] = [
     reservedStock: 2,
     lowStockThreshold: 5,
     weightGrams: 500,
-    originRegionAr: 'أودية دوعن العتيقة، حضرموت',
-    originRegionEn: 'Ancient Doan Valleys, Hadramout',
+    originRegionAr: '',
+    originRegionEn: '',
     floralSourceAr: 'أشجار السدر العتيقة المعمرة (Ziziphus Spina-Christi)',
     floralSourceEn: 'Ancient Wild Sidr Trees',
     shortDescAr: 'الإصدار الملكي التراثي من عسل السدر الصافي، يتميز بكثافة لزجة استثنائية ونكهة خشبية فخمة تدوم طويلاً في الفم مع نقاء أحادي الزهرة يفوق 99.8%.',
-    fullStoryAr: `يمثل هذا الإصدار أرقى ما تجود به طبيعة وادي دوعن، حيث تقطف الأقراص الشمعية يدوياً من مناحل تقليدية معزولة عن أي شوائب بيئية. يمر العسل باختبارات فحص صارمة لضمان نقاء أحادي الزهرة بنسبة تتجاوز 99% وتوثيق خلوه من أي تغذية سكرية صناعية.`,
+    fullStoryAr: `يمثل هذا الإصدار أرقى ما تجود به الطبيعة العذراء، حيث تقطف الأقراص الشمعية يدوياً من مناحل تقليدية معزولة عن أي شوائب بيئية. يمر العسل باختبارات فحص صارمة لضمان نقاء أحادي الزهرة بنسبة تتجاوز 99% وتوثيق خلوه من أي تغذية سكرية صناعية.`,
     healthBenefitsAr: [
       'أعلى تركيز لمركبات الفلافونويد ومضادات الأكسدة الفائقة',
       'ترميم الغشاء المخاطي ودعم الجهاز الهضمي والقولون',
@@ -666,7 +666,7 @@ export const INITIAL_ORDERS: Order[] = [
       },
       {
         productId: 'prod-1',
-        productNameAr: 'عسل سدر دوعني ملكي فاخر',
+        productNameAr: 'عسل سدر ملكي فاخر',
         productSlug: 'royal-sidr-doan',
         productImage: '/images/zaad-nature-honey-clover.jpg',
         price: 490,
@@ -727,7 +727,7 @@ export const INITIAL_ORDERS: Order[] = [
     items: [
       {
         productId: 'prod-1',
-        productNameAr: 'عسل سدر دوعني ملكي فاخر',
+        productNameAr: 'عسل سدر ملكي فاخر',
         productSlug: 'royal-sidr-doan',
         productImage: '/images/zaad-nature-honey-clover.jpg',
         price: 490,
@@ -873,7 +873,7 @@ export const INITIAL_REVIEWS: Review[] = [
   {
     id: 'rev-1',
     productId: 'prod-1',
-    productNameAr: 'عسل سدر دوعني ملكي فاخر',
+    productNameAr: 'عسل سدر ملكي فاخر',
     customerName: 'عبدالرحمن بن خالد القحطاني',
     rating: 5,
     titleAr: 'أفضل عسل سدر تذوقته بلا مبالغة',
@@ -885,7 +885,7 @@ export const INITIAL_REVIEWS: Review[] = [
   {
     id: 'rev-2',
     productId: 'prod-1',
-    productNameAr: 'عسل سدر دوعني ملكي فاخر',
+    productNameAr: 'عسل سدر ملكي فاخر',
     customerName: 'سارة بنت سلطان المهيري',
     rating: 5,
     titleAr: 'فخامة هادئة وتجربة استثنائية',
@@ -928,7 +928,7 @@ export const INITIAL_CMS: CmsSection[] = [
     titleAr: 'قصة زاد وفلسفة الفخامة الهادئة',
     subtitleAr: 'من الأودية العذراء إلى طاولتكم',
     headlineAr: 'رحلة البحث عن القطرة الأكثر نقاءً في العالم',
-    bodyAr: 'تبدأ حكايتنا في أودية دوعن وجبال عسير الوعرة، حيث لا تصل آليات المدن ولا تتدخل الكيمياء الحديثة. نحرص على كل قطرة لتصلكم نقية وحية.',
+    bodyAr: 'تبدأ حكايتنا في أصفى المحميات والمناحل الطبيعية، حيث لا تصل آليات المدن ولا تتدخل الكيمياء الحديثة. نحرص على كل قطرة لتصلكم نقية وحية.',
     isActive: true,
     updatedAt: '2026-08-22T10:00:00Z'
   }

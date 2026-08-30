@@ -183,7 +183,7 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
     addToCartButtonTextAr: 'اقتناء',
     quickViewButtonTextAr: 'تفاصيل المنتج الطبيعي',
     showLabBatchTag: false,
-    showOriginRegionTag: true,
+    showOriginRegionTag: false,
     showRatingStars: true,
     emptyStateTitleAr: 'لم يتم العثور على مقتنيات مطابقة',
     emptyStateDescAr: 'جرب تغيير معايير البحث أو اختيار فئة أخرى لاستعراض منتجات زاد.',
@@ -232,8 +232,8 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
       { id: 'attr-1', nameAr: 'اللون', valueAr: 'عنبري ذهبي نقي', icon: 'droplet', isVisible: true, order: 1 },
       { id: 'attr-2', nameAr: 'الرائحة', valueAr: 'عطرية زهرية دافئة', icon: 'sparkles', isVisible: true, order: 2 },
       { id: 'attr-3', nameAr: 'القوام', valueAr: 'حريري كثيف ومتماسك', icon: 'feather', isVisible: true, order: 3 },
-      { id: 'attr-4', nameAr: 'المصدر', valueAr: 'أودية ومحميات طبيعية عذراء', icon: 'map-pin', isVisible: true, order: 4 },
-      { id: 'attr-5', nameAr: 'بلد المنشأ', valueAr: 'جمهورية مصر العربية / وادي دوعن', icon: 'shield', isVisible: true, order: 5 },
+      { id: 'attr-4', nameAr: 'المصدر', valueAr: 'محميات ومناحل طبيعية نقية', icon: 'map-pin', isVisible: true, order: 4 },
+      { id: 'attr-5', nameAr: 'بلد المنشأ', valueAr: 'جمهورية مصر العربية', icon: 'shield', isVisible: true, order: 5 },
       { id: 'attr-6', nameAr: 'الوزن الصافي', valueAr: '500 جرام', icon: 'award', isVisible: true, order: 6 },
     ],
 
@@ -399,13 +399,13 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
         id: 'test-1',
         customerName: 'د. خالد بن سلطان آل سعود',
         customerTitleAr: 'مقتني معتمد لكبار الشخصيات',
-        headingAr: 'نقاء دوعني استثنائي لا يقارن',
-        contentAr: 'أقتني الأعسال النادرة منذ أكثر من عقدين، ولكن عسل السدر الدوعني من دار زاد فاق كل التوقعات بقوامه المخملي ورائحته الزكية ونقائه الصارم.',
+        headingAr: 'نقاء ملكي استثنائي لا يقارن',
+        contentAr: 'أقتني الأعسال النادرة منذ أكثر من عقدين، ولكن عسل السدر الملكي من دار زاد فاق كل التوقعات بقوامه المخملي ورائحته الزكية ونقائه الصارم.',
         rating: 5,
         customerImageUrl: '',
         isVisible: true,
         order: 1,
-        productPurchasedAr: 'عسل سدر دوعني ملكي معتق'
+        productPurchasedAr: 'عسل سدر ملكي معتق'
       },
       {
         id: 'test-2',
@@ -451,7 +451,7 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
   // 8. SEO Configuration
   seo: {
     defaultMetaTitle: 'زاد | دار النقاء الطبيعي للأعسال الفاخرة',
-    defaultMetaDescription: 'زاد (ZAAD) تقدم أفخر أنواع العسل الطبيعي النقي 100% من أودية دوعن وجبال عسير العذراء وفق أعلى معايير النقاء والجودة.',
+    defaultMetaDescription: 'زاد (ZAAD) تقدم أفخر أنواع العسل الطبيعي النقي 100% من أصفى المناحل والمحميات العذراء وفق أعلى معايير النقاء والجودة.',
     defaultOgImage: '/images/zaad-story-hero-banner.jpg',
     pages: [
       {
@@ -460,13 +460,13 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
         metaTitle: 'زاد | دار النقاء الطبيعي للأعسال النادرة',
         metaDescription: 'اكتشف أنقى أنواع العسل الطبيعي من دار زاد.',
         ogImageUrl: '/images/zaad-story-hero-banner.jpg',
-        keywords: ['عسل زاد', 'عسل سدر ملكي', 'عسل طبيعي نقي', 'عسل دوعني', 'أعسال فاخرة']
+        keywords: ['عسل زاد', 'عسل سدر ملكي', 'عسل طبيعي نقي', 'أعسال فاخرة']
       },
       {
         pagePath: '/shop',
         pageNameAr: 'المنتجات الطبيعية (المتجر)',
         metaTitle: 'المنتجات الطبيعية | تسوق أفخر أعسال دار زاد',
-        metaDescription: 'تسوق عسل السدر الدوعني وعسل السمر البري ومجموعات الهدايا الفاخرة.',
+        metaDescription: 'تسوق عسل السدر الملكي وعسل السمر البري ومجموعات الهدايا الفاخرة.',
         ogImageUrl: '/images/zaad-nature-honey-clover.jpg',
         keywords: ['شراء عسل سدر', 'عسل سمر', 'هدايا عسل', 'عسل نوارة']
       },
@@ -491,7 +491,7 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
     textColor: '#fbf8f1',
     accentColor: '#c59b27',
     badges: [
-      { id: 'b1', titleAr: 'نقاء دوعني موثق 100%', subtitleAr: 'جودة استثنائية لكل صنف', icon: 'award', isVisible: true, order: 1 },
+      { id: 'b1', titleAr: 'نقاء طبيعي موثق 100%', subtitleAr: 'جودة استثنائية لكل صنف', icon: 'award', isVisible: true, order: 1 },
       { id: 'b2', titleAr: 'إنزيمات حية كاملة', subtitleAr: 'بدون أي بسترة أو تسخين حراري', icon: 'shield', isVisible: true, order: 2 },
       { id: 'b3', titleAr: 'شحن لجميع المحافظات', subtitleAr: 'توصيل سريع لجميع محافظات مصر', icon: 'truck', isVisible: true, order: 3 },
       { id: 'b4', titleAr: 'مطابقة مالية فورية', subtitleAr: 'تحقق آمن وفوري لإيصالات التحويل', icon: 'lock', isVisible: true, order: 4 }

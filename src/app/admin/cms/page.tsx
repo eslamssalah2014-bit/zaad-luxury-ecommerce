@@ -4363,7 +4363,7 @@ export default function AdminCmsPage() {
                     customerImageUrl: '',
                     isVisible: true,
                     order: (settings.testimonials?.items?.length || 0) + 1,
-                    productPurchasedAr: 'عسل سدر دوعني ملكي'
+                    productPurchasedAr: 'عسل سدر ملكي فاخر'
                   };
                   setSettings({
                     ...settings,
@@ -4570,7 +4570,7 @@ export default function AdminCmsPage() {
                           setSettings({ ...settings, testimonials: { ...settings.testimonials, items: updated } });
                         }}
                         className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 font-semibold text-zaad-900"
-                        placeholder="مثال: نقاء دوعني استثنائي لا يقارن"
+                        placeholder="مثال: نقاء ملكي استثنائي لا يقارن"
                       />
                     </div>
 

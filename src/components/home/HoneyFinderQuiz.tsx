@@ -44,7 +44,7 @@ export default function HoneyFinderQuiz({ products }: HoneyFinderQuizProps) {
     } else if (objective === 'energy') {
       match = products.find(p => p.slug === 'pure-royal-jelly-extract');
     } else {
-      match = products.find(p => p.slug === 'royal-sidr-doan');
+      match = products.find(p => p.slug === 'royal' || p.slug === 'royal-sidr-doan' || p.slug.includes('sidr')) || products[0];
     }
     setRecommendation(match || products[0]);
     setStep(4);

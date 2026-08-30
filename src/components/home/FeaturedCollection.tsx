@@ -129,12 +129,8 @@ export default function FeaturedCollection({ products }: FeaturedCollectionProps
                 {/* Content Container */}
                 <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
                   <div className="space-y-2">
-                    {/* Origin & Rating */}
-                    <div className="flex items-center justify-between text-xs text-charcoal-700/70">
-                      <span className="flex items-center gap-1 text-gold-700 font-medium">
-                        <ShieldCheck className="w-3.5 h-3.5 text-gold-600" />
-                        <span>{product.originRegionAr}</span>
-                      </span>
+                    {/* Rating */}
+                    <div className="flex items-center justify-end text-xs text-charcoal-700/70">
                       <div className="flex items-center gap-1">
                         <Star className="w-3.5 h-3.5 fill-gold-500 text-gold-500" />
                         <span className="font-bold text-zaad-900">{product.rating}</span>

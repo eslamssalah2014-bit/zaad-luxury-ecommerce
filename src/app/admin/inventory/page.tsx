@@ -468,7 +468,7 @@ export default function AdminInventoryPage() {
                   required
                   value={adjustReason}
                   onChange={(e) => setAdjustReason(e.target.value)}
-                  placeholder="مثال: توريد حصاد موسم 2026 من وادي دوعن"
+                  placeholder="مثال: توريد حصاد جديد معتمد لموسم 2026"
                   className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 focus:border-gold-500 focus:outline-none"
                 />
               </div>

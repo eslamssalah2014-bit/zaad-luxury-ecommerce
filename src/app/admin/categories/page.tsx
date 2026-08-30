@@ -547,7 +547,7 @@ export default function AdminCategoriesPage() {
                   required
                   value={catNameAr}
                   onChange={(e) => setCatNameAr(e.target.value)}
-                  placeholder="مثال: عسل السدر الدوعني الملكي"
+                  placeholder="مثال: عسل السدر الملكي الفاخر"
                   className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 focus:border-gold-500 focus:outline-none"
                 />
               </div>
@@ -669,7 +669,7 @@ export default function AdminCategoriesPage() {
                   required
                   value={subNameAr}
                   onChange={(e) => setSubNameAr(e.target.value)}
-                  placeholder="مثال: عسل سدر دوعني صافي"
+                  placeholder="مثال: عسل سدر صافي نقي"
                   className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 focus:border-gold-500 focus:outline-none"
                 />
               </div>
@@ -680,8 +680,8 @@ export default function AdminCategoriesPage() {
                   type="text"
                   value={subNameEn}
                   onChange={(e) => setSubNameEn(e.target.value)}
-                  placeholder="e.g. Pure Doan Sidr Honey"
-                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 focus:border-gold-500 focus:outline-none font-mono"
+                  placeholder="e.g. Pure Sidr Honey"
+                  className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 focus:border-gold-500 focus:outline-none"
                 />
               </div>
 
@@ -693,7 +693,7 @@ export default function AdminCategoriesPage() {
                     required
                     value={subSlug}
                     onChange={(e) => setSubSlug(e.target.value)}
-                    placeholder="pure-doan-sidr"
+                    placeholder="pure-sidr-honey"
                     className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 focus:border-gold-500 focus:outline-none font-mono"
                   />
                 </div>

@@ -85,8 +85,8 @@ export default function AdminProductsPage() {
   const [stockQuantity, setStockQuantity] = useState<number>(25);
   const [lowStockThreshold, setLowStockThreshold] = useState<number>(5);
   const [weightGrams, setWeightGrams] = useState<number>(500);
-  const [originRegionAr, setOriginRegionAr] = useState('حضرموت - وادي دوعن');
-  const [originRegionEn, setOriginRegionEn] = useState('Hadramout - Doan Valley');
+  const [originRegionAr, setOriginRegionAr] = useState('');
+  const [originRegionEn, setOriginRegionEn] = useState('');
   const [floralSourceAr, setFloralSourceAr] = useState('أزهار أشجار السدر البرية الجبلية');
   const [floralSourceEn, setFloralSourceEn] = useState('Wild Mountain Sidr Blossom');
   const [shortDescAr, setShortDescAr] = useState('');
@@ -423,8 +423,8 @@ export default function AdminProductsPage() {
         stockQuantity: Number(stockQuantity ?? 0),
         lowStockThreshold: Number(lowStockThreshold ?? 5),
         weightGrams: Number(weightGrams ?? 500),
-        originRegionAr: originRegionAr || 'وادي دوعن، حضرموت',
-        originRegionEn: originRegionEn || 'Doan Valley, Hadramout',
+        originRegionAr: originRegionAr?.trim() || null,
+        originRegionEn: originRegionEn?.trim() || null,
         floralSourceAr: floralSourceAr || 'أشجار ومروج برية',
         floralSourceEn: floralSourceEn || 'Wild Flora',
         shortDescAr: shortDescAr?.trim() || nameAr.trim(),
@@ -901,7 +901,7 @@ export default function AdminProductsPage() {
                         required
                         value={nameAr}
                         onChange={(e) => setNameAr(e.target.value)}
-                        placeholder="مثال: عسل السدر الدوعني الملكي الفاخر"
+                        placeholder="مثال: عسل السدر الملكي الفاخر"
                         className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 focus:border-gold-500 focus:outline-none"
                       />
                     </div>
@@ -912,7 +912,7 @@ export default function AdminProductsPage() {
                         type="text"
                         value={nameEn}
                         onChange={(e) => setNameEn(e.target.value)}
-                        placeholder="e.g. Royal Doan Sidr Honey"
+                        placeholder="e.g. Royal Sidr Honey"
                         className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 focus:border-gold-500 focus:outline-none font-mono"
                       />
                     </div>
@@ -925,7 +925,7 @@ export default function AdminProductsPage() {
                         type="text"
                         value={slug}
                         onChange={(e) => setSlug(e.target.value)}
-                        placeholder="royal-doan-sidr"
+                        placeholder="royal-sidr-honey"
                         className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 focus:border-gold-500 focus:outline-none font-mono"
                       />
                     </div>
@@ -991,7 +991,7 @@ export default function AdminProductsPage() {
                       type="text"
                       value={taglineAr}
                       onChange={(e) => setTaglineAr(e.target.value)}
-                      placeholder="عسل نقي من أودية حضرموت التاريخية"
+                      placeholder="مثال: عسل طبيعي نقي وفاخر"
                       className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 focus:border-gold-500 focus:outline-none"
                     />
                   </div>

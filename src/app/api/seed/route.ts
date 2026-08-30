@@ -137,7 +137,7 @@ async function handleSeed() {
       title_ar: r.titleAr || 'جودة ملكية لا تضاهى',
       comment_ar: r.commentAr,
       is_verified_purchase: r.isVerifiedPurchase ?? true,
-      product_name_ar: r.productNameAr || 'عسل السدر الدوعني الملكي',
+      product_name_ar: r.productNameAr || 'عسل السدر الملكي الفاخر',
       status: 'approved'
     }));
 

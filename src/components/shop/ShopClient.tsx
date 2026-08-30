@@ -251,14 +251,8 @@ export default function ShopClient({
                   <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-xs text-charcoal-700/70">
-                        {shopConfig.showOriginRegionTag !== false && (
-                          <span className="flex items-center gap-1 text-gold-700 font-medium">
-                            <ShieldCheck className="w-3.5 h-3.5 text-gold-600" />
-                            <span>{product.originRegionAr}</span>
-                          </span>
-                        )}
                         {shopConfig.showRatingStars !== false && (
-                          <div className="flex items-center gap-1 mr-auto">
+                          <div className="flex items-center gap-1">
                             <Star className="w-3.5 h-3.5 fill-gold-500 text-gold-500" />
                             <span className="font-bold text-zaad-900">{product.rating}</span>
                             <span className="text-[10px]">({product.reviewCount})</span>
