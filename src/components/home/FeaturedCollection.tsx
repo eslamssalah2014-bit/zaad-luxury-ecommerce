@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ShoppingBag, Heart, ArrowLeft, Star, ShieldCheck, Eye } from 'lucide-react';
+import { ShoppingBag, Heart, ArrowLeft, Star, ShieldCheck, Eye, Package } from 'lucide-react';
 import { Product } from '@/types';
 import { useCart } from '@/context/CartContext';
 import { useCurrency } from '@/context/CurrencyContext';
@@ -129,8 +129,14 @@ export default function FeaturedCollection({ products }: FeaturedCollectionProps
                 {/* Content Container */}
                 <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
                   <div className="space-y-2">
-                    {/* Rating */}
-                    <div className="flex items-center justify-end text-xs text-charcoal-700/70">
+                    {/* Weight & Rating */}
+                    <div className="flex items-center justify-between text-xs text-charcoal-700/70">
+                      {product.packageWeight ? (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-gold-50 text-zaad-900 border border-gold-300 text-[11px] font-semibold">
+                          <Package className="w-3 h-3 text-gold-600" />
+                          <span>{product.packageWeight}</span>
+                        </span>
+                      ) : <span />}
                       <div className="flex items-center gap-1">
                         <Star className="w-3.5 h-3.5 fill-gold-500 text-gold-500" />
                         <span className="font-bold text-zaad-900">{product.rating}</span>

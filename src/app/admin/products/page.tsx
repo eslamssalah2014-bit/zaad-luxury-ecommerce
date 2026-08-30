@@ -85,6 +85,7 @@ export default function AdminProductsPage() {
   const [stockQuantity, setStockQuantity] = useState<number>(25);
   const [lowStockThreshold, setLowStockThreshold] = useState<number>(5);
   const [weightGrams, setWeightGrams] = useState<number>(500);
+  const [packageWeight, setPackageWeight] = useState<string>('500 جم');
   const [originRegionAr, setOriginRegionAr] = useState('');
   const [originRegionEn, setOriginRegionEn] = useState('');
   const [floralSourceAr, setFloralSourceAr] = useState('أزهار أشجار السدر البرية الجبلية');
@@ -164,6 +165,7 @@ export default function AdminProductsPage() {
       setStockQuantity(prod.stockQuantity);
       setLowStockThreshold(prod.lowStockThreshold);
       setWeightGrams(prod.weightGrams);
+      setPackageWeight(prod.packageWeight || (prod.weightGrams ? (prod.weightGrams >= 1000 ? `${prod.weightGrams / 1000} كجم` : `${prod.weightGrams} جم`) : ''));
       setOriginRegionAr(prod.originRegionAr || '');
       setOriginRegionEn(prod.originRegionEn || '');
       setFloralSourceAr(prod.floralSourceAr || '');
@@ -222,6 +224,7 @@ export default function AdminProductsPage() {
       setStockQuantity(25);
       setLowStockThreshold(5);
       setWeightGrams(500);
+      setPackageWeight('500 جم');
       setOriginRegionAr('');
       setOriginRegionEn('');
       setFloralSourceAr('');
@@ -423,6 +426,7 @@ export default function AdminProductsPage() {
         stockQuantity: Number(stockQuantity ?? 0),
         lowStockThreshold: Number(lowStockThreshold ?? 5),
         weightGrams: Number(weightGrams ?? 500),
+        packageWeight: packageWeight !== undefined ? packageWeight.trim() : null,
         originRegionAr: originRegionAr?.trim() || null,
         originRegionEn: originRegionEn?.trim() || null,
         floralSourceAr: floralSourceAr || 'أشجار ومروج برية',
@@ -985,15 +989,33 @@ export default function AdminProductsPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block font-bold text-zaad-900 mb-1">الشعار التسويقي (Tagline)</label>
-                    <input
-                      type="text"
-                      value={taglineAr}
-                      onChange={(e) => setTaglineAr(e.target.value)}
-                      placeholder="مثال: عسل طبيعي نقي وفاخر"
-                      className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 focus:border-gold-500 focus:outline-none"
-                    />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block font-bold text-zaad-900 mb-1">
+                        وزن العبوة (Package Weight)
+                      </label>
+                      <input
+                        type="text"
+                        value={packageWeight}
+                        onChange={(e) => setPackageWeight(e.target.value)}
+                        placeholder="مثال: 500 جم أو 1 كجم أو 250 جم"
+                        className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 focus:border-gold-500 focus:outline-none"
+                      />
+                      <span className="text-[11px] text-charcoal-700/60 mt-1 block">
+                        يظهر في بطاقات المتجر وصفحة تفاصيل المنتج. اتركه فارغاً لإخفائه.
+                      </span>
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-zaad-900 mb-1">الشعار التسويقي (Tagline)</label>
+                      <input
+                        type="text"
+                        value={taglineAr}
+                        onChange={(e) => setTaglineAr(e.target.value)}
+                        placeholder="مثال: عسل طبيعي نقي وفاخر"
+                        className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 focus:border-gold-500 focus:outline-none"
+                      />
+                    </div>
                   </div>
 
                   <div>
@@ -1500,12 +1522,13 @@ export default function AdminProductsPage() {
                     </div>
 
                     <div>
-                      <label className="block font-bold text-zaad-900 mb-1">وزن العبوة (جرام)</label>
+                      <label className="block font-bold text-zaad-900 mb-1">الوزن المعروض بالمتجر (نصي)</label>
                       <input
-                        type="number"
-                        value={weightGrams}
-                        onChange={(e) => setWeightGrams(Number(e.target.value))}
-                        className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 font-mono focus:border-gold-500 focus:outline-none"
+                        type="text"
+                        value={packageWeight}
+                        onChange={(e) => setPackageWeight(e.target.value)}
+                        placeholder="مثال: 500 جم أو 1 كجم"
+                        className="w-full bg-ivory-50 border border-ivory-300 rounded-xl p-3 focus:border-gold-500 focus:outline-none"
                       />
                     </div>
                   </div>

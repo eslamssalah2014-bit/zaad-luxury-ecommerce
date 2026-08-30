@@ -104,6 +104,7 @@ export interface Product {
   availableStock?: number;
   lowStockThreshold: number;
   weightGrams: number;
+  packageWeight?: string;
   originRegionAr?: string;
   originRegionEn?: string;
   floralSourceAr?: string;

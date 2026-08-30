@@ -602,13 +602,21 @@ export default function ProductDetailPage() {
                   {product.nameAr}
                 </h1>
 
-                {/* Tagline Below Title (Unique per product) */}
-                {product.taglineAr && (
-                  <div className="mt-2 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-gold-50/90 border border-gold-200 text-gold-950 text-xs font-semibold">
-                    <Sparkles className="w-3.5 h-3.5 text-gold-600 shrink-0" />
-                    <span>{product.taglineAr}</span>
-                  </div>
-                )}
+                {/* Tagline & Package Weight */}
+                <div className="mt-2.5 flex flex-wrap items-center gap-2">
+                  {product.packageWeight && (
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zaad-950 text-gold-300 border border-gold-500/40 text-xs font-bold shadow-sm animate-fade-in">
+                      <Package className="w-3.5 h-3.5 text-gold-400 shrink-0" />
+                      <span>وزن العبوة: {product.packageWeight}</span>
+                    </div>
+                  )}
+                  {product.taglineAr && (
+                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-gold-50/90 border border-gold-200 text-gold-950 text-xs font-semibold">
+                      <Sparkles className="w-3.5 h-3.5 text-gold-600 shrink-0" />
+                      <span>{product.taglineAr}</span>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* English Subtitle & Rating */}
@@ -630,8 +638,16 @@ export default function ProductDetailPage() {
               {/* Commercial Price Block */}
               <div className="bg-ivory-50 p-4 rounded-2xl border border-ivory-300 flex items-center justify-between">
                 <div>
-                  <div className="text-2xl sm:text-3xl font-bold text-zaad-900 font-serif">
-                    {formatPrice(product.price)}
+                  <div className="flex items-center gap-2.5">
+                    <div className="text-2xl sm:text-3xl font-bold text-zaad-900 font-serif">
+                      {formatPrice(product.price)}
+                    </div>
+                    {product.packageWeight && (
+                      <span className="text-xs font-bold text-zaad-900 bg-gold-100/90 border border-gold-300 px-2.5 py-0.5 rounded-lg flex items-center gap-1">
+                        <Package className="w-3 h-3 text-gold-700" />
+                        <span>{product.packageWeight}</span>
+                      </span>
+                    )}
                   </div>
                   {pConfig.showCompareAtPrice && product.compareAtPrice && (
                     <div className="text-xs text-gray-500 line-through mt-0.5">
@@ -1130,6 +1146,12 @@ export default function ProductDetailPage() {
                     </div>
 
                     <div className="p-4 space-y-2">
+                      {rel.packageWeight && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-gold-50 text-zaad-900 border border-gold-300 text-[10px] font-semibold">
+                          <Package className="w-3 h-3 text-gold-600" />
+                          <span>{rel.packageWeight}</span>
+                        </span>
+                      )}
                       <h4 className="font-serif text-sm font-bold text-zaad-900 line-clamp-1 group-hover:text-gold-700 transition-colors">
                         <Link href={`/product/${rel.slug}`}>{rel.nameAr}</Link>
                       </h4>

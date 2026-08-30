@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, Heart, ShoppingBag, Star, ShieldCheck, Eye, Sparkles, RotateCcw, ArrowLeft } from 'lucide-react';
+import { Search, Heart, ShoppingBag, Star, ShieldCheck, Eye, Sparkles, RotateCcw, ArrowLeft, Package } from 'lucide-react';
 import { Product, Category } from '@/types';
 import { ShopPageConfig } from '@/types/cms';
 import { DEFAULT_CMS_SETTINGS } from '@/lib/services/cmsService';
@@ -251,6 +251,12 @@ export default function ShopClient({
                   <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-xs text-charcoal-700/70">
+                        {product.packageWeight ? (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-gold-50 text-zaad-900 border border-gold-300 text-[11px] font-semibold">
+                            <Package className="w-3 h-3 text-gold-600" />
+                            <span>{product.packageWeight}</span>
+                          </span>
+                        ) : <span />}
                         {shopConfig.showRatingStars !== false && (
                           <div className="flex items-center gap-1">
                             <Star className="w-3.5 h-3.5 fill-gold-500 text-gold-500" />

@@ -73,6 +73,7 @@ export function formatSupabaseProduct(d: any): Product {
     availableStock,
     lowStockThreshold: d.low_stock_threshold ?? 5,
     weightGrams: d.weight_grams ?? 500,
+    packageWeight: d.package_weight?.trim() || d.sensory_profile?.package_weight?.trim() || (d.sensory_profile?.package_weight === '' ? undefined : (d.weight_grams ? (d.weight_grams >= 1000 ? `${d.weight_grams / 1000} كجم` : `${d.weight_grams} جم`) : undefined)),
     originRegionAr: d.origin_region_ar && d.origin_region_ar.trim() ? d.origin_region_ar.trim() : undefined,
     originRegionEn: d.origin_region_en && d.origin_region_en.trim() ? d.origin_region_en.trim() : undefined,
     floralSourceAr: d.floral_source_ar || undefined,
