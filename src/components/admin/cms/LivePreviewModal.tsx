@@ -249,8 +249,8 @@ export default function LivePreviewModal({
                     <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-8">
                       {sec.imageUrl && (
                         <div className="w-full md:w-1/2">
-                          <div className="relative aspect-[16/10] rounded-2xl overflow-hidden shadow-xl border border-gold-500/30">
-                            <Image src={sec.imageUrl} alt={sec.titleAr} fill className="object-cover" />
+                          <div className="relative h-[280px] sm:h-[340px] rounded-2xl overflow-hidden shadow-xl border border-gold-500/30 flex items-center justify-center p-2 bg-black/30">
+                            <Image src={sec.imageUrl} alt={sec.titleAr} fill className="object-contain object-center" />
                           </div>
                         </div>
                       )}

@@ -98,16 +98,19 @@ export default async function StoryPage() {
                 {/* Image */}
                 {chapter.imageUrl && (
                   <div className={`flex flex-col items-center ${isDark ? 'md:col-span-5 order-2 md:order-1' : 'md:col-span-5'}`}>
-                    <div className={`relative w-full aspect-[4/3] sm:aspect-[16/11] max-h-[500px] rounded-2xl overflow-hidden shadow-md ${
+                    <div className={`relative w-full h-[300px] sm:h-[380px] rounded-2xl overflow-hidden shadow-md flex items-center justify-center p-2.5 ${
                       isDark ? 'border border-gold-500/30 bg-zaad-900' : 'border border-ivory-300 bg-ivory-50'
                     }`}>
-                      <Image
-                        src={chapter.imageUrl}
-                        alt={chapter.titleAr}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, 40vw"
-                      />
+                      <div className="relative w-full h-full flex items-center justify-center">
+                        <Image
+                          src={chapter.imageUrl}
+                          alt={chapter.titleAr}
+                          fill
+                          className="object-contain object-center"
+                          sizes="(max-width: 768px) 100vw, 40vw"
+                          quality={95}
+                        />
+                      </div>
                     </div>
                     {chapter.imageCaptionAr && (
                       <p className={`text-xs text-center mt-3 font-serif tracking-wide ${

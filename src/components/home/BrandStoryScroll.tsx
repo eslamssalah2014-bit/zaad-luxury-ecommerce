@@ -125,25 +125,25 @@ export default function BrandStoryScroll({ initialSections }: BrandStoryScrollPr
                 isImageLeft ? 'lg:flex-row-reverse' : 'lg:flex-row'
               }`}>
                 
-                {/* Image Container */}
+                {/* Image Container (Full uncropped luxury display) */}
                 {sec.imageUrl && (
                   <div className="w-full lg:w-1/2 flex justify-center">
-                    <div className={`relative w-full aspect-[16/10] max-h-[500px] rounded-3xl overflow-hidden shadow-2xl border-2 group ${
+                    <div className={`relative w-full h-[360px] sm:h-[460px] lg:h-[500px] rounded-3xl overflow-hidden shadow-2xl border-2 group transition-all duration-500 flex items-center justify-center p-3 sm:p-4 ${
                       isDark
-                        ? 'border-gold-500/30 bg-zaad-950/80'
-                        : 'border-ivory-300 bg-ivory-100 flex items-center justify-center'
+                        ? 'border-gold-500/30 bg-gradient-to-b from-zaad-950/95 to-zaad-900/90'
+                        : 'border-ivory-300 bg-gradient-to-b from-white to-ivory-50'
                     }`}>
-                      <Image
-                        src={sec.imageUrl}
-                        alt={sec.imageAltAr || sec.titleAr}
-                        fill
-                        className="object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
-                        sizes="(max-width: 1024px) 100vw, 50vw"
-                        quality={90}
-                      />
-                      {isDark && (
-                        <div className="absolute inset-0 bg-gradient-to-t from-zaad-950/30 via-transparent to-transparent pointer-events-none"></div>
-                      )}
+                      <div className="relative w-full h-full flex items-center justify-center">
+                        <Image
+                          src={sec.imageUrl}
+                          alt={sec.imageAltAr || sec.titleAr}
+                          fill
+                          className="object-contain object-center group-hover:scale-[1.02] transition-transform duration-700 ease-out"
+                          sizes="(max-width: 1024px) 100vw, 50vw"
+                          quality={95}
+                          priority
+                        />
+                      </div>
                     </div>
                   </div>
                 )}
