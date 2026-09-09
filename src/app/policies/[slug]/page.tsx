@@ -262,43 +262,45 @@ export default async function PolicyPage({ params }: PageProps) {
               {renderPolicyContent(policy.content)}
             </div>
 
-            {/* Assistance & Concierge Callout */}
-            <div className="pt-8 border-t border-[#E8E2D8] mt-10">
-              <div className="bg-ivory-50 border border-gold-500/20 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gold-500/10 text-gold-600 flex items-center justify-center shrink-0 mt-0.5">
-                    <HelpCircle className="w-5 h-5" />
+            {/* Assistance & Concierge Callout (Omitted on Refund Policy page) */}
+            {policy.slug !== 'refund-policy' && (
+              <div className="pt-8 border-t border-[#E8E2D8] mt-10">
+                <div className="bg-ivory-50 border border-gold-500/20 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gold-500/10 text-gold-600 flex items-center justify-center shrink-0 mt-0.5">
+                      <HelpCircle className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="font-serif font-bold text-sm text-zaad-950">
+                        هل لديك استفسار حول هذا البند؟
+                      </h4>
+                      <p className="text-xs text-charcoal-700/80 mt-0.5">
+                        فريق كونسيرج زاد متاح لخدمتكم والإجابة على أي تساؤل بأعلى درجات العناية.
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-serif font-bold text-sm text-zaad-950">
-                      هل لديك استفسار حول هذا الميثاق؟
-                    </h4>
-                    <p className="text-xs text-charcoal-700/80 mt-0.5">
-                      فريق كونسيرج زاد متاح لخدمتكم والإجابة على أي تساؤل بأعلى درجات العناية.
-                    </p>
-                  </div>
-                </div>
 
-                <div className="flex items-center gap-2.5 w-full sm:w-auto">
-                  <a
-                    href="https://wa.me/966500000000"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-zaad-950 hover:bg-zaad-900 text-gold-400 text-xs font-bold transition-all shadow-sm"
-                  >
-                    <MessageCircle className="w-3.5 h-3.5" />
-                    <span>واتساب الكونسيرج</span>
-                  </a>
-                  <a
-                    href="mailto:concierge@zaad.sa"
-                    className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-white hover:bg-gold-50 border border-gold-500/30 text-zaad-950 text-xs font-bold transition-all shadow-sm"
-                  >
-                    <Mail className="w-3.5 h-3.5 text-gold-600" />
-                    <span>مراسلة الدار</span>
-                  </a>
+                  <div className="flex items-center gap-2.5 w-full sm:w-auto">
+                    <a
+                      href="https://wa.me/966500000000"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-zaad-950 hover:bg-zaad-900 text-gold-400 text-xs font-bold transition-all shadow-sm"
+                    >
+                      <MessageCircle className="w-3.5 h-3.5" />
+                      <span>واتساب الكونسيرج</span>
+                    </a>
+                    <a
+                      href="mailto:concierge@zaad.sa"
+                      className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-white hover:bg-gold-50 border border-gold-500/30 text-zaad-950 text-xs font-bold transition-all shadow-sm"
+                    >
+                      <Mail className="w-3.5 h-3.5 text-gold-600" />
+                      <span>مراسلة الدار</span>
+                    </a>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </main>
 
           {/* Sticky Sidebar Navigation */}

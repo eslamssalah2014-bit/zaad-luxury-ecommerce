@@ -278,8 +278,8 @@ export default function Footer({ initialFooter }: FooterProps) {
                 الشروط والأحكام
               </Link>
               <span className="opacity-30">•</span>
-              <Link href="/policies/refund-policy" className="hover:text-gold-300 transition-colors">
-                الضمان والاسترجاع
+              <Link href="/refund-policy" className="hover:text-gold-300 transition-colors">
+                سياسة الاسترجاع
               </Link>
               <span className="opacity-30">•</span>
               <Link href="/policies/shipping-policy" className="hover:text-gold-300 transition-colors">

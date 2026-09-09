@@ -527,7 +527,7 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
         links: [
           { id: 'l11', labelAr: 'سياسة الخصوصية', href: '/policies/privacy-policy', openInNewTab: false, isVisible: true, order: 1 },
           { id: 'l12', labelAr: 'الشروط والأحكام', href: '/policies/terms-and-conditions', openInNewTab: false, isVisible: true, order: 2 },
-          { id: 'l13', labelAr: 'سياسة الاسترجاع والاستبدال', href: '/policies/refund-policy', openInNewTab: false, isVisible: true, order: 3 },
+          { id: 'l13', labelAr: 'سياسة الاسترجاع', href: '/refund-policy', openInNewTab: false, isVisible: true, order: 3 },
           { id: 'l14', labelAr: 'سياسة الشحن والتوصيل', href: '/policies/shipping-policy', openInNewTab: false, isVisible: true, order: 4 }
         ]
       }
