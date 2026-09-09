@@ -436,3 +436,18 @@ export interface CmsSettingsDocument {
   seo: SeoConfig;
   footer: FooterConfig;
 }
+
+export type PolicyStatus = 'published' | 'draft';
+
+export interface Policy {
+  id: string;
+  title: string;
+  slug: string;
+  content: string;
+  meta_title?: string | null;
+  meta_description?: string | null;
+  status: PolicyStatus;
+  created_at?: string;
+  updated_at?: string;
+}
+

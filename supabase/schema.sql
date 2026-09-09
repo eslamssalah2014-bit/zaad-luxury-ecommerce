@@ -309,6 +309,19 @@ CREATE TABLE IF NOT EXISTS public.notifications (
     created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
 
+-- 3.17 POLICIES TABLE (CMS-Managed Legal & Compliance Pages)
+CREATE TABLE IF NOT EXISTS public.policies (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    title TEXT NOT NULL,
+    slug TEXT UNIQUE NOT NULL,
+    content TEXT NOT NULL,
+    meta_title TEXT,
+    meta_description TEXT,
+    status VARCHAR(20) DEFAULT 'draft' CHECK (status IN ('draft', 'published')) NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
+);
+
 -- ====================================================================
 -- 4. PERFORMANCE INDEXES (Complete & Optimized)
 -- ====================================================================
@@ -329,6 +342,9 @@ CREATE INDEX IF NOT EXISTS idx_inventory_movements_product_id ON public.inventor
 CREATE INDEX IF NOT EXISTS idx_reviews_product ON public.reviews(product_id);
 CREATE INDEX IF NOT EXISTS idx_notifications_user_unread ON public.notifications(user_id, is_read);
 CREATE INDEX IF NOT EXISTS idx_audit_logs_created_at ON public.audit_logs(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_policies_slug ON public.policies(slug);
+CREATE INDEX IF NOT EXISTS idx_policies_status ON public.policies(status);
+CREATE INDEX IF NOT EXISTS idx_policies_updated_at ON public.policies(updated_at DESC);
 
 -- ====================================================================
 -- 5. HELPER SECURITY DEFINER FUNCTIONS (Accurate Role Extraction)
@@ -555,6 +571,18 @@ DROP POLICY IF EXISTS "Users view own notifications" ON public.notifications;
 CREATE POLICY "Users view own notifications" ON public.notifications
     FOR ALL USING (auth.uid() = user_id OR public.is_staff())
     WITH CHECK (auth.uid() = user_id OR public.is_staff());
+
+-- 7.17 POLICIES POLICIES
+ALTER TABLE public.policies ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public can view published policies" ON public.policies;
+CREATE POLICY "Public can view published policies" ON public.policies
+    FOR SELECT USING (status = 'published' OR public.is_admin() OR auth.role() = 'service_role');
+
+DROP POLICY IF EXISTS "Admins can manage policies" ON public.policies;
+CREATE POLICY "Admins can manage policies" ON public.policies
+    FOR ALL USING (public.is_admin() OR auth.role() = 'service_role')
+    WITH CHECK (public.is_admin() OR auth.role() = 'service_role');
 
 -- ====================================================================
 -- 8. AUTOMATIC AUTH USER PROFILE SYNC TRIGGER

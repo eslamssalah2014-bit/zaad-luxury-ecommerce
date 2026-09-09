@@ -515,8 +515,20 @@ export const DEFAULT_CMS_SETTINGS: CmsSettingsDocument = {
         order: 2,
         links: [
           { id: 'l8', labelAr: 'تتبع الشحنات والطلبات', href: '/cart', openInNewTab: false, isVisible: true, order: 1 },
-          { id: 'l9', labelAr: 'الضمان الذهبي للاسترجاع', href: '/story', openInNewTab: false, isVisible: true, order: 2 },
+          { id: 'l9', labelAr: 'الضمان الذهبي للاسترجاع', href: '/policies/refund-policy', openInNewTab: false, isVisible: true, order: 2 },
           { id: 'l10', labelAr: 'التواصل المباشر مع الدار', href: 'https://wa.me/966500000000', openInNewTab: true, isVisible: true, order: 3 }
+        ]
+      },
+      {
+        id: 'col-4',
+        titleAr: 'السياسات واللوائح',
+        isVisible: true,
+        order: 3,
+        links: [
+          { id: 'l11', labelAr: 'سياسة الخصوصية', href: '/policies/privacy-policy', openInNewTab: false, isVisible: true, order: 1 },
+          { id: 'l12', labelAr: 'الشروط والأحكام', href: '/policies/terms-and-conditions', openInNewTab: false, isVisible: true, order: 2 },
+          { id: 'l13', labelAr: 'سياسة الاسترجاع والاستبدال', href: '/policies/refund-policy', openInNewTab: false, isVisible: true, order: 3 },
+          { id: 'l14', labelAr: 'سياسة الشحن والتوصيل', href: '/policies/shipping-policy', openInNewTab: false, isVisible: true, order: 4 }
         ]
       }
     ],

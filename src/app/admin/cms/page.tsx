@@ -54,6 +54,7 @@ import {
 import { DEFAULT_CMS_SETTINGS } from '@/lib/services/cmsService';
 import MediaLibraryModal from '@/components/admin/cms/MediaLibraryModal';
 import LivePreviewModal from '@/components/admin/cms/LivePreviewModal';
+import PoliciesManager from '@/components/admin/cms/PoliciesManager';
 
 type CmsTab =
   | 'home'
@@ -68,6 +69,7 @@ type CmsTab =
   | 'media'
   | 'design'
   | 'seo'
+  | 'policies'
   | 'footer';
 
 const TABS: { id: CmsTab; labelAr: string; icon: any; descAr: string }[] = [
@@ -83,6 +85,7 @@ const TABS: { id: CmsTab; labelAr: string; icon: any; descAr: string }[] = [
   { id: 'media', labelAr: 'مكتبة الوسائط (Media Library)', icon: ImageIcon, descAr: 'رفع وإدارة صور المتجر وملفات الوسائط' },
   { id: 'design', labelAr: 'الهوية والتصميم (Design)', icon: Palette, descAr: 'الألوان، الخطوط، ونمط الأزرار الحية' },
   { id: 'seo', labelAr: 'محركات البحث (SEO)', icon: SearchIcon, descAr: 'عناوين ووصف صفحات المتجر للظهور في Google' },
+  { id: 'policies', labelAr: 'السياسات والأحكام (Policies)', icon: ShieldCheck, descAr: 'إدارة وتعديل ونشر سياسات المتجر والشروط والأحكام وميثاق الخصوصية' },
   { id: 'footer', labelAr: 'تذييل المتجر (Footer)', icon: Footprints, descAr: 'بيانات التواصل، الروابط، وأوسمة الجودة' },
 ];
 
@@ -4621,6 +4624,13 @@ export default function AdminCmsPage() {
               ))}
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Policies Management Tab */}
+      {activeTab === 'policies' && (
+        <div className="animate-fade-in">
+          <PoliciesManager />
         </div>
       )}
 

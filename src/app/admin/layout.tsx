@@ -20,7 +20,8 @@ import {
   Sparkles,
   LogOut,
   Lock,
-  Boxes
+  Boxes,
+  FileText
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 
@@ -193,6 +194,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       items: [
         { name: 'سجل العملاء والنخبة (CRM)', href: '/admin/customers', icon: Users },
         { name: 'إدارة محتوى الموقع (CMS)', href: '/admin/cms', icon: FileEdit },
+        { name: 'سياسات المتجر (Policies)', href: '/admin/policies', icon: FileText },
         { name: 'نظام رسائل Resend', href: '/admin/emails', icon: Mail },
         { name: 'سجل التدقيق الأمني', href: '/admin/audit-logs', icon: ShieldAlert },
       ]

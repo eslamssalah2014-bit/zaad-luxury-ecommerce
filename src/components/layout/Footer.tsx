@@ -264,10 +264,30 @@ export default function Footer({ initialFooter }: FooterProps) {
         </div>
 
         {/* Bottom Copyright & Security */}
-        <div className="pt-8 flex flex-col md:flex-row items-center justify-between text-xs text-ivory-400 gap-4">
-          <div className="flex items-center gap-2">
+        <div className="pt-8 flex flex-col lg:flex-row items-center justify-between text-xs text-ivory-400 gap-4 border-t border-zaad-800/80 mt-8">
+          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-6 text-center sm:text-right">
             <span>{footer.copyrightTextAr}</span>
+            
+            {/* Direct Policies Links */}
+            <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[11px] text-ivory-400/80">
+              <Link href="/policies/privacy-policy" className="hover:text-gold-300 transition-colors">
+                سياسة الخصوصية
+              </Link>
+              <span className="opacity-30">•</span>
+              <Link href="/policies/terms-and-conditions" className="hover:text-gold-300 transition-colors">
+                الشروط والأحكام
+              </Link>
+              <span className="opacity-30">•</span>
+              <Link href="/policies/refund-policy" className="hover:text-gold-300 transition-colors">
+                الضمان والاسترجاع
+              </Link>
+              <span className="opacity-30">•</span>
+              <Link href="/policies/shipping-policy" className="hover:text-gold-300 transition-colors">
+                الشحن والتوصيل
+              </Link>
+            </div>
           </div>
+
           {footer.vatOrCrNumberAr && (
             <div className="flex items-center gap-4 text-[11px] text-ivory-400 font-mono">
               <span>{footer.vatOrCrNumberAr}</span>
