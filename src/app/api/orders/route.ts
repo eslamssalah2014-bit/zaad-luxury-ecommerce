@@ -88,13 +88,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'بيانات الطلب غير مكتملة' }, { status: 400 });
     }
 
+    const shippingAddressWithPayment = {
+      ...(body.shippingAddress || { city: 'القاهرة', district: '', street: '' }),
+      paymentMethod: body.paymentMethod
+    };
+
     const orderPayload = {
       order_number: body.orderNumber || `ZD-ORD-${Math.floor(1000 + Math.random() * 9000)}`,
       customer_id: body.customerId && !body.customerId.startsWith('usr-guest') ? body.customerId : null,
       customer_name: body.customerName,
       customer_email: body.customerEmail || `${body.customerPhone}@customer.zaad.sa`,
       customer_phone: body.customerPhone,
-      shipping_address: body.shippingAddress || { city: 'الرياض', district: 'العليا', street: 'شارع الملك فهد' },
+      shipping_address: shippingAddressWithPayment,
       subtotal: body.subtotal,
       discount_amount: body.discountAmount || 0,
       shipping_fee: body.shippingFee || 0,
@@ -110,16 +115,30 @@ export async function POST(request: NextRequest) {
           status: 'pending',
           title: 'تم إنشاء الطلب الملكي',
           timestamp: new Date().toISOString(),
-          notes: 'بانتظار تأكيد السداد'
+          notes: body.paymentMethod === 'cash_on_delivery' ? 'الدفع عند الاستلام' : 'بانتظار تأكيد السداد'
         }
       ]
     };
 
-    const { data: orderData, error: orderError } = await supabaseAdmin
+    let { data: orderData, error: orderError } = await supabaseAdmin
       .from('orders')
       .insert(orderPayload)
       .select()
       .single();
+
+    // Fallback if 'cash_on_delivery' is not yet registered in PostgreSQL payment_method enum
+    if (orderError && body.paymentMethod === 'cash_on_delivery') {
+      const fallbackRes = await supabaseAdmin
+        .from('orders')
+        .insert({
+          ...orderPayload,
+          payment_method: 'bank_transfer'
+        })
+        .select()
+        .single();
+      orderData = fallbackRes.data;
+      orderError = fallbackRes.error;
+    }
 
     if (orderError || !orderData) {
       console.error('Supabase error inserting order:', orderError);
@@ -292,7 +311,7 @@ function formatOrderRow(o: any): Order {
     totalAmount: Number(o.total_amount),
     currency: o.currency || 'EGP',
     status: o.status,
-    paymentMethod: o.payment_method,
+    paymentMethod: o.shipping_address?.paymentMethod || o.payment_method,
     paymentStatus: o.payment_status,
     trackingNumber: o.tracking_number,
     courierName: o.courier_name,

@@ -99,7 +99,7 @@ export default function AdminOrdersPage() {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      
+
       {/* Header & Export */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -196,12 +196,13 @@ export default function AdminOrdersPage() {
                     </td>
 
                     <td className="p-4">
-                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
-                        ord.paymentStatus === 'approved' ? 'bg-green-100 text-green-800' :
-                        ord.paymentStatus === 'proof_submitted' ? 'bg-amber-100 text-amber-800' : 'bg-gray-100 text-gray-800'
-                      }`}>
+                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${ord.paymentStatus === 'approved' ? 'bg-green-100 text-green-800' :
+                          ord.paymentMethod === 'cash_on_delivery' ? 'bg-blue-100 text-blue-800' :
+                            ord.paymentStatus === 'proof_submitted' ? 'bg-amber-100 text-amber-800' : 'bg-gray-100 text-gray-800'
+                        }`}>
                         {ord.paymentStatus === 'approved' ? 'معتمد ومطابق' :
-                         ord.paymentStatus === 'proof_submitted' ? 'بانتظار التدقيق' : 'غير مسدد'}
+                          ord.paymentMethod === 'cash_on_delivery' ? 'الدفع عند الاستلام' :
+                            ord.paymentStatus === 'proof_submitted' ? 'إنستاباي - بانتظار التدقيق' : 'غير مسدد'}
                       </span>
                     </td>
 

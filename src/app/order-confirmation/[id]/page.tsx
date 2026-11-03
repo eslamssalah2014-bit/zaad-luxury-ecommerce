@@ -78,26 +78,33 @@ export default function OrderConfirmationPage() {
     );
   }
 
-  const isAwaiting = order.status === 'awaiting_verification' || order.paymentStatus === 'proof_submitted';
+  const isCOD = order.paymentMethod === 'cash_on_delivery';
+  const isAwaiting = !isCOD && (order.status === 'awaiting_verification' || order.paymentStatus === 'proof_submitted');
   const isPaid = order.status === 'paid' || order.paymentStatus === 'approved';
 
   const timelineSteps = [
     { key: 'placed', label: 'تم إنشاء الطلب', done: true, time: 'فوري' },
-    { key: 'verification', label: 'مطابقة إيصال التحويل', done: isAwaiting || isPaid, current: isAwaiting, time: 'خلال دقائق' },
-    { key: 'processing', label: 'التجهيز في الغرفة المعقمة', done: isPaid, time: 'بإشراف خبير الجودة' },
-    { key: 'shipped', label: 'الشحن والتوصيل الفاخر', done: order.status === 'shipped' || order.status === 'delivered', time: 'سمسا إكسبريس' },
+    {
+      key: 'verification',
+      label: isCOD ? 'تأكيد بيانات الطلب والتوصيل' : 'مطابقة إيصال إنستاباي',
+      done: isCOD || isAwaiting || isPaid,
+      current: isAwaiting,
+      time: isCOD ? 'الدفع عند الاستلام' : 'خلال دقائق'
+    },
+    { key: 'processing', label: 'التجهيز في الغرفة المعقمة', done: isCOD || isPaid, time: 'بإشراف خبير الجودة' },
+    { key: 'shipped', label: 'الشحن والتوصيل الفاخر', done: order.status === 'shipped' || order.status === 'delivered', time: 'توصيل سريع' },
     { key: 'delivered', label: 'التسليم للمقتني', done: order.status === 'delivered', time: 'نقاءٌ يصافح ذوقكم' },
   ];
 
   return (
     <div className="min-h-screen bg-ivory-100 py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-        
+
         {/* Top Success & State Card */}
         <div className="bg-white rounded-3xl p-8 sm:p-12 border-2 border-gold-500/30 shadow-luxury text-center space-y-6 animate-fade-in relative overflow-hidden">
-          
+
           <div className="w-20 h-20 rounded-full bg-gold-50 mx-auto flex items-center justify-center border-2 border-gold-400 text-gold-600 shadow-gold-glow">
-            {isPaid ? <CheckCircle2 className="w-10 h-10 text-green-700" /> : <Clock className="w-10 h-10 text-gold-600 animate-pulse" />}
+            {isPaid || isCOD ? <CheckCircle2 className="w-10 h-10 text-green-700" /> : <Clock className="w-10 h-10 text-gold-600 animate-pulse" />}
           </div>
 
           <div className="space-y-2">
@@ -107,12 +114,17 @@ export default function OrderConfirmationPage() {
             </div>
 
             <h1 className="font-serif text-3xl sm:text-4xl font-bold text-zaad-900">
-              {isPaid ? 'تم تأكيد السداد وجاري التجهيز' : 'شكراً لاقتنائك.. جاري مطابقة التحويل البنكي'}
+              {isPaid
+                ? 'تم تأكيد السداد وجاري التجهيز'
+                : isCOD
+                  ? 'شكراً لاقتنائك.. تم تأكيد طلبك وجاري التجهيز'
+                  : 'شكراً لاقتنائك.. جاري مطابقة تحويل إنستاباي'}
             </h1>
 
             <p className="text-xs sm:text-sm text-charcoal-700/80 max-w-lg mx-auto font-light leading-relaxed">
-              رقم الطلب المرجعي: <strong className="font-mono text-zaad-900 text-sm">{order.orderNumber}</strong>. 
-              {isAwaiting && ' يقوم فريق العمليات المالية بمراجعة إشعار التحويل البنكي المرفق لجدولة الشحن فوراً.'}
+              رقم الطلب المرجعي: <strong className="font-mono text-zaad-900 text-sm">{order.orderNumber}</strong>.
+              {isAwaiting && ' يقوم فريق العمليات المالية بمراجعة إيصال إنستاباي المرفق لجدولة الشحن فوراً.'}
+              {isCOD && ' سيتم تحصيل قيمة الطلب نقداً بواسطة المندوب عند تسليم الشحنة.'}
             </p>
           </div>
 
@@ -120,8 +132,8 @@ export default function OrderConfirmationPage() {
           <div className="bg-ivory-50 p-4 rounded-2xl border border-ivory-200 inline-flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-xs">
             <div>
               <span className="text-charcoal-700/70 block text-[11px]">حالة السداد:</span>
-              <strong className={`font-bold ${isPaid ? 'text-green-700' : 'text-amber-700'}`}>
-                {isPaid ? 'مدفوع ومعتمد ✓' : 'جاري التحقق من الإيصال ⏳'}
+              <strong className={`font-bold ${isPaid ? 'text-green-700' : isCOD ? 'text-zaad-800' : 'text-amber-700'}`}>
+                {isPaid ? 'مدفوع ومعتمد ✓' : isCOD ? 'عند الاستلام 📦' : 'جاري التحقق من الإيصال ⏳'}
               </strong>
             </div>
 
@@ -130,8 +142,9 @@ export default function OrderConfirmationPage() {
             <div>
               <span className="text-charcoal-700/70 block text-[11px]">طريقة الدفع:</span>
               <strong className="text-zaad-900">
-                {order.paymentMethod === 'bank_transfer' ? 'تحويل بنكي مباشر' :
-                 order.paymentMethod === 'instapay' ? 'إنستاباي (InstaPay)' : 'مدى / فيزا'}
+                {order.paymentMethod === 'cash_on_delivery' ? 'الدفع عند الاستلام' :
+                  order.paymentMethod === 'instapay' ? 'إنستاباي (InstaPay)' :
+                    order.paymentMethod === 'bank_transfer' ? 'تحويل بنكي مباشر' : 'دفع إلكتروني'}
               </strong>
             </div>
 
@@ -154,9 +167,8 @@ export default function OrderConfirmationPage() {
           <div className="relative border-r-2 border-gold-300/40 pr-6 space-y-6 mr-3">
             {timelineSteps.map((step, idx) => (
               <div key={idx} className="relative">
-                <div className={`absolute -right-[31px] top-0 w-4 h-4 rounded-full border-2 ${
-                  step.done ? 'bg-green-600 border-green-200' : 'bg-white border-ivory-400'
-                }`} />
+                <div className={`absolute -right-[31px] top-0 w-4 h-4 rounded-full border-2 ${step.done ? 'bg-green-600 border-green-200' : 'bg-white border-ivory-400'
+                  }`} />
                 <div className="space-y-0.5">
                   <div className="text-xs font-bold text-zaad-900">{step.label}</div>
                   <div className="text-[11px] text-charcoal-700/70">{step.time}</div>

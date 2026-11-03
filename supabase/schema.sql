@@ -17,7 +17,7 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN null; END $$;
 
 DO $$ BEGIN
-    CREATE TYPE payment_method AS ENUM ('bank_transfer', 'instapay', 'vodafone_cash', 'mada_card', 'apple_pay');
+    CREATE TYPE payment_method AS ENUM ('instapay', 'cash_on_delivery', 'bank_transfer', 'vodafone_cash', 'mada_card', 'apple_pay');
 EXCEPTION WHEN duplicate_object THEN null; END $$;
 
 DO $$ BEGIN

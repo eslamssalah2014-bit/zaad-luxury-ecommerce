@@ -8,10 +8,8 @@ import {
   ShieldCheck,
   CheckCircle2,
   UploadCloud,
-  FileImage,
-  CreditCard,
-  Building2,
   Smartphone,
+  Banknote,
   Sparkles,
   ArrowLeft,
   ArrowRight,
@@ -46,12 +44,12 @@ export default function CheckoutPage() {
   const [deliveryNotes, setDeliveryNotes] = useState('');
 
   // Step 3: Payment method
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('bank_transfer');
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('instapay');
 
   // Step 4: Payment Receipt Proof Upload
   const [receiptImage, setReceiptImage] = useState<string>('https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1000&q=80');
   const [senderName, setSenderName] = useState('');
-  const [senderBank, setSenderBank] = useState('مصرف الراجحي');
+  const [senderBank, setSenderBank] = useState('InstaPay');
   const [transactionRef, setTransactionRef] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(true);
@@ -96,8 +94,10 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (!transactionRef && (paymentMethod === 'bank_transfer' || paymentMethod === 'instapay' || paymentMethod === 'vodafone_cash')) {
-      setErrorMsg('يرجى إدخال رقم الحوالة / العملية المرجعي من الإيصال.');
+    const isInstaPay = paymentMethod === 'instapay';
+
+    if (isInstaPay && !transactionRef) {
+      setErrorMsg('يرجى إدخال رقم الحوالة / العملية المرجعي من إيصال إنستاباي.');
       return;
     }
 
@@ -119,18 +119,20 @@ export default function CheckoutPage() {
       deliveryNotes
     };
 
-    const paymentProof: PaymentProof = {
-      id: `prf-${Date.now()}`,
-      orderId: orderNumber,
-      receiptImageUrl: receiptImage,
-      senderName: senderName || fullName,
-      senderBank,
-      transactionReference: transactionRef || `REF-${Date.now()}`,
-      transferDate: new Date().toISOString().split('T')[0],
-      amountTransferred: total,
-      status: 'proof_submitted',
-      createdAt: new Date().toISOString()
-    };
+    const paymentProof: PaymentProof | undefined = isInstaPay
+      ? {
+          id: `prf-${Date.now()}`,
+          orderId: orderNumber,
+          receiptImageUrl: receiptImage,
+          senderName: senderName || fullName,
+          senderBank: 'InstaPay',
+          transactionReference: transactionRef || `REF-${Date.now()}`,
+          transferDate: new Date().toISOString().split('T')[0],
+          amountTransferred: total,
+          status: 'proof_submitted',
+          createdAt: new Date().toISOString()
+        }
+      : undefined;
 
     const newOrder: Order = {
       id: `ord-${Date.now()}`,
@@ -148,22 +150,30 @@ export default function CheckoutPage() {
       luxuryGiftMessage: giftMessage,
       totalAmount: total,
       currency: 'EGP',
-      status: 'awaiting_verification',
+      status: isInstaPay ? 'awaiting_verification' : 'pending',
       paymentMethod,
-      paymentStatus: 'proof_submitted',
+      paymentStatus: isInstaPay ? 'proof_submitted' : 'unpaid',
       paymentProof,
-      statusTimeline: [
-        {
-          status: 'pending',
-          timestamp: new Date().toISOString(),
-          noteAr: 'تم إنشاء الطلب واختيار الدفع عبر التحويل البنكي'
-        },
-        {
-          status: 'awaiting_verification',
-          timestamp: new Date().toISOString(),
-          noteAr: 'تم رفع إيصال التحويل بنجاح وبانتظار اعتماد العمليات المالية'
-        }
-      ],
+      statusTimeline: isInstaPay
+        ? [
+            {
+              status: 'pending',
+              timestamp: new Date().toISOString(),
+              noteAr: 'تم إنشاء الطلب واختيار الدفع عبر إنستاباي (InstaPay)'
+            },
+            {
+              status: 'awaiting_verification',
+              timestamp: new Date().toISOString(),
+              noteAr: 'تم رفع إيصال التحويل بنجاح وبانتظار اعتماد العمليات المالية'
+            }
+          ]
+        : [
+            {
+              status: 'pending',
+              timestamp: new Date().toISOString(),
+              noteAr: 'تم إنشاء الطلب بنجاح (الدفع عند الاستلام)'
+            }
+          ],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
@@ -195,13 +205,20 @@ export default function CheckoutPage() {
     router.push(`/order-confirmation/${orderNumber}`);
   };
 
-  const stepsLabels = [
-    { num: 1, label: 'بيانات المقتني' },
-    { num: 2, label: 'العنوان الملكي' },
-    { num: 3, label: 'طريقة السداد' },
-    { num: 4, label: 'إيصال التحويل' },
-    { num: 5, label: 'التأكيد والاعتماد' },
-  ];
+  const stepsLabels = paymentMethod === 'cash_on_delivery'
+    ? [
+        { num: 1, displayNum: 1, label: 'بيانات المقتني' },
+        { num: 2, displayNum: 2, label: 'العنوان الملكي' },
+        { num: 3, displayNum: 3, label: 'طريقة السداد' },
+        { num: 5, displayNum: 4, label: 'التأكيد والاعتماد' },
+      ]
+    : [
+        { num: 1, displayNum: 1, label: 'بيانات المقتني' },
+        { num: 2, displayNum: 2, label: 'العنوان الملكي' },
+        { num: 3, displayNum: 3, label: 'طريقة السداد' },
+        { num: 4, displayNum: 4, label: 'إيصال إنستاباي' },
+        { num: 5, displayNum: 5, label: 'التأكيد والاعتماد' },
+      ];
 
   return (
     <div className="min-h-screen bg-ivory-100 py-12">
@@ -218,7 +235,7 @@ export default function CheckoutPage() {
           </h1>
         </div>
 
-        {/* 5-Step Stepper Header */}
+        {/* Stepper Header */}
         <div className="bg-white rounded-2xl p-4 sm:p-6 border border-ivory-300 shadow-sm mb-8">
           <div className="flex items-center justify-between overflow-x-auto">
             {stepsLabels.map((s, idx) => (
@@ -233,7 +250,7 @@ export default function CheckoutPage() {
                         : 'bg-ivory-200 text-charcoal-700'
                     }`}
                   >
-                    {s.num < currentStep ? <CheckCircle2 className="w-4 h-4" /> : s.num}
+                    {s.num < currentStep ? <CheckCircle2 className="w-4 h-4" /> : s.displayNum}
                   </div>
                   <span className={`text-[11px] mt-1.5 font-medium ${s.num === currentStep ? 'text-zaad-900 font-bold' : 'text-charcoal-700/60'}`}>
                     {s.label}
@@ -448,94 +465,61 @@ export default function CheckoutPage() {
                   <span>الخطوة 3: اختيار وسيلة الدفع المعتمدة</span>
                 </h2>
 
-                <div className="space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   
-                  {/* Bank Transfer (Direct Official Account) */}
-                  <label
-                    onClick={() => setPaymentMethod('bank_transfer')}
-                    className={`block p-4 rounded-2xl border-2 cursor-pointer transition-all ${
-                      paymentMethod === 'bank_transfer'
-                        ? 'border-gold-500 bg-gold-50/40 ring-2 ring-gold-300/40'
-                        : 'border-ivory-300 hover:border-gold-300 bg-white'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-zaad-900 text-gold-400 flex items-center justify-center">
-                          <Building2 className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <span className="text-xs font-bold text-zaad-900 block">تحويل بنكي رسمي مباشر (مصرف الراجحي / بنك الرياض)</span>
-                          <span className="text-[11px] text-charcoal-700/70">مطابقة فورية ورفع إيصال التحويل لاعتماده في الغرفة المعقمة</span>
-                        </div>
-                      </div>
-                      <span className="text-xs bg-zaad-800 text-gold-300 px-2 py-0.5 rounded-full font-bold">الأكثر استخداماً</span>
-                    </div>
-                  </label>
-
-                  {/* InstaPay */}
+                  {/* Option 1: InstaPay */}
                   <label
                     onClick={() => setPaymentMethod('instapay')}
-                    className={`block p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+                    className={`relative p-5 rounded-2xl border-2 cursor-pointer transition-all flex flex-col justify-between gap-4 ${
                       paymentMethod === 'instapay'
-                        ? 'border-gold-500 bg-gold-50/40 ring-2 ring-gold-300/40'
+                        ? 'border-gold-500 bg-gold-50/40 ring-2 ring-gold-300/40 shadow-sm'
                         : 'border-ivory-300 hover:border-gold-300 bg-white'
                     }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-purple-900 text-purple-200 flex items-center justify-center">
-                          <Smartphone className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <span className="text-xs font-bold text-zaad-900 block">تحويل إنستاباي الفوري (InstaPay)</span>
-                          <span className="text-[11px] text-charcoal-700/70">تحويل لحظي مباشر عبر حساب إنستاباي المعتمد</span>
-                        </div>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="w-11 h-11 rounded-2xl bg-purple-900 text-purple-100 flex items-center justify-center shrink-0 shadow-sm">
+                        <Smartphone className="w-5 h-5" />
                       </div>
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+                        paymentMethod === 'instapay' ? 'border-gold-600 bg-gold-500 text-zaad-950' : 'border-ivory-300 bg-white'
+                      }`}>
+                        {paymentMethod === 'instapay' && <CheckCircle2 className="w-3.5 h-3.5" />}
+                      </div>
+                    </div>
+
+                    <div className="space-y-1">
+                      <span className="text-sm font-bold text-zaad-900 block">إنستاباي (InstaPay)</span>
+                      <span className="text-[11px] text-charcoal-700/75 block leading-relaxed">
+                        تحويل لحظي مباشر عبر تطبيق إنستاباي المعتمد مع إرفاق صورة الإيصال
+                      </span>
                     </div>
                   </label>
 
-                  {/* Vodafone Cash */}
+                  {/* Option 2: Cash on Delivery */}
                   <label
-                    onClick={() => setPaymentMethod('vodafone_cash')}
-                    className={`block p-4 rounded-2xl border-2 cursor-pointer transition-all ${
-                      paymentMethod === 'vodafone_cash'
-                        ? 'border-gold-500 bg-gold-50/40 ring-2 ring-gold-300/40'
+                    onClick={() => setPaymentMethod('cash_on_delivery')}
+                    className={`relative p-5 rounded-2xl border-2 cursor-pointer transition-all flex flex-col justify-between gap-4 ${
+                      paymentMethod === 'cash_on_delivery'
+                        ? 'border-gold-500 bg-gold-50/40 ring-2 ring-gold-300/40 shadow-sm'
                         : 'border-ivory-300 hover:border-gold-300 bg-white'
                     }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-red-800 text-white flex items-center justify-center">
-                          <Smartphone className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <span className="text-xs font-bold text-zaad-900 block">محفظة فودافون كاش الرسمية (Vodafone Cash)</span>
-                          <span className="text-[11px] text-charcoal-700/70">تحويل سريع عبر المحفظة الإلكترونية لعملاء مصر</span>
-                        </div>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="w-11 h-11 rounded-2xl bg-zaad-900 text-gold-400 flex items-center justify-center shrink-0 shadow-sm">
+                        <Banknote className="w-5 h-5" />
+                      </div>
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+                        paymentMethod === 'cash_on_delivery' ? 'border-gold-600 bg-gold-500 text-zaad-950' : 'border-ivory-300 bg-white'
+                      }`}>
+                        {paymentMethod === 'cash_on_delivery' && <CheckCircle2 className="w-3.5 h-3.5" />}
                       </div>
                     </div>
-                  </label>
 
-                  {/* Mada / Apple Pay Mockup */}
-                  <label
-                    onClick={() => setPaymentMethod('mada_card')}
-                    className={`block p-4 rounded-2xl border-2 cursor-pointer transition-all ${
-                      paymentMethod === 'mada_card'
-                        ? 'border-gold-500 bg-gold-50/40 ring-2 ring-gold-300/40'
-                        : 'border-ivory-300 hover:border-gold-300 bg-white'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-zaad-800 text-white flex items-center justify-center">
-                          <CreditCard className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <span className="text-xs font-bold text-zaad-900 block">بطاقات مدى / فيزا / ماستركارد / Apple Pay</span>
-                          <span className="text-[11px] text-charcoal-700/70">دفع إلكتروني فوري ومطابقة آلية مشفرة 256-bit</span>
-                        </div>
-                      </div>
+                    <div className="space-y-1">
+                      <span className="text-sm font-bold text-zaad-900 block">الدفع عند الاستلام</span>
+                      <span className="text-[11px] text-charcoal-700/75 block leading-relaxed">
+                        سداد قيمة الطلب نقداً للمندوب فور استلام شحنتك في عنوانك
+                      </span>
                     </div>
                   </label>
 
@@ -552,43 +536,39 @@ export default function CheckoutPage() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setCurrentStep(4)}
+                    onClick={() => setCurrentStep(paymentMethod === 'cash_on_delivery' ? 5 : 4)}
                     className="bg-zaad-800 hover:bg-zaad-700 text-white text-xs font-bold px-8 py-3 rounded-xl shadow-md transition-all flex items-center gap-2"
                   >
-                    <span>متابعة لرفع الإيصال والتفاصيل</span>
+                    <span>
+                      {paymentMethod === 'cash_on_delivery'
+                        ? 'متابعة لمراجعة وتأكيد الطلب'
+                        : 'متابعة لرفع إيصال إنستاباي'}
+                    </span>
                     <ArrowLeft className="w-4 h-4 text-gold-300" />
                   </button>
                 </div>
               </div>
             )}
 
-            {/* STEP 4: Payment Receipt Proof Upload (Critical Requirement) */}
+            {/* STEP 4: InstaPay Receipt Proof Upload */}
             {currentStep === 4 && (
               <div className="space-y-5 animate-fade-in">
                 <h2 className="text-base font-bold text-zaad-900 border-b border-ivory-200 pb-3 flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-gold-500"></span>
-                  <span>الخطوة 4: تفاصيل الحوالة ورفع إيصال الدفع</span>
+                  <span>الخطوة 4: بيانات تحويل إنستاباي ورفع الإيصال</span>
                 </h2>
 
-                {/* Bank Account Transfer Details Card */}
+                {/* InstaPay Account Transfer Details Card */}
                 <div className="bg-zaad-950 text-ivory-100 p-5 rounded-2xl border border-gold-500/40 space-y-3">
                   <div className="flex items-center justify-between text-xs text-gold-400 font-bold">
-                    <span>بيانات الحساب البنكي الرسمي المعتمد:</span>
-                    <span>مؤسسة دار زاد للنقاء المحدودة</span>
+                    <span>بيانات حساب إنستاباي (InstaPay) الرسمي:</span>
+                    <span>دار زاد</span>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs bg-zaad-900/90 p-3.5 rounded-xl border border-zaad-800">
                     <div>
-                      <span className="text-ivory-400 block text-[11px]">اسم البنك:</span>
-                      <strong className="text-ivory-100">مصرف الراجحي (Al Rajhi Bank)</strong>
-                    </div>
-                    <div>
-                      <span className="text-ivory-400 block text-[11px]">رقم الآيبان (IBAN):</span>
-                      <strong className="font-mono text-gold-400 text-xs">SA44 8000 0456 6080 1012 3456</strong>
-                    </div>
-                    <div>
-                      <span className="text-ivory-400 block text-[11px]">حساب إنستاباي:</span>
-                      <strong className="text-gold-400 font-mono">zaad.luxury@instapay</strong>
+                      <span className="text-ivory-400 block text-[11px]">عنوان الدفع اللحظي (IPA):</span>
+                      <strong className="text-gold-400 font-mono text-sm">zaad.luxury@instapay</strong>
                     </div>
                     <div>
                       <span className="text-ivory-400 block text-[11px]">المبلغ المطلوب تحويله:</span>
@@ -602,7 +582,7 @@ export default function CheckoutPage() {
                   
                   <div>
                     <label className="block text-xs font-semibold text-zaad-900 mb-1.5">
-                      إرفاق صورة أو لقطة شاشة لإيصال التحويل *
+                      إرفاق صورة أو لقطة شاشة لإيصال إنستاباي *
                     </label>
 
                     <div className="border-2 border-dashed border-gold-400/60 hover:border-gold-500 bg-ivory-50 rounded-2xl p-6 text-center cursor-pointer relative transition-all">
@@ -641,7 +621,7 @@ export default function CheckoutPage() {
                   {/* Transfer Reference inputs */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-semibold text-zaad-900 mb-1">اسم صاحب الحساب المحول منه *</label>
+                      <label className="block text-xs font-semibold text-zaad-900 mb-1">اسم المحول بحساب إنستاباي *</label>
                       <input
                         type="text"
                         placeholder="الاسم كما يظهر بالإيصال"
@@ -652,10 +632,10 @@ export default function CheckoutPage() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-zaad-900 mb-1">رقم الحوالة / العملية المرجعي (Reference No) *</label>
+                      <label className="block text-xs font-semibold text-zaad-900 mb-1">الرقم المرجعي للعملية (Reference No) *</label>
                       <input
                         type="text"
-                        placeholder="مثال: TXN-89410293"
+                        placeholder="مثال: 41290381920"
                         value={transactionRef}
                         onChange={(e) => setTransactionRef(e.target.value)}
                         className="w-full text-xs bg-ivory-50 border border-ivory-300 rounded-xl px-4 py-3 font-mono focus:border-gold-500 focus:outline-none"
@@ -698,7 +678,11 @@ export default function CheckoutPage() {
               <div className="space-y-6 animate-fade-in">
                 <h2 className="text-base font-bold text-zaad-900 border-b border-ivory-200 pb-3 flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-gold-500"></span>
-                  <span>الخطوة 5: مراجعة واعتماد الطلب الملكي</span>
+                  <span>
+                    {paymentMethod === 'cash_on_delivery'
+                      ? 'الخطوة 4: مراجعة واعتماد الطلب الملكي'
+                      : 'الخطوة 5: مراجعة واعتماد الطلب الملكي'}
+                  </span>
                 </h2>
 
                 <div className="space-y-4 text-xs">
@@ -713,28 +697,36 @@ export default function CheckoutPage() {
                       <span className="text-charcoal-700/70">عنوان الشحن:</span>
                       <strong className="text-zaad-900">{country} - {city} - {district} {street}</strong>
                     </div>
-                    <div className="flex justify-between border-b border-ivory-200 pb-2">
+                    <div className={`flex justify-between ${paymentMethod === 'instapay' ? 'border-b border-ivory-200 pb-2' : ''}`}>
                       <span className="text-charcoal-700/70">طريقة الدفع:</span>
                       <strong className="text-zaad-900">
-                        {paymentMethod === 'bank_transfer' && 'تحويل بنكي رسمي'}
-                        {paymentMethod === 'instapay' && 'إنستاباي فوري'}
-                        {paymentMethod === 'vodafone_cash' && 'فودافون كاش'}
-                        {paymentMethod === 'mada_card' && 'بطاقة مدى / ائتمان'}
+                        {paymentMethod === 'instapay' && 'إنستاباي (InstaPay)'}
+                        {paymentMethod === 'cash_on_delivery' && 'الدفع عند الاستلام'}
                       </strong>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-charcoal-700/70">الرقم المرجعي للإيصال:</span>
-                      <strong className="text-gold-700 font-mono">{transactionRef || 'تم الإرفاق'}</strong>
-                    </div>
+                    {paymentMethod === 'instapay' && (
+                      <div className="flex justify-between">
+                        <span className="text-charcoal-700/70">الرقم المرجعي للإيصال:</span>
+                        <strong className="text-gold-700 font-mono">{transactionRef || 'تم الإرفاق'}</strong>
+                      </div>
+                    )}
                   </div>
 
                   {/* Trust Notice */}
                   <div className="bg-gold-50 p-4 rounded-xl border border-gold-300 text-zaad-900 flex items-start gap-2.5">
                     <ShieldCheck className="w-5 h-5 text-gold-600 shrink-0 mt-0.5" />
                     <div>
-                      <h4 className="text-xs font-bold">بروتوكول التحقق الفوري لدار زاد:</h4>
+                      <h4 className="text-xs font-bold">بروتوكول اعتماد الطلبات لدار زاد:</h4>
                       <p className="text-[11px] text-charcoal-700 mt-0.5 leading-relaxed">
-                        بمجرد الضغط على تأكيد الطلب، ستتغير حالة طلبكم إلى <strong>&ldquo;قيد المراجعة المالية&rdquo;</strong> وسيصل إشعار فوري لفريق العمليات لمطابقة الإيصال وتجهيز المنتجات الطبيعية للشحن.
+                        {paymentMethod === 'cash_on_delivery' ? (
+                          <>
+                            بمجرد الضغط على تأكيد الطلب، سيتم تسجيل طلبكم فوراً وتجهيز المنتجات الطبيعية للشحن، على أن يتم سداد المبلغ نقداً للمندوب عند الاستلام.
+                          </>
+                        ) : (
+                          <>
+                            بمجرد الضغط على تأكيد الطلب، ستتغير حالة طلبكم إلى <strong>&ldquo;قيد المراجعة المالية&rdquo;</strong> وسيصل إشعار فوري لفريق العمليات لمطابقة إيصال إنستاباي وتجهيز المنتجات للشحن.
+                          </>
+                        )}
                       </p>
                     </div>
                   </div>
@@ -744,11 +736,11 @@ export default function CheckoutPage() {
                 <div className="pt-4 flex justify-between">
                   <button
                     type="button"
-                    onClick={() => setCurrentStep(4)}
+                    onClick={() => setCurrentStep(paymentMethod === 'cash_on_delivery' ? 3 : 4)}
                     className="text-xs text-charcoal-700 hover:text-zaad-900 flex items-center gap-1 font-semibold"
                   >
                     <ArrowRight className="w-4 h-4" />
-                    <span>تعديل الإيصال</span>
+                    <span>{paymentMethod === 'cash_on_delivery' ? 'تعديل طريقة الدفع' : 'تعديل الإيصال'}</span>
                   </button>
 
                   <button
@@ -761,7 +753,11 @@ export default function CheckoutPage() {
                       <span>جاري تسجيل الطلب وإرسال الإشعار...</span>
                     ) : (
                       <>
-                        <span>تأكيد الطلب وإرسال الإيصال للمطابقة</span>
+                        <span>
+                          {paymentMethod === 'cash_on_delivery'
+                            ? 'تأكيد وإتمام الطلب الآن'
+                            : 'تأكيد الطلب وإرسال الإيصال للمطابقة'}
+                        </span>
                         <ArrowLeft className="w-4 h-4 text-zaad-950" />
                       </>
                     )}

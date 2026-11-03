@@ -71,18 +71,18 @@ export default function PaymentVerificationPage() {
   // Derive active proof safely
   const activeProof: PaymentProof | null = selectedOrder
     ? (selectedOrder.paymentProof || {
-        id: `proof-${selectedOrder.id}`,
-        orderId: selectedOrder.id,
-        receiptImageUrl: '/images/zaad-logo.png',
-        senderName: selectedOrder.customerName || 'المحول الملكي',
-        senderPhone: selectedOrder.customerPhone,
-        senderBank: 'مصرف الراجحي',
-        transactionReference: 'REF-' + selectedOrder.orderNumber,
-        transferDate: selectedOrder.createdAt?.split('T')[0] || new Date().toISOString().split('T')[0],
-        amountTransferred: selectedOrder.totalAmount,
-        status: 'proof_submitted',
-        createdAt: selectedOrder.createdAt
-      })
+      id: `proof-${selectedOrder.id}`,
+      orderId: selectedOrder.id,
+      receiptImageUrl: '/images/zaad-logo.png',
+      senderName: selectedOrder.customerName || 'المحول الملكي',
+      senderPhone: selectedOrder.customerPhone,
+      senderBank: 'مصرف الراجحي',
+      transactionReference: 'REF-' + selectedOrder.orderNumber,
+      transferDate: selectedOrder.createdAt?.split('T')[0] || new Date().toISOString().split('T')[0],
+      amountTransferred: selectedOrder.totalAmount,
+      status: 'proof_submitted',
+      createdAt: selectedOrder.createdAt
+    })
     : null;
 
   const handleApprove = async (order: Order) => {
@@ -140,7 +140,7 @@ export default function PaymentVerificationPage() {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      
+
       {/* Top Banner */}
       <div>
         <div className="inline-flex items-center gap-1.5 text-xs text-gold-700 font-bold bg-gold-50 px-3 py-0.5 rounded-full border border-gold-300 mb-1">
@@ -161,7 +161,7 @@ export default function PaymentVerificationPage() {
 
       {/* Main Split Interface */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
+
         {/* Left Side: Pending Queue (5 cols) */}
         <div className="lg:col-span-5 space-y-4">
           <div className="flex items-center justify-between">
@@ -190,11 +190,10 @@ export default function PaymentVerificationPage() {
                   <div
                     key={ord.id}
                     onClick={() => setSelectedOrder(ord)}
-                    className={`bg-white p-5 rounded-2xl border-2 transition-all cursor-pointer shadow-sm space-y-3 ${
-                      isSelected
+                    className={`bg-white p-5 rounded-2xl border-2 transition-all cursor-pointer shadow-sm space-y-3 ${isSelected
                         ? 'border-gold-500 ring-2 ring-gold-400/20 bg-gold-50/20'
                         : 'border-ivory-300 hover:border-gold-300'
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-mono text-sm font-bold text-zaad-900">{ord.orderNumber}</span>
@@ -235,7 +234,7 @@ export default function PaymentVerificationPage() {
         <div className="lg:col-span-7">
           {selectedOrder && activeProof ? (
             <div className="bg-white rounded-3xl p-6 sm:p-8 border border-ivory-300 shadow-sm space-y-6 animate-fade-in">
-              
+
               <div className="flex items-center justify-between pb-4 border-b border-ivory-200">
                 <div>
                   <span className="text-xs text-gold-700 font-bold block">مراجعة إشعار التحويل للطلب:</span>

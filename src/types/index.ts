@@ -159,8 +159,9 @@ export type OrderStatus =
   | 'cancelled';
 
 export type PaymentMethod =
-  | 'bank_transfer'
   | 'instapay'
+  | 'cash_on_delivery'
+  | 'bank_transfer'
   | 'vodafone_cash'
   | 'mada_card'
   | 'apple_pay';

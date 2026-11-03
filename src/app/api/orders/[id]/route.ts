@@ -98,7 +98,7 @@ function formatOrderRow(o: any): Order {
     totalAmount: Number(o.total_amount),
     currency: o.currency,
     status: o.status,
-    paymentMethod: o.payment_method,
+    paymentMethod: o.shipping_address?.paymentMethod || o.payment_method,
     paymentStatus: o.payment_status,
     trackingNumber: o.tracking_number,
     courierName: o.courier_name,
